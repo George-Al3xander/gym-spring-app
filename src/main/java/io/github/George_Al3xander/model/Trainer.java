@@ -15,6 +15,7 @@ public class Trainer extends User {
     }
 
     public Trainer(
+            Long id,
             String firstName,
             String lastName,
             String username,
@@ -23,7 +24,7 @@ public class Trainer extends User {
             Long userId,
             String specialization
     ) {
-        super(firstName, lastName, username, password, isActive);
+        super(id, firstName, lastName, username, password, isActive);
         this.userId = userId;
         this.specialization = specialization;
     }

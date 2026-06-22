@@ -18,6 +18,7 @@ public class Trainee extends User {
     }
 
     public Trainee(
+            Long id,
             String firstName,
             String lastName,
             String username,
@@ -27,7 +28,7 @@ public class Trainee extends User {
             String address,
             Long userId
     ) {
-        super(firstName, lastName, username, password, isActive);
+        super(id, firstName, lastName, username, password, isActive);
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.userId = userId;
