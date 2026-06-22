@@ -1,0 +1,77 @@
+{
+  "trainees": {
+    "101": {
+      "id": 101,
+      "userId": 1,
+      "dateOfBirth": "1998-05-15",
+      "address": "New York, USA",
+      "firstName": "John",
+      "lastName": "Smith",
+      "username": "john.smith",
+      "password": "Pass1234",
+      "isActive": true
+    },
+    "102": {
+      "id": 102,
+      "userId": 2,
+      "dateOfBirth": "2000-11-20",
+      "address": "London, UK",
+      "firstName": "Anna",
+      "lastName": "Brown",
+      "username": "anna.brown",
+      "password": "Anna@123",
+      "isActive": true
+    }
+  },
+  "trainers": {
+    "201": {
+      "id": 201,
+      "userId": 3,
+      "specialization": "Strength Training",
+      "firstName": "Mike",
+      "lastName": "Wilson",
+      "username": "mike.wilson",
+      "password": "Mike#456",
+      "isActive": false
+    },
+    "202": {
+      "id": 202,
+      "userId": 4,
+      "specialization": "Flexibility Training",
+      "firstName": "Emma",
+      "lastName": "Davis",
+      "username": "emma.davis",
+      "password": "Emma456",
+      "isActive": true
+    }
+  },
+  "trainings": {
+    "1001": {
+      "id": 1001,
+      "traineeId": 101,
+      "trainerId": 201,
+      "trainingName": "Morning Strength Workout",
+      "trainingType": "STRENGTH",
+      "trainingDate": "2026-06-22T09:00:00",
+      "durationSeconds": 3600
+    },
+    "1002": {
+      "id": 1002,
+      "traineeId": 102,
+      "trainerId": 202,
+      "trainingName": "Flexibility Session",
+      "trainingType": "FLEXIBILITY",
+      "trainingDate": "2026-06-23T18:30:00",
+      "durationSeconds": 2700
+    },
+    "1003": {
+      "id": 1003,
+      "traineeId": 101,
+      "trainerId": 201,
+      "trainingName": "HIIT Cardio Blast",
+      "trainingType": "HIIT",
+      "trainingDate": "2026-06-24T07:30:00",
+      "durationSeconds": 1800
+    }
+  }
+}
