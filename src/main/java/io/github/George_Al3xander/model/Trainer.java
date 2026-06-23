@@ -3,45 +3,44 @@ package io.github.George_Al3xander.model;
 import java.util.Objects;
 
 public class Trainer extends User {
-    private Long userId;
-    private String specialization;
+    private String userId;
+    private TrainingType specialization;
 
     public Trainer() {
     }
 
-    public Trainer(Long userId, String specialization) {
+    public Trainer(String userId, TrainingType specialization) {
         this.userId = userId;
         this.specialization = specialization;
     }
 
     public Trainer(
-            Long id,
             String firstName,
             String lastName,
             String username,
             String password,
             boolean isActive,
-            Long userId,
-            String specialization
+            String userId,
+            TrainingType specialization
     ) {
-        super(id, firstName, lastName, username, password, isActive);
+        super(firstName, lastName, username, password, isActive);
         this.userId = userId;
         this.specialization = specialization;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getSpecialization() {
+    public TrainingType getSpecialization() {
         return specialization;
     }
 
-    public void setSpecialization(String specialization) {
+    public void setSpecialization(TrainingType specialization) {
         this.specialization = specialization;
     }
 

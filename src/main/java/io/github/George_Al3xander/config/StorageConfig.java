@@ -19,9 +19,9 @@ public class StorageConfig {
     @Value("${storage.file.path}")
     private String filePath;
 
-    private final Map<Long, Trainee> traineeStorage = new ConcurrentHashMap<>();
-    private final Map<Long, Trainer> trainerStorage = new ConcurrentHashMap<>();
-    private final Map<Long, Training> trainingStorage = new ConcurrentHashMap<>();
+    private final Map<String, Trainee> traineeStorage = new ConcurrentHashMap<>();
+    private final Map<String, Trainer> trainerStorage = new ConcurrentHashMap<>();
+    private final Map<String, Training> trainingStorage = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -30,17 +30,17 @@ public class StorageConfig {
 
 
     @Bean
-    public Map<Long, Trainee> traineeStorage() {
+    public Map<String, Trainee> traineeStorage() {
         return traineeStorage;
     }
 
     @Bean
-    public Map<Long, Trainer> trainerStorage() {
+    public Map<String, Trainer> trainerStorage() {
         return trainerStorage;
     }
 
     @Bean
-    public Map<Long, Training> trainingStorage() {
+    public Map<String, Training> trainingStorage() {
         return trainingStorage;
     }
 
@@ -69,8 +69,8 @@ public class StorageConfig {
     }
 
     private static class GymData {
-        public Map<Long, Trainee> trainees;
-        public Map<Long, Trainer> trainers;
-        public Map<Long, Training> trainings;
+        public Map<String, Trainee> trainees;
+        public Map<String, Trainer> trainers;
+        public Map<String, Training> trainings;
     }
 }

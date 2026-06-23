@@ -3,7 +3,6 @@ package io.github.George_Al3xander.model;
 import java.util.Objects;
 
 public class User {
-    private Long id;
     private String firstName;
     private String lastName;
     private String username;
@@ -13,21 +12,12 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, String username, String password, boolean isActive) {
-        this.id = id;
+    public User(String firstName, String lastName, String username, String password, boolean isActive) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
         this.isActive = isActive;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

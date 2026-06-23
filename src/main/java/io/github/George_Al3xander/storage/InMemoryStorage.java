@@ -12,22 +12,22 @@ import java.util.Map;
 public class InMemoryStorage implements Storage {
 
     @Autowired
-    private Map<Long, Trainee> traineeStorage;
+    private Map<String, Trainee> traineeStorage;
     @Autowired
-    private Map<Long, Trainer> trainerStorage;
+    private Map<String, Trainer> trainerStorage;
     @Autowired
-    private Map<Long, Training> trainingStorage;
+    private Map<String, Training> trainingStorage;
 
 
-    public Map<Long, Trainee> getTraineeStorage() {
+    public Map<String, Trainee> getTraineeStorage() {
         return traineeStorage;
     }
 
-    public Map<Long, Trainer> getTrainerStorage() {
+    public Map<String, Trainer> getTrainerStorage() {
         return trainerStorage;
     }
 
-    public Map<Long, Training> getTrainingStorage() {
+    public Map<String, Training> getTrainingStorage() {
         return trainingStorage;
     }
 }

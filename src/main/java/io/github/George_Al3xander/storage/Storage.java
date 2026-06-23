@@ -8,9 +8,9 @@ import java.util.Map;
 
 public interface Storage {
 
-    Map<Long, Trainee> getTraineeStorage();
+    Map<String, Trainee> getTraineeStorage();
 
-    Map<Long, Trainer> getTrainerStorage();
+    Map<String, Trainer> getTrainerStorage();
 
-    Map<Long, Training> getTrainingStorage();
+    Map<String, Training> getTrainingStorage();
 }
