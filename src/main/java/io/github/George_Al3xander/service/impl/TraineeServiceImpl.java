@@ -8,6 +8,8 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ import java.util.Optional;
 
 @Service
 public class TraineeServiceImpl implements TraineeService {
+
+    private static final Logger log = LoggerFactory.getLogger(TraineeServiceImpl.class);
+
     @Autowired
     private TraineeDao traineeDao;
 
@@ -26,36 +31,67 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Trainee getTraineeById(String id) {
+        log.info("Fetching trainee with id={}", id);
 
         Optional<Trainee> optionalTrainee = traineeDao.findById(id);
 
         if (optionalTrainee.isEmpty()) {
-            throw new EntityNotFoundException("Trainee", id);
+            EntityNotFoundException ex = new EntityNotFoundException("Trainee", id);
+            log.warn(ex.getMessage());
+            throw ex;
         }
 
+
+        log.info("Trainee found, id={}", id);
         return optionalTrainee.get();
     }
 
     @Override
     public List<Trainee> getAllTrainees() {
-        return traineeDao.findAll();
+        log.info("Fetching all trainees");
+
+        List<Trainee> trainees = traineeDao.findAll();
+
+        log.info("Retrieved {} trainees", trainees.size());
+        return trainees;
     }
 
     @Override
     public Trainee saveTrainee(Trainee entity) {
+        log.info(
+                "Creating trainee firstName={} lastName={}",
+                entity.getFirstName(),
+                entity.getLastName()
+        );
+
         entity.setUsername(usernameGenerator.generateUsername(entity));
         entity.setPassword(PasswordGenerator.generatePassword(10));
 
-        return traineeDao.save(entity);
+        Trainee savedTrainee = traineeDao.save(entity);
+
+        log.info(
+                "Trainee created successfully id={} username={}",
+                savedTrainee.getUserId(),
+                savedTrainee.getUsername()
+        );
+
+        return savedTrainee;
     }
 
     @Override
     public Trainee updateTrainee(Trainee entity) {
-        return traineeDao.save(entity);
+        log.info("Updating trainee id={}", entity.getUserId());
+
+        Trainee updatedTrainee = traineeDao.save(entity);
+
+        log.info("Trainee updated successfully id={}", updatedTrainee.getUserId());
+
+        return updatedTrainee;
     }
 
     @Override
     public void deleteTrainee(String id) {
+        log.info("Deleting trainee id={}", id);
 
         trainingDao.findAll()
                 .stream()
@@ -71,6 +107,8 @@ public class TraineeServiceImpl implements TraineeService {
                 });
 
         traineeDao.delete(id);
+
+        log.info("Trainee deleted successfully id={}", id);
     }
 
     @Autowired
