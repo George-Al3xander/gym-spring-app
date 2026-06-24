@@ -17,8 +17,11 @@ public class TrainerDao implements CrudDao<Trainer> {
 
     @Override
     public Trainer save(Trainer entity) {
-        return storage.getTrainerStorage().put(UUID.randomUUID().toString(), entity);
+        String id = UUID.randomUUID().toString();
+        entity.setUserId(id);
 
+        storage.getTrainerStorage().put(id, entity);
+        return entity;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class TrainerDao implements CrudDao<Trainer> {
 
     @Override
     public List<Trainer> findAll() {
-        return storage.getTrainerStorage().values().stream().toList();
+        return List.copyOf(storage.getTrainerStorage().values());
     }
 
     @Override
@@ -38,6 +41,13 @@ public class TrainerDao implements CrudDao<Trainer> {
 
     @Override
     public Trainer update(Trainer entity) {
-        return storage.getTrainerStorage().put(entity.getUserId(), entity);
+        if (!storage.getTrainerStorage().containsKey(entity.getUserId())) {
+            throw new IllegalArgumentException(
+                    "Trainer with id " + entity.getUserId() + " not found"
+            );
+        }
+
+        storage.getTrainerStorage().put(entity.getUserId(), entity);
+        return entity;
     }
 }

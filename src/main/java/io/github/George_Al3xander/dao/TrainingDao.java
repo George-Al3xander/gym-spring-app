@@ -17,7 +17,11 @@ public class TrainingDao implements CrudDao<Training> {
 
     @Override
     public Training save(Training entity) {
-        return storage.getTrainingStorage().put(UUID.randomUUID().toString(), entity);
+        String id = UUID.randomUUID().toString();
+
+        storage.getTrainingStorage().put(id, entity);
+
+        return entity;
     }
 
     @Override
@@ -27,7 +31,7 @@ public class TrainingDao implements CrudDao<Training> {
 
     @Override
     public List<Training> findAll() {
-        return storage.getTrainingStorage().values().stream().toList();
+        return List.copyOf(storage.getTrainingStorage().values());
     }
 
     @Override
@@ -37,6 +41,18 @@ public class TrainingDao implements CrudDao<Training> {
 
     @Override
     public Training update(Training entity) {
-        return save(entity);
+        String existingId = storage.getTrainingStorage()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().equals(entity))
+                .map(entry -> entry.getKey())
+                .findFirst()
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Training not found")
+                );
+
+        storage.getTrainingStorage().put(existingId, entity);
+
+        return entity;
     }
 }
