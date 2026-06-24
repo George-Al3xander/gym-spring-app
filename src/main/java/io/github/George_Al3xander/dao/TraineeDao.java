@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.dao;
 
+import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,8 @@ public class TraineeDao implements CrudDao<Trainee> {
     @Override
     public Trainee update(Trainee entity) {
         if (!storage.getTraineeStorage().containsKey(entity.getUserId())) {
-            throw new IllegalArgumentException(
-                    "Trainee with id " + entity.getUserId() + " not found"
+            throw new EntityNotFoundException(
+                    "Trainee", entity.getUserId()
             );
         }
 
