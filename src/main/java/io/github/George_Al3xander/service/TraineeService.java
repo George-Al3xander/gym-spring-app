@@ -8,7 +8,7 @@ public interface TraineeService {
 
     Trainee getTraineeById(String id);
 
-    List<Trainee> getAllTrainees(String id);
+    List<Trainee> getAllTrainees();
 
     Trainee saveTrainee(Trainee entity);
 

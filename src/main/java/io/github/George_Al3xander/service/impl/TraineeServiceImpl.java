@@ -37,7 +37,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public List<Trainee> getAllTrainees(String id) {
+    public List<Trainee> getAllTrainees() {
         return traineeDao.findAll();
     }
 
