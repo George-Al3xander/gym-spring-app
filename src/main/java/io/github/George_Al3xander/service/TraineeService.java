@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TraineeService {
 
-    Trainee getTraineeById(String id);
+    Trainee getTraineeById(Long id);
 
     List<Trainee> getAllTrainees();
 
@@ -14,5 +14,5 @@ public interface TraineeService {
 
     Trainee updateTrainee(Trainee entity);
 
-    void deleteTrainee(String id);
+    void deleteTrainee(Long id);
 }

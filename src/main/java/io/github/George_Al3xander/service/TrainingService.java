@@ -5,7 +5,7 @@ import io.github.George_Al3xander.model.Training;
 import java.util.List;
 
 public interface TrainingService {
-    Training getTrainingById(String id);
+    Training getTrainingById(Long id);
 
     List<Training> getAllTrainings();
 

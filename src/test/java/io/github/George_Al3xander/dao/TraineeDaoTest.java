@@ -3,6 +3,7 @@ package io.github.George_Al3xander.dao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.storage.Storage;
+import io.github.George_Al3xander.util.SequenceGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,10 @@ class TraineeDaoTest {
     private Storage storage;
 
     @Mock
-    private Map<String, Trainee> traineeStorage;
+    private SequenceGenerator sequenceGenerator;
+
+    @Mock
+    private Map<Long, Trainee> traineeStorage;
 
     @InjectMocks
     private TraineeDao traineeDao;
@@ -32,10 +36,12 @@ class TraineeDaoTest {
     @BeforeEach
     void setUp() {
         when(storage.getTraineeStorage()).thenReturn(traineeStorage);
+
     }
 
     @Test
     void givenTraineeWithoutId_whenSave_thenTraineeIsStoredWithGeneratedId() {
+        when(sequenceGenerator.getNextSeq()).thenReturn(1L);
         Trainee trainee = new Trainee();
 
         Trainee saved = traineeDao.save(trainee);
@@ -48,7 +54,7 @@ class TraineeDaoTest {
 
     @Test
     void givenExistingTrainee_whenFindById_thenReturnOptionalOfTrainee() {
-        String id = "123";
+        long id = 123L;
         Trainee trainee = new Trainee();
         when(traineeStorage.get(id)).thenReturn(trainee);
 
@@ -60,9 +66,9 @@ class TraineeDaoTest {
 
     @Test
     void givenNonExistingTrainee_whenFindById_thenReturnEmptyOptional() {
-        when(traineeStorage.get("missing")).thenReturn(null);
+        when(traineeStorage.get(0L)).thenReturn(null);
 
-        Optional<Trainee> result = traineeDao.findById("missing");
+        Optional<Trainee> result = traineeDao.findById(0L);
 
         assertTrue(result.isEmpty());
     }
@@ -86,7 +92,7 @@ class TraineeDaoTest {
 
     @Test
     void givenExistingTrainee_whenDelete_thenRemoveFromStorage() {
-        String id = "123";
+        long id = 123L;
 
         traineeDao.delete(id);
 
@@ -96,24 +102,24 @@ class TraineeDaoTest {
     @Test
     void givenExistingTrainee_whenUpdate_thenReturnUpdatedTrainee() {
         Trainee trainee = new Trainee();
-        trainee.setUserId("123");
+        trainee.setUserId(123L);
 
-        when(traineeStorage.containsKey("123")).thenReturn(true);
-        when(traineeStorage.put("123", trainee)).thenReturn(trainee);
+        when(traineeStorage.containsKey(123L)).thenReturn(true);
+        when(traineeStorage.put(123L, trainee)).thenReturn(trainee);
 
         Trainee result = traineeDao.update(trainee);
 
         assertEquals(trainee, result);
 
-        verify(traineeStorage).put("123", trainee);
+        verify(traineeStorage).put(123L, trainee);
     }
 
     @Test
     void givenNonExistingTrainee_whenUpdate_thenThrowEntityNotFoundException() {
         Trainee trainee = new Trainee();
-        trainee.setUserId("missing");
+        trainee.setUserId(123L);
 
-        when(traineeStorage.containsKey("missing")).thenReturn(false);
+        when(traineeStorage.containsKey(123L)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class,
                 () -> traineeDao.update(trainee));

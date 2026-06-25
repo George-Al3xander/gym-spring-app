@@ -41,8 +41,8 @@ class TrainingServiceImplTest {
     @BeforeEach
     void setUp() {
         training = new Training(
-                "trainee-1",
-                "trainer-1",
+                11L,
+                101L,
                 "Morning cardio",
                 TrainingType.CARDIO,
                 LocalDateTime.of(2026, 1, 10, 8, 0),
@@ -53,32 +53,32 @@ class TrainingServiceImplTest {
     @Test
     void givenExistingTraining_whenGetTrainingById_thenReturnTraining() {
 
-        when(trainingDao.findById("training-1"))
+        when(trainingDao.findById(1012L))
                 .thenReturn(Optional.of(training));
 
         Training result =
-                trainingService.getTrainingById("training-1");
+                trainingService.getTrainingById(1012L);
 
         assertEquals(training, result);
 
         verify(trainingDao)
-                .findById("training-1");
+                .findById(1012L);
     }
 
 
     @Test
     void givenNonExistingTraining_whenGetTrainingById_thenThrowEntityNotFoundException() {
 
-        when(trainingDao.findById("training-1"))
+        when(trainingDao.findById(1012L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> trainingService.getTrainingById("training-1")
+                () -> trainingService.getTrainingById(1012L)
         );
 
         verify(trainingDao)
-                .findById("training-1");
+                .findById(1012L);
     }
 
 
@@ -127,10 +127,10 @@ class TrainingServiceImplTest {
                 trainingService.saveTraining(training);
 
         verify(trainerService)
-                .getTrainerById("trainer-1");
+                .getTrainerById(101L);
 
         verify(traineeService)
-                .getTraineeById("trainee-1");
+                .getTraineeById(11L);
 
         verify(trainingDao)
                 .save(training);
@@ -142,9 +142,9 @@ class TrainingServiceImplTest {
     @Test
     void givenTrainingWithUnknownTrainer_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
 
-        doThrow(new EntityNotFoundException("Trainer", "trainer-1"))
+        doThrow(new EntityNotFoundException("Trainer", 101L))
                 .when(trainerService)
-                .getTrainerById("trainer-1");
+                .getTrainerById(101L);
 
         assertThrows(
                 EntityNotFoundException.class,
@@ -152,7 +152,7 @@ class TrainingServiceImplTest {
         );
 
         verify(trainerService)
-                .getTrainerById("trainer-1");
+                .getTrainerById(101L);
 
 
         verifyNoInteractions(traineeService);
@@ -165,9 +165,9 @@ class TrainingServiceImplTest {
     @Test
     void givenTrainingWithUnknownTrainee_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
 
-        doThrow(new EntityNotFoundException("Trainee", "trainee-1"))
+        doThrow(new EntityNotFoundException("Trainee", 11L))
                 .when(traineeService)
-                .getTraineeById("trainee-1");
+                .getTraineeById(11L);
 
         assertThrows(
                 EntityNotFoundException.class,
@@ -175,10 +175,10 @@ class TrainingServiceImplTest {
         );
 
         verify(trainerService)
-                .getTrainerById("trainer-1");
+                .getTrainerById(101L);
 
         verify(traineeService)
-                .getTraineeById("trainee-1");
+                .getTraineeById(11L);
 
         verify(trainingDao, never())
                 .save(any());
@@ -188,8 +188,8 @@ class TrainingServiceImplTest {
     void givenValidTraining_whenSaveTraining_thenReturnSavedTraining() {
 
         Training savedTraining = new Training(
-                "trainee-1",
-                "trainer-1",
+                11L,
+                101L,
                 "Evening strength",
                 TrainingType.STRENGTH,
                 LocalDateTime.of(2026, 1, 11, 18, 0),

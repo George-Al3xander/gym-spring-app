@@ -1,7 +1,7 @@
 {
   "trainees": {
-    "3fa85f64-5717-4562-b3fc-2c963f66afa1": {
-      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa1",
+    "1": {
+      "userId": 1,
       "dateOfBirth": "1998-05-15",
       "address": "New York, USA",
       "firstName": "John",
@@ -10,8 +10,8 @@
       "password": "Pass1234",
       "isActive": true
     },
-    "3fa85f64-5717-4562-b3fc-2c963f66afa2": {
-      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa2",
+    "2": {
+      "userId": 2,
       "dateOfBirth": "2000-11-20",
       "address": "London, UK",
       "firstName": "Anna",
@@ -22,8 +22,8 @@
     }
   },
   "trainers": {
-    "3fa85f64-5717-4562-b3fc-2c963f66afb1": {
-      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afb1",
+    "101": {
+      "userId": 101,
       "specialization": "STRENGTH",
       "firstName": "Mike",
       "lastName": "Wilson",
@@ -31,8 +31,8 @@
       "password": "Mike#456",
       "isActive": false
     },
-    "3fa85f64-5717-4562-b3fc-2c963f66afb2": {
-      "userId": "3fa85f64-5717-4562-b3fc-2c963f66afb2",
+    "102": {
+      "userId": 102,
       "specialization": "FLEXIBILITY",
       "firstName": "Emma",
       "lastName": "Davis",
@@ -42,25 +42,25 @@
     }
   },
   "trainings": {
-    "3fa85f64-5717-4562-b3fc-2c963f66afc1": {
-      "traineeId": "3fa85f64-5717-4562-b3fc-2c963f66afa1",
-      "trainerId": "3fa85f64-5717-4562-b3fc-2c963f66afb1",
+    "1001": {
+      "traineeId": 1,
+      "trainerId": 101,
       "trainingName": "Morning Strength Workout",
       "trainingType": "STRENGTH",
       "trainingDate": "2026-06-22T09:00:00",
       "durationSeconds": 3600
     },
-    "3fa85f64-5717-4562-b3fc-2c963f66afc2": {
-      "traineeId": "3fa85f64-5717-4562-b3fc-2c963f66afa2",
-      "trainerId": "3fa85f64-5717-4562-b3fc-2c963f66afb2",
+    "1002": {
+      "traineeId": 2,
+      "trainerId": 102,
       "trainingName": "Flexibility Session",
       "trainingType": "FLEXIBILITY",
       "trainingDate": "2026-06-23T18:30:00",
       "durationSeconds": 2700
     },
-    "3fa85f64-5717-4562-b3fc-2c963f66afc3": {
-      "traineeId": "3fa85f64-5717-4562-b3fc-2c963f66afa1",
-      "trainerId": "3fa85f64-5717-4562-b3fc-2c963f66afb1",
+    "1003": {
+      "traineeId": 1,
+      "trainerId": 101,
       "trainingName": "HIIT Cardio Blast",
       "trainingType": "HIIT",
       "trainingDate": "2026-06-24T07:30:00",

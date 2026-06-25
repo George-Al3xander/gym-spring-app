@@ -3,12 +3,12 @@ package io.github.George_Al3xander.dao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.storage.Storage;
+import io.github.George_Al3xander.util.SequenceGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class TrainerDao implements CrudDao<Trainer> {
@@ -16,9 +16,11 @@ public class TrainerDao implements CrudDao<Trainer> {
     @Autowired
     private Storage storage;
 
+    private SequenceGenerator sequenceGenerator;
+
     @Override
     public Trainer save(Trainer entity) {
-        String id = UUID.randomUUID().toString();
+        long id = sequenceGenerator.getNextSeq();
         entity.setUserId(id);
 
         storage.getTrainerStorage().put(id, entity);
@@ -26,7 +28,7 @@ public class TrainerDao implements CrudDao<Trainer> {
     }
 
     @Override
-    public Optional<Trainer> findById(String id) {
+    public Optional<Trainer> findById(Long id) {
         return Optional.ofNullable(storage.getTrainerStorage().get(id));
     }
 
@@ -36,7 +38,7 @@ public class TrainerDao implements CrudDao<Trainer> {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         storage.getTrainerStorage().remove(id);
     }
 
@@ -50,5 +52,10 @@ public class TrainerDao implements CrudDao<Trainer> {
 
         storage.getTrainerStorage().put(entity.getUserId(), entity);
         return entity;
+    }
+
+    @Autowired
+    public void setSequenceGenerator(SequenceGenerator sequenceGenerator) {
+        this.sequenceGenerator = sequenceGenerator;
     }
 }

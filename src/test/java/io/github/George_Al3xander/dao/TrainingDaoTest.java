@@ -2,6 +2,7 @@ package io.github.George_Al3xander.dao;
 
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.storage.Storage;
+import io.github.George_Al3xander.util.SequenceGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +21,11 @@ class TrainingDaoTest {
     private Storage storage;
 
     @Mock
-    private Map<String, Training> trainingStorage;
+    private SequenceGenerator sequenceGenerator;
+
+
+    @Mock
+    private Map<Long, Training> trainingStorage;
 
     @InjectMocks
     private TrainingDao trainingDao;
@@ -32,20 +37,21 @@ class TrainingDaoTest {
     @Test
     void givenTraining_whenSave_thenStoredWithGeneratedKey() {
         init();
+        when(sequenceGenerator.getNextSeq()).thenReturn(1L);
 
         Training training = new Training();
 
         trainingDao.save(training);
 
         verify(trainingStorage, times(1))
-                .put(anyString(), eq(training));
+                .put(anyLong(), eq(training));
     }
 
     @Test
     void givenExistingTraining_whenFindById_thenReturnTraining() {
         init();
 
-        String id = "123";
+        long id = 123L;
         Training training = new Training();
 
         when(trainingStorage.get(id)).thenReturn(training);
@@ -60,9 +66,9 @@ class TrainingDaoTest {
     void givenMissingTraining_whenFindById_thenReturnEmpty() {
         init();
 
-        when(trainingStorage.get("missing")).thenReturn(null);
+        when(trainingStorage.get(0L)).thenReturn(null);
 
-        Optional<Training> result = trainingDao.findById("missing");
+        Optional<Training> result = trainingDao.findById(0L);
 
         assertTrue(result.isEmpty());
     }
@@ -90,7 +96,7 @@ class TrainingDaoTest {
     void givenTraining_whenDelete_thenRemovedFromStorage() {
         init();
 
-        String id = "123";
+        long id = 123L;
 
         trainingDao.delete(id);
 
@@ -103,20 +109,20 @@ class TrainingDaoTest {
 
         Training training = new Training();
 
-        Map.Entry<String, Training> entry =
-                Map.entry("key-1", training);
+        Map.Entry<Long, Training> entry =
+                Map.entry(13L, training);
 
         when(trainingStorage.entrySet())
                 .thenReturn(Set.of(entry));
 
-        when(trainingStorage.put("key-1", training))
+        when(trainingStorage.put(13L, training))
                 .thenReturn(training);
 
         Training result = trainingDao.update(training);
 
         assertEquals(training, result);
 
-        verify(trainingStorage).put("key-1", training);
+        verify(trainingStorage).put(13L, training);
     }
 
     @Test

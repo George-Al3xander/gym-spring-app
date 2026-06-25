@@ -7,11 +7,11 @@ public interface CrudDao<T> {
 
     T save(T entity);
 
-    Optional<T> findById(String id);
+    Optional<T> findById(Long id);
 
     List<T> findAll();
 
-    void delete(String id);
+    void delete(Long id);
 
     T update(T entity);
 }

@@ -6,8 +6,6 @@ import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +14,6 @@ import java.util.Optional;
 
 @Service
 public class TrainingServiceImpl implements TrainingService {
-
-    private static final Logger log = LoggerFactory.getLogger(TrainingServiceImpl.class);
-
     @Autowired
     private TrainingDao trainingDao;
 
@@ -27,51 +22,29 @@ public class TrainingServiceImpl implements TrainingService {
     private TrainerService trainerService;
 
     @Override
-    public Training getTrainingById(String id) {
-        log.info("Fetching training with id={}", id);
+    public Training getTrainingById(Long id) {
+
 
         Optional<Training> optionalTraining = trainingDao.findById(id);
 
         if (optionalTraining.isEmpty()) {
-            EntityNotFoundException ex = new EntityNotFoundException("Training", id);
-            log.warn(ex.getMessage());
-            throw ex;
+            throw new EntityNotFoundException("Training", id);
         }
 
-        log.info("Training found, id={}", id);
         return optionalTraining.get();
     }
 
     @Override
     public List<Training> getAllTrainings() {
-        log.info("Fetching all trainings");
-
-        List<Training> trainings = trainingDao.findAll();
-
-        log.info("Retrieved {} trainings", trainings.size());
-        return trainings;
+        return trainingDao.findAll();
     }
 
     @Override
     public Training saveTraining(Training entity) {
-        log.info(
-                "Creating training name={} trainerId={} traineeId={}",
-                entity.getTrainingName(),
-                entity.getTrainerId(),
-                entity.getTraineeId()
-        );
-
         trainerService.getTrainerById(entity.getTrainerId());
         traineeService.getTraineeById(entity.getTraineeId());
 
-        Training savedTraining = trainingDao.save(entity);
-
-        log.info(
-                "Training created successfully name={}",
-                savedTraining.getTrainingName()
-        );
-
-        return savedTraining;
+        return trainingDao.save(entity);
     }
 
     @Autowired

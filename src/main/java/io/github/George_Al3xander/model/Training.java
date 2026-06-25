@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Training {
-    private String traineeId;
-    private String trainerId;
+    private Long traineeId;
+    private Long trainerId;
     private String trainingName;
     private TrainingType trainingType;
     private LocalDateTime trainingDate;
@@ -14,7 +14,7 @@ public class Training {
     public Training() {
     }
 
-    public Training(String traineeId, String trainerId, String trainingName, TrainingType trainingType, LocalDateTime trainingDate, Integer durationSeconds) {
+    public Training(Long traineeId, Long trainerId, String trainingName, TrainingType trainingType, LocalDateTime trainingDate, Integer durationSeconds) {
         this.traineeId = traineeId;
         this.trainerId = trainerId;
         this.trainingName = trainingName;
@@ -23,19 +23,19 @@ public class Training {
         this.durationSeconds = durationSeconds;
     }
 
-    public String getTraineeId() {
+    public Long getTraineeId() {
         return traineeId;
     }
 
-    public void setTraineeId(String traineeId) {
+    public void setTraineeId(Long traineeId) {
         this.traineeId = traineeId;
     }
 
-    public String getTrainerId() {
+    public Long getTrainerId() {
         return trainerId;
     }
 
-    public void setTrainerId(String trainerId) {
+    public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
     }
 

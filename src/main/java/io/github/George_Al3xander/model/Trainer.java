@@ -3,13 +3,13 @@ package io.github.George_Al3xander.model;
 import java.util.Objects;
 
 public class Trainer extends User {
-    private String userId;
+    private Long userId;
     private TrainingType specialization;
 
     public Trainer() {
     }
 
-    public Trainer(String userId, TrainingType specialization) {
+    public Trainer(Long userId, TrainingType specialization) {
         this.userId = userId;
         this.specialization = specialization;
     }
@@ -20,7 +20,7 @@ public class Trainer extends User {
             String username,
             String password,
             boolean isActive,
-            String userId,
+            Long userId,
             TrainingType specialization
     ) {
         super(firstName, lastName, username, password, isActive);
@@ -28,11 +28,11 @@ public class Trainer extends User {
         this.specialization = specialization;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

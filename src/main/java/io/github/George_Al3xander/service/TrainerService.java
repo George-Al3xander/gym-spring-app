@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TrainerService {
 
-    Trainer getTrainerById(String id);
+    Trainer getTrainerById(Long id);
 
     List<Trainer> getAllTrainers();
 

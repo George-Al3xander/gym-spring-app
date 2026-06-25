@@ -46,35 +46,35 @@ class TraineeServiceImplTest {
     void givenExistingTraineeId_whenGetTraineeById_thenReturnTrainee() {
 
         Trainee trainee = new Trainee();
-        trainee.setUserId("1");
+        trainee.setUserId(1L);
 
-        when(traineeDao.findById("1"))
+        when(traineeDao.findById(1L))
                 .thenReturn(Optional.of(trainee));
 
 
         Trainee result =
-                traineeService.getTraineeById("1");
+                traineeService.getTraineeById(1L);
 
 
         assertEquals(trainee, result);
 
         verify(traineeDao)
-                .findById("1");
+                .findById(1L);
     }
 
     @Test
     void givenNonExistingTraineeId_whenGetTraineeById_thenThrowEntityNotFoundException() {
 
-        when(traineeDao.findById("1"))
+        when(traineeDao.findById(1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> traineeService.getTraineeById("1")
+                () -> traineeService.getTraineeById(1L)
         );
 
         verify(traineeDao)
-                .findById("1");
+                .findById(1L);
     }
 
     @Test
@@ -192,10 +192,10 @@ class TraineeServiceImplTest {
         when(trainingDao.findAll())
                 .thenReturn(List.of());
 
-        traineeService.deleteTrainee("1");
+        traineeService.deleteTrainee(1L);
 
         verify(traineeDao)
-                .delete("1");
+                .delete(1L);
     }
 
 
@@ -204,7 +204,7 @@ class TraineeServiceImplTest {
 
         Training training = new Training();
 
-        training.setTraineeId("1");
+        training.setTraineeId(1L);
         training.setTrainingName("Java");
 
         when(trainingDao.findAll())
@@ -212,11 +212,11 @@ class TraineeServiceImplTest {
 
         assertThrows(
                 EntityInUseException.class,
-                () -> traineeService.deleteTrainee("1")
+                () -> traineeService.deleteTrainee(1L)
         );
 
         verify(traineeDao, never())
-                .delete(anyString());
+                .delete(anyLong());
     }
 
 
@@ -225,7 +225,7 @@ class TraineeServiceImplTest {
 
         Training training = new Training();
 
-        training.setTraineeId("ABC");
+        training.setTraineeId(123L);
         training.setTrainingName("Spring");
 
         when(trainingDao.findAll())
@@ -233,11 +233,11 @@ class TraineeServiceImplTest {
 
         assertThrows(
                 EntityInUseException.class,
-                () -> traineeService.deleteTrainee("abc")
+                () -> traineeService.deleteTrainee(123L)
         );
 
         verify(traineeDao, never())
-                .delete(anyString());
+                .delete(anyLong());
     }
 
 
@@ -246,14 +246,14 @@ class TraineeServiceImplTest {
 
         Training training = new Training();
 
-        training.setTraineeId("999");
+        training.setTraineeId(999L);
 
         when(trainingDao.findAll())
                 .thenReturn(List.of(training));
 
-        traineeService.deleteTrainee("1");
+        traineeService.deleteTrainee(1L);
 
         verify(traineeDao)
-                .delete("1");
+                .delete(1L);
     }
 }

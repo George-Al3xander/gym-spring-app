@@ -43,7 +43,7 @@ class TrainerServiceImplTest {
 
     @Test
     void givenExistingTrainerId_whenGetTrainerById_thenReturnTrainer() {
-        String id = "trainer-1";
+        long id = 12L;
 
         when(trainerDao.findById(id))
                 .thenReturn(Optional.of(trainer));
@@ -58,7 +58,7 @@ class TrainerServiceImplTest {
 
     @Test
     void givenMissingTrainerId_whenGetTrainerById_thenThrowEntityNotFoundException() {
-        String id = "missing-id";
+        long id = 0L;
 
         when(trainerDao.findById(id))
                 .thenReturn(Optional.empty());

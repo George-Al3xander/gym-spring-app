@@ -3,6 +3,7 @@ package io.github.George_Al3xander.dao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.storage.Storage;
+import io.github.George_Al3xander.util.SequenceGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,10 @@ class TrainerDaoTest {
     private Storage storage;
 
     @Mock
-    private Map<String, Trainer> trainerStorage;
+    private SequenceGenerator sequenceGenerator;
+
+    @Mock
+    private Map<Long, Trainer> trainerStorage;
 
     @InjectMocks
     private TrainerDao trainerDao;
@@ -35,7 +39,7 @@ class TrainerDaoTest {
     @Test
     void givenTrainerWithoutId_whenSave_thenTrainerIsStoredWithGeneratedId() {
         initStorageMock();
-
+        when(sequenceGenerator.getNextSeq()).thenReturn(1L);
         Trainer trainer = new Trainer();
 
         Trainer saved = trainerDao.save(trainer);
@@ -50,7 +54,7 @@ class TrainerDaoTest {
     void givenExistingTrainer_whenFindById_thenReturnTrainer() {
         initStorageMock();
 
-        String id = "123";
+        long id = 123L;
         Trainer trainer = new Trainer();
 
         when(trainerStorage.get(id)).thenReturn(trainer);
@@ -65,9 +69,9 @@ class TrainerDaoTest {
     void givenMissingTrainer_whenFindById_thenReturnEmpty() {
         initStorageMock();
 
-        when(trainerStorage.get("missing")).thenReturn(null);
+        when(trainerStorage.get(0L)).thenReturn(null);
 
-        Optional<Trainer> result = trainerDao.findById("missing");
+        Optional<Trainer> result = trainerDao.findById(0L);
 
         assertTrue(result.isEmpty());
     }
@@ -95,7 +99,7 @@ class TrainerDaoTest {
     void givenTrainerExists_whenDelete_thenRemoveFromStorage() {
         initStorageMock();
 
-        String id = "123";
+        long id = 123L;
 
         trainerDao.delete(id);
 
@@ -107,16 +111,16 @@ class TrainerDaoTest {
         initStorageMock();
 
         Trainer trainer = new Trainer();
-        trainer.setUserId("123");
+        trainer.setUserId(123L);
 
-        when(trainerStorage.containsKey("123")).thenReturn(true);
-        when(trainerStorage.put("123", trainer)).thenReturn(trainer);
+        when(trainerStorage.containsKey(123L)).thenReturn(true);
+        when(trainerStorage.put(123L, trainer)).thenReturn(trainer);
 
         Trainer result = trainerDao.update(trainer);
 
         assertEquals(trainer, result);
 
-        verify(trainerStorage).put("123", trainer);
+        verify(trainerStorage).put(123L, trainer);
     }
 
     @Test
@@ -124,9 +128,9 @@ class TrainerDaoTest {
         initStorageMock();
 
         Trainer trainer = new Trainer();
-        trainer.setUserId("missing");
+        trainer.setUserId(0L);
 
-        when(trainerStorage.containsKey("missing")).thenReturn(false);
+        when(trainerStorage.containsKey(0L)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class,
                 () -> trainerDao.update(trainer));

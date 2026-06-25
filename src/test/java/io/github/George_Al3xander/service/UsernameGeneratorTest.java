@@ -237,7 +237,7 @@ class UsernameGeneratorTest {
                 true,
                 LocalDate.of(2000, 1, 1),
                 "Address",
-                "TRN-1"
+                3L
         );
     }
 
@@ -248,7 +248,7 @@ class UsernameGeneratorTest {
                 username,
                 "password",
                 true,
-                "TRR-1",
+                2L,
                 null
         );
     }

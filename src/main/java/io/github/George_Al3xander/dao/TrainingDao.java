@@ -2,12 +2,12 @@ package io.github.George_Al3xander.dao;
 
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.storage.Storage;
+import io.github.George_Al3xander.util.SequenceGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class TrainingDao implements CrudDao<Training> {
@@ -15,9 +15,11 @@ public class TrainingDao implements CrudDao<Training> {
     @Autowired
     private Storage storage;
 
+    private SequenceGenerator sequenceGenerator;
+
     @Override
     public Training save(Training entity) {
-        String id = UUID.randomUUID().toString();
+        long id = sequenceGenerator.getNextSeq();
 
         storage.getTrainingStorage().put(id, entity);
 
@@ -25,7 +27,7 @@ public class TrainingDao implements CrudDao<Training> {
     }
 
     @Override
-    public Optional<Training> findById(String id) {
+    public Optional<Training> findById(Long id) {
         return Optional.ofNullable(storage.getTrainingStorage().get(id));
     }
 
@@ -35,13 +37,13 @@ public class TrainingDao implements CrudDao<Training> {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         storage.getTrainingStorage().remove(id);
     }
 
     @Override
     public Training update(Training entity) {
-        String existingId = storage.getTrainingStorage()
+        Long existingId = storage.getTrainingStorage()
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().equals(entity))
@@ -54,5 +56,10 @@ public class TrainingDao implements CrudDao<Training> {
         storage.getTrainingStorage().put(existingId, entity);
 
         return entity;
+    }
+
+    @Autowired
+    public void setSequenceGenerator(SequenceGenerator sequenceGenerator) {
+        this.sequenceGenerator = sequenceGenerator;
     }
 }

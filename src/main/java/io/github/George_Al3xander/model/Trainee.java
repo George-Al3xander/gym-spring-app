@@ -6,12 +6,12 @@ import java.util.Objects;
 public class Trainee extends User {
     private LocalDate dateOfBirth;
     private String address;
-    private String userId;
+    private Long userId;
 
     public Trainee() {
     }
 
-    public Trainee(LocalDate dateOfBirth, String address, String userId) {
+    public Trainee(LocalDate dateOfBirth, String address, Long userId) {
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.userId = userId;
@@ -25,7 +25,7 @@ public class Trainee extends User {
             boolean isActive,
             LocalDate dateOfBirth,
             String address,
-            String userId
+            Long userId
     ) {
         super(firstName, lastName, username, password, isActive);
         this.dateOfBirth = dateOfBirth;
@@ -49,11 +49,11 @@ public class Trainee extends User {
         this.address = address;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
