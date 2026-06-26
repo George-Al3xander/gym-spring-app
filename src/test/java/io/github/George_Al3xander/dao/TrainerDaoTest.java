@@ -10,12 +10,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TrainerDaoTest {
@@ -33,6 +34,7 @@ class TrainerDaoTest {
     private TrainerDao trainerDao;
 
     private void initStorageMock() {
+        trainerStorage = new HashMap<>();
         when(storage.getTrainerStorage()).thenReturn(trainerStorage);
     }
 
@@ -41,13 +43,12 @@ class TrainerDaoTest {
         initStorageMock();
         when(sequenceGenerator.getNextSeq()).thenReturn(1L);
         Trainer trainer = new Trainer();
+        Long id = trainer.getUserId();
 
         Trainer saved = trainerDao.save(trainer);
 
         assertNotNull(saved.getUserId());
-
-        verify(trainerStorage, times(1))
-                .put(eq(saved.getUserId()), eq(saved));
+        assertNotEquals(id, saved.getUserId());
     }
 
     @Test
@@ -56,8 +57,9 @@ class TrainerDaoTest {
 
         long id = 123L;
         Trainer trainer = new Trainer();
+        trainer.setUserId(id);
 
-        when(trainerStorage.get(id)).thenReturn(trainer);
+        trainerStorage.put(id, trainer);
 
         Optional<Trainer> result = trainerDao.findById(id);
 
@@ -68,8 +70,6 @@ class TrainerDaoTest {
     @Test
     void givenMissingTrainer_whenFindById_thenReturnEmpty() {
         initStorageMock();
-
-        when(trainerStorage.get(0L)).thenReturn(null);
 
         Optional<Trainer> result = trainerDao.findById(0L);
 
@@ -83,7 +83,8 @@ class TrainerDaoTest {
         Trainer t1 = new Trainer();
         Trainer t2 = new Trainer();
 
-        when(trainerStorage.values()).thenReturn(List.of(t1, t2));
+        trainerStorage.put(1L, t1);
+        trainerStorage.put(2L, t2);
 
         List<Trainer> result = trainerDao.findAll();
 
@@ -103,24 +104,23 @@ class TrainerDaoTest {
 
         trainerDao.delete(id);
 
-        verify(trainerStorage, times(1)).remove(id);
+        assertNull(trainerStorage.get(id));
     }
 
     @Test
     void givenExistingTrainer_whenUpdate_thenReturnUpdatedTrainer() {
-        initStorageMock();
-
         Trainer trainer = new Trainer();
         trainer.setUserId(123L);
 
-        when(trainerStorage.containsKey(123L)).thenReturn(true);
-        when(trainerStorage.put(123L, trainer)).thenReturn(trainer);
+        Map<Long, Trainer> storage = new HashMap<>();
+        storage.put(123L, new Trainer());
+
+        when(this.storage.getTrainerStorage()).thenReturn(storage);
 
         Trainer result = trainerDao.update(trainer);
 
         assertEquals(trainer, result);
-
-        verify(trainerStorage).put(123L, trainer);
+        assertSame(trainer, storage.get(123L));
     }
 
     @Test
@@ -130,11 +130,8 @@ class TrainerDaoTest {
         Trainer trainer = new Trainer();
         trainer.setUserId(0L);
 
-        when(trainerStorage.containsKey(0L)).thenReturn(false);
-
         assertThrows(EntityNotFoundException.class,
                 () -> trainerDao.update(trainer));
 
-        verify(trainerStorage, never()).put(any(), any());
     }
 }

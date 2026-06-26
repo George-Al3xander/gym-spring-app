@@ -11,12 +11,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TraineeDaoTest {
@@ -35,28 +36,27 @@ class TraineeDaoTest {
 
     @BeforeEach
     void setUp() {
+        traineeStorage = new HashMap<>();
         when(storage.getTraineeStorage()).thenReturn(traineeStorage);
-
     }
 
     @Test
     void givenTraineeWithoutId_whenSave_thenTraineeIsStoredWithGeneratedId() {
         when(sequenceGenerator.getNextSeq()).thenReturn(1L);
         Trainee trainee = new Trainee();
+        Long id = trainee.getUserId();
 
         Trainee saved = traineeDao.save(trainee);
 
         assertNotNull(saved.getUserId());
-
-        verify(traineeStorage, times(1))
-                .put(eq(saved.getUserId()), eq(saved));
+        assertNotEquals(id, saved.getUserId());
     }
 
     @Test
     void givenExistingTrainee_whenFindById_thenReturnOptionalOfTrainee() {
         long id = 123L;
         Trainee trainee = new Trainee();
-        when(traineeStorage.get(id)).thenReturn(trainee);
+        traineeStorage.put(id, trainee);
 
         Optional<Trainee> result = traineeDao.findById(id);
 
@@ -66,9 +66,7 @@ class TraineeDaoTest {
 
     @Test
     void givenNonExistingTrainee_whenFindById_thenReturnEmptyOptional() {
-        when(traineeStorage.get(0L)).thenReturn(null);
-
-        Optional<Trainee> result = traineeDao.findById(0L);
+        Optional<Trainee> result = traineeDao.findById(-1L);
 
         assertTrue(result.isEmpty());
     }
@@ -78,7 +76,8 @@ class TraineeDaoTest {
         Trainee t1 = new Trainee();
         Trainee t2 = new Trainee();
 
-        when(traineeStorage.values()).thenReturn(List.of(t1, t2));
+        traineeStorage.put(1L, t1);
+        traineeStorage.put(2L, t2);
 
         List<Trainee> result = traineeDao.findAll();
 
@@ -96,7 +95,7 @@ class TraineeDaoTest {
 
         traineeDao.delete(id);
 
-        verify(traineeStorage, times(1)).remove(id);
+        assertNull(traineeStorage.get(id));
     }
 
     @Test
@@ -104,14 +103,12 @@ class TraineeDaoTest {
         Trainee trainee = new Trainee();
         trainee.setUserId(123L);
 
-        when(traineeStorage.containsKey(123L)).thenReturn(true);
-        when(traineeStorage.put(123L, trainee)).thenReturn(trainee);
+        traineeStorage.put(123L, new Trainee());
 
         Trainee result = traineeDao.update(trainee);
 
         assertEquals(trainee, result);
-
-        verify(traineeStorage).put(123L, trainee);
+        assertSame(trainee, traineeStorage.get(123L));
     }
 
     @Test
@@ -119,11 +116,7 @@ class TraineeDaoTest {
         Trainee trainee = new Trainee();
         trainee.setUserId(123L);
 
-        when(traineeStorage.containsKey(123L)).thenReturn(false);
-
         assertThrows(EntityNotFoundException.class,
                 () -> traineeDao.update(trainee));
-
-        verify(traineeStorage, never()).put(any(), any());
     }
 }

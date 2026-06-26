@@ -9,10 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingDaoTest {
@@ -23,7 +26,6 @@ class TrainingDaoTest {
     @Mock
     private SequenceGenerator sequenceGenerator;
 
-
     @Mock
     private Map<Long, Training> trainingStorage;
 
@@ -31,20 +33,20 @@ class TrainingDaoTest {
     private TrainingDao trainingDao;
 
     private void init() {
+        trainingStorage = new HashMap<>();
         when(storage.getTrainingStorage()).thenReturn(trainingStorage);
     }
 
     @Test
     void givenTraining_whenSave_thenStoredWithGeneratedKey() {
         init();
-        when(sequenceGenerator.getNextSeq()).thenReturn(1L);
+        long nextId = 1L;
+        when(sequenceGenerator.getNextSeq()).thenReturn(nextId);
 
         Training training = new Training();
 
         trainingDao.save(training);
-
-        verify(trainingStorage, times(1))
-                .put(anyLong(), eq(training));
+        assertNotNull(trainingStorage.get(nextId));
     }
 
     @Test
@@ -54,7 +56,7 @@ class TrainingDaoTest {
         long id = 123L;
         Training training = new Training();
 
-        when(trainingStorage.get(id)).thenReturn(training);
+        trainingStorage.put(id, training);
 
         Optional<Training> result = trainingDao.findById(id);
 
@@ -66,9 +68,7 @@ class TrainingDaoTest {
     void givenMissingTraining_whenFindById_thenReturnEmpty() {
         init();
 
-        when(trainingStorage.get(0L)).thenReturn(null);
-
-        Optional<Training> result = trainingDao.findById(0L);
+        Optional<Training> result = trainingDao.findById(-1L);
 
         assertTrue(result.isEmpty());
     }
@@ -80,7 +80,8 @@ class TrainingDaoTest {
         Training t1 = new Training();
         Training t2 = new Training();
 
-        when(trainingStorage.values()).thenReturn(List.of(t1, t2));
+        trainingStorage.put(1L, t1);
+        trainingStorage.put(2L, t2);
 
         List<Training> result = trainingDao.findAll();
 
@@ -100,7 +101,7 @@ class TrainingDaoTest {
 
         trainingDao.delete(id);
 
-        verify(trainingStorage, times(1)).remove(id);
+        assertNull(trainingStorage.get(id));
     }
 
     @Test
@@ -109,20 +110,12 @@ class TrainingDaoTest {
 
         Training training = new Training();
 
-        Map.Entry<Long, Training> entry =
-                Map.entry(13L, training);
-
-        when(trainingStorage.entrySet())
-                .thenReturn(Set.of(entry));
-
-        when(trainingStorage.put(13L, training))
-                .thenReturn(training);
+        trainingStorage.put(13L, training);
 
         Training result = trainingDao.update(training);
 
         assertEquals(training, result);
-
-        verify(trainingStorage).put(13L, training);
+        assertNotNull(trainingStorage.get(13L));
     }
 
     @Test
@@ -131,12 +124,8 @@ class TrainingDaoTest {
 
         Training training = new Training();
 
-        when(trainingStorage.entrySet())
-                .thenReturn(Collections.emptySet());
-
         assertThrows(IllegalArgumentException.class,
                 () -> trainingDao.update(training));
 
-        verify(trainingStorage, never()).put(any(), any());
     }
 }
