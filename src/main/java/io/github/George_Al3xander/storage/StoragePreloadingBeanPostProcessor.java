@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class StoragePreloader implements BeanPostProcessor {
-    private static final Logger log = LoggerFactory.getLogger(StoragePreloader.class);
+public class StoragePreloadingBeanPostProcessor implements BeanPostProcessor {
+    private static final Logger log = LoggerFactory.getLogger(StoragePreloadingBeanPostProcessor.class);
 
     @Value("${storage.file.path}")
     private String filePath;
