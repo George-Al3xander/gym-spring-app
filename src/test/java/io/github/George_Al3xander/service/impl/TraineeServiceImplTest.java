@@ -39,7 +39,7 @@ class TraineeServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        traineeService.setUsernameGenerator(usernameGenerator);
+        traineeService = new TraineeServiceImpl(traineeDao, trainingDao, usernameGenerator);
     }
 
     @Test

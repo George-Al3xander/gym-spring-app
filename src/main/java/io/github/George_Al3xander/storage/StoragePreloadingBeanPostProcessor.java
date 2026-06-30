@@ -4,9 +4,9 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.util.SequenceGenerator;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
@@ -17,13 +17,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 public class StoragePreloadingBeanPostProcessor implements BeanPostProcessor {
     private static final Logger log = LoggerFactory.getLogger(StoragePreloadingBeanPostProcessor.class);
 
     @Value("${storage.file.path}")
     private String filePath;
 
-    private SequenceGenerator sequenceGenerator;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
@@ -33,11 +34,6 @@ public class StoragePreloadingBeanPostProcessor implements BeanPostProcessor {
         }
 
         return bean;
-    }
-
-    @Autowired
-    public void setSequenceGenerator(SequenceGenerator sequenceGenerator) {
-        this.sequenceGenerator = sequenceGenerator;
     }
 
     private void preloadData(Storage storage) {
@@ -111,7 +107,6 @@ public class StoragePreloadingBeanPostProcessor implements BeanPostProcessor {
             );
         }
     }
-
 
     private static class GymData {
         public Map<Long, Trainee> trainees = new ConcurrentHashMap<>();

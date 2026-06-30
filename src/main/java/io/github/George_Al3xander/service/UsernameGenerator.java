@@ -3,15 +3,16 @@ package io.github.George_Al3xander.service;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UsernameGenerator {
-    @Autowired
-    private TraineeDao traineeDao;
-    @Autowired
-    private TrainerDao trainerDao;
+
+    private final TraineeDao traineeDao;
+
+    private final TrainerDao trainerDao;
 
 
     public String generateUsername(User user) {

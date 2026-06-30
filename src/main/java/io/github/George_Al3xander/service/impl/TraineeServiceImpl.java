@@ -8,7 +8,7 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +16,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TraineeServiceImpl implements TraineeService {
-    @Autowired
-    private TraineeDao traineeDao;
+    private final TraineeDao traineeDao;
 
-    @Autowired
-    private TrainingDao trainingDao;
+    private final TrainingDao trainingDao;
 
-    private UsernameGenerator usernameGenerator;
+    private final UsernameGenerator usernameGenerator;
 
     @Override
     public Trainee getTraineeById(Long id) {
@@ -70,10 +69,5 @@ public class TraineeServiceImpl implements TraineeService {
                 });
 
         traineeDao.delete(id);
-    }
-
-    @Autowired
-    public void setUsernameGenerator(UsernameGenerator usernameGenerator) {
-        this.usernameGenerator = usernameGenerator;
     }
 }

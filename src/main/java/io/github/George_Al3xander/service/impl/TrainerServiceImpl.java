@@ -6,18 +6,18 @@ import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
-    @Autowired
-    private TrainerDao trainerDao;
+    private final TrainerDao trainerDao;
 
-    private UsernameGenerator usernameGenerator;
+    private final UsernameGenerator usernameGenerator;
 
     @Override
     public Trainer getTrainerById(Long id) {
@@ -48,10 +48,5 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer updateTrainer(Trainer entity) {
         return trainerDao.save(entity);
-    }
-
-    @Autowired
-    public void setUsernameGenerator(UsernameGenerator usernameGenerator) {
-        this.usernameGenerator = usernameGenerator;
     }
 }

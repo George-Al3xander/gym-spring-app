@@ -34,11 +34,12 @@ class TrainerServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        trainerService = new TrainerServiceImpl(trainerDao, usernameGenerator);
         trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Smith");
 
-        trainerService.setUsernameGenerator(usernameGenerator);
+
     }
 
     @Test
@@ -179,7 +180,8 @@ class TrainerServiceImplTest {
         UsernameGenerator customGenerator =
                 mock(UsernameGenerator.class);
 
-        trainerService.setUsernameGenerator(customGenerator);
+        trainerService = new TrainerServiceImpl(trainerDao, customGenerator);
+
 
         when(customGenerator.generateUsername(trainer))
                 .thenReturn("generated.username");

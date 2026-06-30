@@ -6,20 +6,20 @@ import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
-    @Autowired
-    private TrainingDao trainingDao;
+    private final TrainingDao trainingDao;
 
-    private TraineeService traineeService;
+    private final TraineeService traineeService;
 
-    private TrainerService trainerService;
+    private final TrainerService trainerService;
 
     @Override
     public Training getTrainingById(Long id) {
@@ -45,15 +45,5 @@ public class TrainingServiceImpl implements TrainingService {
         traineeService.getTraineeById(entity.getTraineeId());
 
         return trainingDao.save(entity);
-    }
-
-    @Autowired
-    public void setTraineeService(TraineeService traineeService) {
-        this.traineeService = traineeService;
-    }
-
-    @Autowired
-    public void setTrainerService(TrainerService trainerService) {
-        this.trainerService = trainerService;
     }
 }

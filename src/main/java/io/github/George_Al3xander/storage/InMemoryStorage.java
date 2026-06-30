@@ -3,30 +3,21 @@ package io.github.George_Al3xander.storage;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
+@Getter
+@RequiredArgsConstructor
 public class InMemoryStorage implements Storage {
 
-    @Autowired
-    private Map<Long, Trainee> traineeStorage;
-    @Autowired
-    private Map<Long, Trainer> trainerStorage;
-    @Autowired
-    private Map<Long, Training> trainingStorage;
+    private final Map<Long, Trainee> traineeStorage;
 
-    public Map<Long, Trainee> getTraineeStorage() {
-        return traineeStorage;
-    }
+    private final Map<Long, Trainer> trainerStorage;
 
-    public Map<Long, Trainer> getTrainerStorage() {
-        return trainerStorage;
-    }
+    private final Map<Long, Training> trainingStorage;
 
-    public Map<Long, Training> getTrainingStorage() {
-        return trainingStorage;
-    }
 }
