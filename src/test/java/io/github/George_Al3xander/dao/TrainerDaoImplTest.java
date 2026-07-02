@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MainConfig.class)
 @Transactional
-class TrainerDaoTest {
+class TrainerDaoImplTest {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -90,7 +90,7 @@ class TrainerDaoTest {
 
         assertEquals(trainer, result);
     }
-    
+
     private static Trainer generateTrainer() {
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");

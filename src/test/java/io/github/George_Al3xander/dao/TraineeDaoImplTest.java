@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.dao;
 
 import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.dao.impl.TraineeDaoImpl;
 import io.github.George_Al3xander.model.Trainee;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MainConfig.class)
 @Transactional
-class TraineeDaoTest {
+class TraineeDaoImplTest {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private TraineeDao traineeDao;
+    private TraineeDaoImpl traineeDao;
 
     @Test
     void givenTraineeWithoutId_whenSave_thenTraineeIsStoredWithGeneratedId() {

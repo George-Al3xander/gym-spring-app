@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MainConfig.class)
 @Transactional
-class TrainingDaoTest {
+class TrainingDaoImplTest {
 
     @PersistenceContext
     private EntityManager entityManager;

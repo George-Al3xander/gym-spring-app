@@ -42,12 +42,11 @@ class TrainingServiceImplTest {
     private Training training;
     private Trainee trainee;
     private Trainer trainer;
-    private TrainingType trainingType;
 
     @BeforeEach
     void setUp() {
 
-        trainingType = new TrainingType(1L, "CARDIO");
+        TrainingType trainingType = new TrainingType(1L, "CARDIO");
 
         trainee = new Trainee(
                 11L,
