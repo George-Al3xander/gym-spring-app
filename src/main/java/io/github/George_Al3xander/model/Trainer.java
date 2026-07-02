@@ -1,31 +1,32 @@
 package io.github.George_Al3xander.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "trainers")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class Trainer extends User {
-
-    private Long userId;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialization")
     private TrainingType specialization;
 
     public Trainer(
+            Long id,
             String firstName,
             String lastName,
             String username,
             String password,
             boolean isActive,
-            Long userId,
             TrainingType specialization
     ) {
-        super(firstName, lastName, username, password, isActive);
-        setUserId(userId);
+        super(id, firstName, lastName, username, password, isActive);
         setSpecialization(specialization);
     }
 }

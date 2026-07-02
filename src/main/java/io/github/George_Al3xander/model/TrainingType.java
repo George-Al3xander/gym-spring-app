@@ -1,8 +1,22 @@
 package io.github.George_Al3xander.model;
 
-public enum TrainingType {
-    CARDIO,
-    STRENGTH,
-    FLEXIBILITY,
-    HIIT
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "training_types")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class TrainingType {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(name = "training_type_name", nullable = false)
+    private String trainingTypeName;
 }
