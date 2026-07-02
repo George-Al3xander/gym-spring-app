@@ -1,10 +1,8 @@
 package io.github.George_Al3xander.dao;
 
-import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainer;
-import io.github.George_Al3xander.storage.Storage;
-import io.github.George_Al3xander.util.SequenceGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,49 +11,36 @@ import java.util.Optional;
 @Repository
 public class TrainerDao implements CrudDao<Trainer> {
 
-    @Autowired
-    private Storage storage;
-
-    private SequenceGenerator sequenceGenerator;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Trainer save(Trainer entity) {
-        long id = sequenceGenerator.getNextSeq();
-        entity.setUserId(id);
-
-        storage.getTrainerStorage().put(id, entity);
+        entityManager.persist(entity);
         return entity;
     }
 
     @Override
     public Optional<Trainer> findById(Long id) {
-        return Optional.ofNullable(storage.getTrainerStorage().get(id));
+        return Optional.ofNullable(entityManager.find(Trainer.class, id));
     }
 
     @Override
     public List<Trainer> findAll() {
-        return List.copyOf(storage.getTrainerStorage().values());
+        return entityManager
+                .createQuery("SELECT t FROM Trainer t", Trainer.class)
+                .getResultList();
     }
 
     @Override
     public void delete(Long id) {
-        storage.getTrainerStorage().remove(id);
+        Trainer trainer = entityManager.getReference(Trainer.class, id);
+        entityManager.remove(trainer);
     }
 
     @Override
     public Trainer update(Trainer entity) {
-        if (!storage.getTrainerStorage().containsKey(entity.getUserId())) {
-            throw new EntityNotFoundException(
-                    "Trainer", entity.getUserId()
-            );
-        }
-
-        storage.getTrainerStorage().put(entity.getUserId(), entity);
-        return entity;
+        return entityManager.merge(entity);
     }
 
-    @Autowired
-    public void setSequenceGenerator(SequenceGenerator sequenceGenerator) {
-        this.sequenceGenerator = sequenceGenerator;
-    }
 }

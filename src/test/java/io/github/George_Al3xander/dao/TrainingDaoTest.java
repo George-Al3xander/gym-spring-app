@@ -1,64 +1,53 @@
 package io.github.George_Al3xander.dao;
 
+import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.model.Trainee;
+import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
-import io.github.George_Al3xander.storage.Storage;
-import io.github.George_Al3xander.util.SequenceGenerator;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = MainConfig.class)
+@Transactional
 class TrainingDaoTest {
 
-    @Mock
-    private Storage storage;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Mock
-    private SequenceGenerator sequenceGenerator;
-
-    @Mock
-    private Map<Long, Training> trainingStorage;
-
-    @InjectMocks
+    @Autowired
     private TrainingDao trainingDao;
 
-    private void init() {
-        trainingStorage = new HashMap<>();
-        when(storage.getTrainingStorage()).thenReturn(trainingStorage);
-    }
 
     @Test
     void givenTraining_whenSave_thenStoredWithGeneratedKey() {
-        init();
-        long nextId = 1L;
-        when(sequenceGenerator.getNextSeq()).thenReturn(nextId);
+        Training training = trainingDao.save(generateTraining());
 
-        Training training = new Training();
-
-        trainingDao.save(training);
-        assertNotNull(trainingStorage.get(nextId));
+        assertNotNull(training.getId());
+        assertTrue(trainingDao.findById(training.getId()).isPresent());
     }
 
     @Test
     void givenExistingTraining_whenFindById_thenReturnTraining() {
-        init();
+        Training training = generateTraining();
 
-        long id = 123L;
-        Training training = new Training();
+        entityManager.persist(training);
+        entityManager.flush();
 
-        trainingStorage.put(id, training);
-
-        Optional<Training> result = trainingDao.findById(id);
+        Optional<Training> result = trainingDao.findById(training.getId());
 
         assertTrue(result.isPresent());
         assertEquals(training, result.get());
@@ -66,8 +55,6 @@ class TrainingDaoTest {
 
     @Test
     void givenMissingTraining_whenFindById_thenReturnEmpty() {
-        init();
-
         Optional<Training> result = trainingDao.findById(-1L);
 
         assertTrue(result.isEmpty());
@@ -75,57 +62,74 @@ class TrainingDaoTest {
 
     @Test
     void givenMultipleTrainings_whenFindAll_thenReturnAll() {
-        init();
+        Training t1 = generateTraining();
+        Training t2 = generateTraining();
 
-        Training t1 = new Training();
-        Training t2 = new Training();
-
-        trainingStorage.put(1L, t1);
-        trainingStorage.put(2L, t2);
+        entityManager.persist(t1);
+        entityManager.persist(t2);
+        entityManager.flush();
 
         List<Training> result = trainingDao.findAll();
 
         assertEquals(2, result.size());
         assertTrue(result.contains(t1));
         assertTrue(result.contains(t2));
-
-        assertThrows(UnsupportedOperationException.class,
-                () -> result.add(new Training()));
     }
 
     @Test
     void givenTraining_whenDelete_thenRemovedFromStorage() {
-        init();
+        Training training = generateTraining();
 
-        long id = 123L;
+        entityManager.persist(training);
+        entityManager.flush();
 
-        trainingDao.delete(id);
+        trainingDao.delete(training.getId());
 
-        assertNull(trainingStorage.get(id));
+        assertTrue(trainingDao.findById(training.getId()).isEmpty());
     }
 
     @Test
     void givenExistingTraining_whenUpdate_thenReplaceExistingEntry() {
-        init();
+        Training training = generateTraining();
 
-        Training training = new Training();
-
-        trainingStorage.put(13L, training);
+        entityManager.persist(training);
+        entityManager.flush();
 
         Training result = trainingDao.update(training);
 
         assertEquals(training, result);
-        assertNotNull(trainingStorage.get(13L));
     }
 
-    @Test
-    void givenTrainingNotInStorage_whenUpdate_thenThrowException() {
-        init();
-
+    private Training generateTraining() {
         Training training = new Training();
 
-        assertThrows(IllegalArgumentException.class,
-                () -> trainingDao.update(training));
+        training.setTrainingDate(LocalDateTime.of(2024, 1, 1, 3, 1));
+        training.setTrainingName("Strength Training");
+        training.setDurationSeconds(60);
 
+        Trainer trainer = new Trainer();
+        trainer.setFirstName("John");
+        trainer.setLastName("Doe");
+        trainer.setUsername("john.trainer");
+        trainer.setPassword("pass");
+        trainer.setIsActive(true);
+
+        Trainee trainee = new Trainee();
+        trainee.setFirstName("Jane");
+        trainee.setLastName("Smith");
+        trainee.setUsername("jane.trainee");
+        trainee.setPassword("pass");
+        trainee.setIsActive(true);
+        trainee.setDateOfBirth(LocalDate.of(1995, 5, 5));
+        trainee.setAddress("Kyiv");
+
+        entityManager.persist(trainer);
+        entityManager.persist(trainee);
+        entityManager.flush();
+
+        training.setTrainer(trainer);
+        training.setTrainee(trainee);
+
+        return training;
     }
 }

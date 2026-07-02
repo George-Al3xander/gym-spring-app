@@ -8,11 +8,13 @@ import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
     private final TrainingDao trainingDao;
@@ -41,8 +43,8 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public Training saveTraining(Training entity) {
-        trainerService.getTrainerById(entity.getTrainerId());
-        traineeService.getTraineeById(entity.getTraineeId());
+        trainerService.getTrainerById(entity.getTrainer().getId());
+        traineeService.getTraineeById(entity.getTrainee().getId());
 
         return trainingDao.save(entity);
     }

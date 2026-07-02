@@ -2,6 +2,8 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.model.Trainee;
+import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.model.TrainingType;
 import io.github.George_Al3xander.service.TraineeService;
@@ -13,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -37,14 +40,42 @@ class TrainingServiceImplTest {
     private TrainingServiceImpl trainingService;
 
     private Training training;
+    private Trainee trainee;
+    private Trainer trainer;
+    private TrainingType trainingType;
 
     @BeforeEach
     void setUp() {
-        training = new Training(
+
+        trainingType = new TrainingType(1L, "CARDIO");
+
+        trainee = new Trainee(
                 11L,
+                "John",
+                "Doe",
+                "john.doe",
+                "pass",
+                true,
+                LocalDate.of(1990, 1, 1),
+                "Kyiv"
+        );
+
+        trainer = new Trainer(
                 101L,
+                "Mike",
+                "Smith",
+                "mike.smith",
+                "pass",
+                true,
+                trainingType
+        );
+
+        training = new Training(
+                1L,
+                trainee,
+                trainer,
                 "Morning cardio",
-                TrainingType.CARDIO,
+                trainingType,
                 LocalDateTime.of(2026, 1, 10, 8, 0),
                 3600
         );
@@ -65,7 +96,6 @@ class TrainingServiceImplTest {
                 .findById(1012L);
     }
 
-
     @Test
     void givenNonExistingTraining_whenGetTrainingById_thenThrowEntityNotFoundException() {
 
@@ -80,7 +110,6 @@ class TrainingServiceImplTest {
         verify(trainingDao)
                 .findById(1012L);
     }
-
 
     @Test
     void givenExistingTrainings_whenGetAllTrainings_thenReturnTrainingList() {
@@ -100,7 +129,6 @@ class TrainingServiceImplTest {
                 .findAll();
     }
 
-
     @Test
     void givenNoTrainings_whenGetAllTrainings_thenReturnEmptyList() {
 
@@ -115,7 +143,6 @@ class TrainingServiceImplTest {
         verify(trainingDao)
                 .findAll();
     }
-
 
     @Test
     void givenValidTraining_whenSaveTraining_thenValidateTrainerAndTraineeAndSaveTraining() {
@@ -138,7 +165,6 @@ class TrainingServiceImplTest {
         assertEquals(training, result);
     }
 
-
     @Test
     void givenTrainingWithUnknownTrainer_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
 
@@ -154,13 +180,11 @@ class TrainingServiceImplTest {
         verify(trainerService)
                 .getTrainerById(101L);
 
-
         verifyNoInteractions(traineeService);
 
         verify(trainingDao, never())
                 .save(any());
     }
-
 
     @Test
     void givenTrainingWithUnknownTrainee_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
@@ -188,10 +212,11 @@ class TrainingServiceImplTest {
     void givenValidTraining_whenSaveTraining_thenReturnSavedTraining() {
 
         Training savedTraining = new Training(
-                11L,
-                101L,
+                2L,
+                trainee,
+                trainer,
                 "Evening strength",
-                TrainingType.STRENGTH,
+                new TrainingType(2L, "STRENGTH"),
                 LocalDateTime.of(2026, 1, 11, 18, 0),
                 5400
         );
@@ -199,12 +224,10 @@ class TrainingServiceImplTest {
         when(trainingDao.save(training))
                 .thenReturn(savedTraining);
 
-
         Training result =
                 trainingService.saveTraining(training);
 
         assertEquals(savedTraining, result);
-
 
         verify(trainingDao)
                 .save(training);

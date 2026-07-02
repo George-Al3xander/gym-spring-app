@@ -1,64 +1,49 @@
 package io.github.George_Al3xander.dao;
 
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.model.Trainee;
-import io.github.George_Al3xander.storage.Storage;
-import io.github.George_Al3xander.util.SequenceGenerator;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = MainConfig.class)
+@Transactional
 class TraineeDaoTest {
 
-    @Mock
-    private Storage storage;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Mock
-    private SequenceGenerator sequenceGenerator;
-
-    @Mock
-    private Map<Long, Trainee> traineeStorage;
-
-    @InjectMocks
+    @Autowired
     private TraineeDao traineeDao;
-
-    @BeforeEach
-    void setUp() {
-        traineeStorage = new HashMap<>();
-        when(storage.getTraineeStorage()).thenReturn(traineeStorage);
-    }
 
     @Test
     void givenTraineeWithoutId_whenSave_thenTraineeIsStoredWithGeneratedId() {
-        when(sequenceGenerator.getNextSeq()).thenReturn(1L);
-        Trainee trainee = new Trainee();
-        Long id = trainee.getUserId();
+        Trainee saved = traineeDao.save(generateTrainee());
 
-        Trainee saved = traineeDao.save(trainee);
-
-        assertNotNull(saved.getUserId());
-        assertNotEquals(id, saved.getUserId());
+        assertNotNull(saved.getId());
+        assertTrue(traineeDao.findById(saved.getId()).isPresent());
     }
 
     @Test
     void givenExistingTrainee_whenFindById_thenReturnOptionalOfTrainee() {
-        long id = 123L;
-        Trainee trainee = new Trainee();
-        traineeStorage.put(id, trainee);
+        Trainee trainee = generateTrainee();
 
-        Optional<Trainee> result = traineeDao.findById(id);
+        entityManager.persist(trainee);
+        entityManager.flush();
+
+        Optional<Trainee> result = traineeDao.findById(trainee.getId());
 
         assertTrue(result.isPresent());
         assertEquals(trainee, result.get());
@@ -73,50 +58,56 @@ class TraineeDaoTest {
 
     @Test
     void givenMultipleTrainees_whenFindAll_thenReturnAllTrainees() {
-        Trainee t1 = new Trainee();
-        Trainee t2 = new Trainee();
+        Trainee t1 = generateTrainee();
+        Trainee t2 = generateTrainee();
 
-        traineeStorage.put(1L, t1);
-        traineeStorage.put(2L, t2);
+        entityManager.persist(t1);
+        entityManager.persist(t2);
+        entityManager.flush();
 
         List<Trainee> result = traineeDao.findAll();
 
         assertEquals(2, result.size());
         assertTrue(result.contains(t1));
         assertTrue(result.contains(t2));
-
-        assertThrows(UnsupportedOperationException.class,
-                () -> result.add(new Trainee()));
     }
 
     @Test
     void givenExistingTrainee_whenDelete_thenRemoveFromStorage() {
-        long id = 123L;
+        Trainee trainee = generateTrainee();
 
-        traineeDao.delete(id);
+        entityManager.persist(trainee);
+        entityManager.flush();
 
-        assertNull(traineeStorage.get(id));
+        traineeDao.delete(trainee.getId());
+
+        assertTrue(traineeDao.findById(trainee.getId()).isEmpty());
     }
 
     @Test
     void givenExistingTrainee_whenUpdate_thenReturnUpdatedTrainee() {
-        Trainee trainee = new Trainee();
-        trainee.setUserId(123L);
+        Trainee trainee = generateTrainee();
 
-        traineeStorage.put(123L, new Trainee());
+        entityManager.persist(trainee);
+        entityManager.flush();
+
+        trainee.setFirstName("Updated");
 
         Trainee result = traineeDao.update(trainee);
 
-        assertEquals(trainee, result);
-        assertSame(trainee, traineeStorage.get(123L));
+        assertEquals("Updated", result.getFirstName());
+        assertEquals(trainee.getId(), result.getId());
     }
 
-    @Test
-    void givenNonExistingTrainee_whenUpdate_thenThrowEntityNotFoundException() {
+    private Trainee generateTrainee() {
         Trainee trainee = new Trainee();
-        trainee.setUserId(123L);
-
-        assertThrows(EntityNotFoundException.class,
-                () -> traineeDao.update(trainee));
+        trainee.setFirstName("John");
+        trainee.setLastName("Doe");
+        trainee.setUsername("john.doe");
+        trainee.setPassword("pass");
+        trainee.setIsActive(true);
+        trainee.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        trainee.setAddress("Kyiv");
+        return trainee;
     }
 }

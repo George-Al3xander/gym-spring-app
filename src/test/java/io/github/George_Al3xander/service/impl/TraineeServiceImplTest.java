@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,25 +37,32 @@ class TraineeServiceImplTest {
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
+    private Trainee trainee;
 
     @BeforeEach
     void setUp() {
         traineeService = new TraineeServiceImpl(traineeDao, trainingDao, usernameGenerator);
+
+        trainee = new Trainee(
+                1L,
+                "John",
+                "Doe",
+                "john.doe",
+                "pass",
+                true,
+                LocalDate.of(1990, 1, 1),
+                "Kyiv"
+        );
     }
 
     @Test
     void givenExistingTraineeId_whenGetTraineeById_thenReturnTrainee() {
 
-        Trainee trainee = new Trainee();
-        trainee.setUserId(1L);
-
         when(traineeDao.findById(1L))
                 .thenReturn(Optional.of(trainee));
 
-
         Trainee result =
                 traineeService.getTraineeById(1L);
-
 
         assertEquals(trainee, result);
 
@@ -105,6 +113,9 @@ class TraineeServiceImplTest {
                 traineeService.getAllTrainees();
 
         assertTrue(result.isEmpty());
+
+        verify(traineeDao)
+                .findAll();
     }
 
     @Test
@@ -121,14 +132,8 @@ class TraineeServiceImplTest {
         Trainee result =
                 traineeService.saveTrainee(trainee);
 
-        assertEquals(
-                "john.doe",
-                result.getUsername()
-        );
-
-        assertNotNull(
-                result.getPassword()
-        );
+        assertEquals("john.doe", result.getUsername());
+        assertNotNull(result.getPassword());
 
         verify(usernameGenerator)
                 .generateUsername(trainee);
@@ -177,10 +182,7 @@ class TraineeServiceImplTest {
         Trainee result =
                 traineeService.updateTrainee(trainee);
 
-        assertEquals(
-                trainee,
-                result
-        );
+        assertEquals(trainee, result);
 
         verify(traineeDao)
                 .save(trainee);
@@ -198,14 +200,15 @@ class TraineeServiceImplTest {
                 .delete(1L);
     }
 
-
     @Test
     void givenTraineeWithTraining_whenDeleteTrainee_thenThrowEntityInUseException() {
 
         Training training = new Training();
 
-        training.setTraineeId(1L);
-        training.setTrainingName("Java");
+        Trainee t = new Trainee();
+        t.setId(1L);
+
+        training.setTrainee(t);
 
         when(trainingDao.findAll())
                 .thenReturn(List.of(training));
@@ -219,14 +222,15 @@ class TraineeServiceImplTest {
                 .delete(anyLong());
     }
 
-
     @Test
     void givenTraineeWithTrainingUsingDifferentCaseId_whenDeleteTrainee_thenThrowEntityInUseException() {
 
         Training training = new Training();
 
-        training.setTraineeId(123L);
-        training.setTrainingName("Spring");
+        Trainee t = new Trainee();
+        t.setId(123L);
+
+        training.setTrainee(t);
 
         when(trainingDao.findAll())
                 .thenReturn(List.of(training));
@@ -240,13 +244,15 @@ class TraineeServiceImplTest {
                 .delete(anyLong());
     }
 
-
     @Test
     void givenTrainingBelongsToAnotherTrainee_whenDeleteTrainee_thenDeleteTrainee() {
 
         Training training = new Training();
 
-        training.setTraineeId(999L);
+        Trainee t = new Trainee();
+        t.setId(999L);
+
+        training.setTrainee(t);
 
         when(trainingDao.findAll())
                 .thenReturn(List.of(training));

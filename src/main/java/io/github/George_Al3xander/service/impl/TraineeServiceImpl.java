@@ -10,12 +10,14 @@ import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TraineeServiceImpl implements TraineeService {
     private final TraineeDao traineeDao;
@@ -57,7 +59,7 @@ public class TraineeServiceImpl implements TraineeService {
     public void deleteTrainee(Long id) {
         trainingDao.findAll()
                 .stream()
-                .filter(t -> Objects.equals(t.getTraineeId(), id))
+                .filter(t -> Objects.equals(t.getTrainee().getId(), id))
                 .findFirst()
                 .ifPresent(t -> {
                     throw new EntityInUseException(
