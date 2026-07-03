@@ -1,0 +1,24 @@
+package io.github.George_Al3xander.dto;
+
+import io.github.George_Al3xander.model.TrainingType;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+public class TrainingFilter {
+    private LocalDateTime fromDate;
+    private LocalDateTime toDate;
+
+    private String traineeFirstName;
+    private String traineeLastName;
+
+    private String trainerFirstName;
+    private String trainerLastName;
+
+    private TrainingType trainingType;
+}
