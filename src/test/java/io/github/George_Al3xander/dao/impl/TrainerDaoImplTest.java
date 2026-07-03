@@ -1,6 +1,7 @@
-package io.github.George_Al3xander.dao;
+package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.model.Trainer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

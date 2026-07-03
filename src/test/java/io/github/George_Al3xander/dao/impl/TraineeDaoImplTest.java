@@ -1,7 +1,6 @@
-package io.github.George_Al3xander.dao;
+package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.config.MainConfig;
-import io.github.George_Al3xander.dao.impl.TraineeDaoImpl;
 import io.github.George_Al3xander.model.Trainee;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,7 +30,7 @@ class TraineeDaoImplTest {
 
     @Test
     void givenTraineeWithoutId_whenSave_thenTraineeIsStoredWithGeneratedId() {
-        Trainee saved = traineeDao.save(generateTrainee());
+        Trainee saved = traineeDao.save(createTrainee());
 
         assertNotNull(saved.getId());
         assertTrue(traineeDao.findById(saved.getId()).isPresent());
@@ -39,7 +38,7 @@ class TraineeDaoImplTest {
 
     @Test
     void givenExistingTrainee_whenFindById_thenReturnOptionalOfTrainee() {
-        Trainee trainee = generateTrainee();
+        Trainee trainee = createTrainee();
 
         entityManager.persist(trainee);
         entityManager.flush();
@@ -59,8 +58,8 @@ class TraineeDaoImplTest {
 
     @Test
     void givenMultipleTrainees_whenFindAll_thenReturnAllTrainees() {
-        Trainee t1 = generateTrainee();
-        Trainee t2 = generateTrainee();
+        Trainee t1 = createTrainee();
+        Trainee t2 = createTrainee();
 
         entityManager.persist(t1);
         entityManager.persist(t2);
@@ -75,7 +74,7 @@ class TraineeDaoImplTest {
 
     @Test
     void givenExistingTrainee_whenDelete_thenRemoveFromStorage() {
-        Trainee trainee = generateTrainee();
+        Trainee trainee = createTrainee();
 
         entityManager.persist(trainee);
         entityManager.flush();
@@ -87,7 +86,7 @@ class TraineeDaoImplTest {
 
     @Test
     void givenExistingTrainee_whenUpdate_thenReturnUpdatedTrainee() {
-        Trainee trainee = generateTrainee();
+        Trainee trainee = createTrainee();
 
         entityManager.persist(trainee);
         entityManager.flush();
@@ -100,7 +99,7 @@ class TraineeDaoImplTest {
         assertEquals(trainee.getId(), result.getId());
     }
 
-    private Trainee generateTrainee() {
+    private Trainee createTrainee() {
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
