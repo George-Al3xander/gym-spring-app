@@ -42,6 +42,7 @@ class UsernameGeneratorTest {
         User newUser = new User();
         newUser.setFirstName("John");
         newUser.setLastName("Doe");
+        newUser.setPassword("1234567890");
 
         String result = usernameGenerator.generateUsername(newUser);
 
@@ -56,6 +57,7 @@ class UsernameGeneratorTest {
         User newUser = new User();
         newUser.setFirstName("John");
         newUser.setLastName("Doe");
+        newUser.setPassword("1234567890");
 
         String result = usernameGenerator.generateUsername(newUser);
 
@@ -67,6 +69,7 @@ class UsernameGeneratorTest {
         User user = new User();
         user.setFirstName("  John  ");
         user.setLastName("  Doe  ");
+        user.setPassword("1234567890");
 
         String result = usernameGenerator.generateUsername(user);
 
@@ -119,6 +122,7 @@ class UsernameGeneratorTest {
         user.setLastName(lastName);
         user.setPassword("secret");
         user.setIsActive(true);
+        user.setPassword("1234567890");
 
         entityManager.persist(user);
         return user;

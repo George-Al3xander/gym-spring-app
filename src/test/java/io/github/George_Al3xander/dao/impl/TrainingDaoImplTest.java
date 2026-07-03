@@ -36,7 +36,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTraining_whenSave_thenStoredWithGeneratedKey() {
-        Training training = trainingDao.save(persistTraining());
+        Training training = trainingDao.save(persistTraining(
+                "john.trainer",
+                "jane.trainee"));
 
         assertNotNull(training.getId());
         assertTrue(trainingDao.findById(training.getId()).isPresent());
@@ -44,7 +46,10 @@ class TrainingDaoImplTest {
 
     @Test
     void givenExistingTraining_whenFindById_thenReturnTraining() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer",
+                "jane.trainee");
+        ;
 
         Optional<Training> result = trainingDao.findById(training.getId());
 
@@ -59,8 +64,12 @@ class TrainingDaoImplTest {
 
     @Test
     void givenMultipleTrainings_whenFindAll_thenReturnAll() {
-        Training t1 = persistTraining();
-        Training t2 = persistTraining();
+        Training t1 = persistTraining(
+                "john.trainer1",
+                "jane.trainee1");
+        Training t2 = persistTraining(
+                "john.trainer2",
+                "jane.trainee2");
 
         List<Training> result = trainingDao.findAll();
 
@@ -71,7 +80,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTraining_whenDelete_thenRemovedFromStorage() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer1",
+                "jane.trainee1");
 
         trainingDao.delete(training.getId());
 
@@ -80,7 +91,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTraining_whenUpdate_thenReplaceExistingEntry() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer1",
+                "jane.trainee1");
 
         Training result = trainingDao.update(training);
 
@@ -89,7 +102,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainings_whenFindByTraineeUsername_withoutFilter_thenReturnAllForTrainee() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer1",
+                "jane.trainee");
 
         List<Training> result =
                 trainingDao.findByTraineeUsername("jane.trainee", null);
@@ -100,7 +115,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenFromDateOnly_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = TrainingFilter.builder()
                 .fromDate(LocalDateTime.of(2023, 12, 31, 0, 0))
@@ -114,7 +131,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenToDateOnly_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = TrainingFilter.builder()
                 .toDate(LocalDateTime.of(2024, 1, 2, 0, 0))
@@ -128,7 +147,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTraineeFirstName_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
         filter.setTraineeFirstName("Jane");
@@ -141,7 +162,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTraineeLastName_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
         filter.setTraineeLastName("Smith");
@@ -154,7 +177,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainerFirstName_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
         filter.setTrainerFirstName("John");
@@ -167,7 +192,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainerLastName_whenFilter_thenReturnMatching() {
-        persistTraining();
+        persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
         filter.setTrainerLastName("Doe");
@@ -180,7 +207,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainingType_whenFilter_thenReturnMatching() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
         filter.setTrainingType(training.getTrainingType());
@@ -193,7 +222,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenFullFilter_whenApplied_thenReturnMatching() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = TrainingFilter.builder()
                 .fromDate(LocalDateTime.of(2023, 12, 31, 0, 0))
@@ -213,7 +244,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainerUsername_whenNoFilter_thenReturnAll() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         List<Training> result =
                 trainingDao.findByTrainerUsername("john.trainer", null);
@@ -225,7 +258,9 @@ class TrainingDaoImplTest {
 
     @Test
     void givenTrainerFullFilter_whenApplied_thenReturnMatching() {
-        Training training = persistTraining();
+        Training training = persistTraining(
+                "john.trainer",
+                "jane.trainee");
 
         TrainingFilter filter = TrainingFilter.builder()
                 .fromDate(LocalDateTime.of(2023, 12, 31, 0, 0))
@@ -240,8 +275,8 @@ class TrainingDaoImplTest {
         assertEquals(1, result.size());
     }
 
-    private Training persistTraining() {
-        Training training = generateTraining();
+    private Training persistTraining(String trainerUsername, String traineeUsername) {
+        Training training = generateTraining(trainerUsername, traineeUsername);
 
         entityManager.persist(training.getTrainer());
         entityManager.persist(training.getTrainee());
@@ -252,7 +287,7 @@ class TrainingDaoImplTest {
         return training;
     }
 
-    private Training generateTraining() {
+    private Training generateTraining(String trainerUsername, String traineeUsername) {
         Training training = new Training();
 
         training.setTrainingDate(LocalDateTime.of(2024, 1, 1, 3, 1));
@@ -266,15 +301,15 @@ class TrainingDaoImplTest {
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Doe");
-        trainer.setUsername("john.trainer");
-        trainer.setPassword("pass");
+        trainer.setUsername(trainerUsername);
+        trainer.setPassword("1234567890");
         trainer.setIsActive(true);
 
         Trainee trainee = new Trainee();
         trainee.setFirstName("Jane");
         trainee.setLastName("Smith");
-        trainee.setUsername("jane.trainee");
-        trainee.setPassword("pass");
+        trainee.setUsername(traineeUsername);
+        trainee.setPassword("1234567890");
         trainee.setIsActive(true);
         trainee.setDateOfBirth(LocalDate.of(1995, 5, 5));
         trainee.setAddress("Kyiv");

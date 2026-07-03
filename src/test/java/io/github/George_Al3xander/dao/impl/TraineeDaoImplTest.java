@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,8 +104,8 @@ class TraineeDaoImplTest {
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
-        trainee.setUsername("john.doe");
-        trainee.setPassword("pass");
+        trainee.setUsername(UUID.randomUUID().toString());
+        trainee.setPassword("1234567890");
         trainee.setIsActive(true);
         trainee.setDateOfBirth(LocalDate.of(1990, 1, 1));
         trainee.setAddress("Kyiv");

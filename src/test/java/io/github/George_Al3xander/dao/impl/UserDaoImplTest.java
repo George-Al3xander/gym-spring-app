@@ -145,7 +145,7 @@ class UserDaoImplTest {
         user.setUsername(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setPassword("secret");
+        user.setPassword("1234567890");
         user.setIsActive(true);
 
         entityManager.persist(user);

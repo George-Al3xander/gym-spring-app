@@ -29,7 +29,7 @@ class TrainerDaoImplTest {
 
     @Test
     void givenTrainerWithoutId_whenSave_thenTrainerIsStoredWithGeneratedId() {
-        Trainer trainer = trainerDao.save(generateTrainer());
+        Trainer trainer = trainerDao.save(generateTrainer("john.doe"));
 
         Long id = trainer.getId();
 
@@ -38,7 +38,7 @@ class TrainerDaoImplTest {
 
     @Test
     void givenExistingTrainer_whenFindById_thenReturnTrainer() {
-        Trainer trainer = generateTrainer();
+        Trainer trainer = generateTrainer("john.doe");
 
         entityManager.persist(trainer);
         entityManager.flush();
@@ -58,8 +58,8 @@ class TrainerDaoImplTest {
 
     @Test
     void givenMultipleTrainers_whenFindAll_thenReturnAllTrainers() {
-        Trainer t1 = generateTrainer();
-        Trainer t2 = generateTrainer();
+        Trainer t1 = generateTrainer("john.doe");
+        Trainer t2 = generateTrainer("john.doe1");
 
         entityManager.persist(t1);
         entityManager.persist(t2);
@@ -74,8 +74,13 @@ class TrainerDaoImplTest {
 
     @Test
     void givenTrainerExists_whenDelete_thenRemoveFromStorage() {
-        long id = 123L;
+        Trainer trainer = generateTrainer("john.doe3");
 
+        entityManager.persist(trainer);
+        entityManager.flush();
+
+        long id = trainer.getId();
+        
         trainerDao.delete(id);
 
         assertTrue(trainerDao.findById(id).isEmpty());
@@ -83,7 +88,7 @@ class TrainerDaoImplTest {
 
     @Test
     void givenExistingTrainer_whenUpdate_thenReturnUpdatedTrainer() {
-        Trainer trainer = generateTrainer();
+        Trainer trainer = generateTrainer("john.doe");
         entityManager.persist(trainer);
         entityManager.flush();
 
@@ -92,12 +97,12 @@ class TrainerDaoImplTest {
         assertEquals(trainer, result);
     }
 
-    private static Trainer generateTrainer() {
+    private static Trainer generateTrainer(String username) {
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Doe");
-        trainer.setUsername("john.doe");
-        trainer.setPassword("1234");
+        trainer.setUsername(username);
+        trainer.setPassword("1234567890");
         trainer.setIsActive(true);
 
         return trainer;

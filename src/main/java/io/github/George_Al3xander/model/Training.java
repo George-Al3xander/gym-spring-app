@@ -1,6 +1,10 @@
 package io.github.George_Al3xander.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +31,8 @@ public class Training {
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
 
+    @NotBlank
+    @Size(max = 255)
     @Column(name = "training_name", nullable = false)
     private String trainingName;
 
@@ -34,9 +40,11 @@ public class Training {
     @JoinColumn(name = "training_type_id")
     private TrainingType trainingType;
 
+    @NotNull
     @Column(name = "training_date", nullable = false)
     private LocalDateTime trainingDate;
 
+    @Positive
     @Column(nullable = false)
     private int durationSeconds;
 }
