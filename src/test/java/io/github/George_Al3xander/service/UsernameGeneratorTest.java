@@ -1,233 +1,126 @@
 package io.github.George_Al3xander.service;
 
-import io.github.George_Al3xander.dao.TraineeDao;
-import io.github.George_Al3xander.dao.TrainerDao;
-import io.github.George_Al3xander.model.Trainee;
-import io.github.George_Al3xander.model.Trainer;
+import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.model.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = MainConfig.class)
+@Transactional
 class UsernameGeneratorTest {
 
-    @Mock
-    private TraineeDao traineeDao;
+    @Autowired
+    private UsernameGenerator usernameGenerator;
 
-    @Mock
-    private TrainerDao trainerDao;
-
-    @InjectMocks
-    private UsernameGenerator generator;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
-    void given_noExistingUsers_when_generateUsername_then_returnBaseUsername() {
+    void givenNewUser_whenGenerateUsername_thenReturnsBaseUsername() {
+        User user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
 
-        when(traineeDao.findAll()).thenReturn(List.of());
-        when(trainerDao.findAll()).thenReturn(List.of());
+        String result = usernameGenerator.generateUsername(user);
 
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith", result);
+        assertEquals("John.Doe", result);
     }
 
     @Test
-    void given_duplicateUsernameInTrainees_when_generateUsername_then_appendSuffixOne() {
+    void givenExistingUserWithSameName_whenGenerateUsername_thenAppendsCount() {
+        persistUserToDB("john.doe", "John", "Doe");
 
-        when(traineeDao.findAll())
-                .thenReturn(List.of(
-                        trainee("John.Smith")
-                ));
+        User newUser = new User();
+        newUser.setFirstName("John");
+        newUser.setLastName("Doe");
 
-        when(trainerDao.findAll()).thenReturn(List.of());
+        String result = usernameGenerator.generateUsername(newUser);
 
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith1", result);
+        assertEquals("John.Doe1", result);
     }
 
     @Test
-    void given_duplicateUsernameInTrainers_when_generateUsername_then_appendSuffixOne() {
+    void givenMultipleExistingUsers_whenGenerateUsername_thenCorrectIncrementedSuffix() {
+        persistUserToDB("john.doe", "John", "Doe");
+        persistUserToDB("john.doe1", "John", "Doe");
 
-        when(traineeDao.findAll()).thenReturn(List.of());
+        User newUser = new User();
+        newUser.setFirstName("John");
+        newUser.setLastName("Doe");
 
-        when(trainerDao.findAll())
-                .thenReturn(List.of(
-                        trainer("John.Smith")
-                ));
+        String result = usernameGenerator.generateUsername(newUser);
 
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith1", result);
+        assertEquals("John.Doe2", result);
     }
 
     @Test
-    void given_duplicatesAcrossRepositories_when_generateUsername_then_returnNextAvailableSuffix() {
+    void givenNamesWithWhitespace_whenGenerateUsername_thenTrimsAndBuildsBaseUsername() {
+        User user = new User();
+        user.setFirstName("  John  ");
+        user.setLastName("  Doe  ");
 
-        when(traineeDao.findAll())
-                .thenReturn(List.of(
-                        trainee("John.Smith")
-                ));
+        String result = usernameGenerator.generateUsername(user);
 
-        when(trainerDao.findAll())
-                .thenReturn(List.of(
-                        trainer("John.Smith1")
-                ));
-
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith2", result);
+        assertEquals("John.Doe", result);
     }
 
     @Test
-    void given_multipleSequentialDuplicates_when_generateUsername_then_returnNextAvailableSuffix() {
+    void givenExistingUsersInDatabase_whenGenerateUsername_thenUsesDatabaseCount() {
+        persistUserToDB("john.doe", "John", "Doe");
+        persistUserToDB("john.doe1", "John", "Doe");
+        persistUserToDB("john.doe2", "John", "Doe");
 
-        when(traineeDao.findAll())
-                .thenReturn(List.of(
-                        trainee("John.Smith"),
-                        trainee("John.Smith1")
-                ));
+        User newUser = new User();
+        newUser.setFirstName("John");
+        newUser.setLastName("Doe");
 
-        when(trainerDao.findAll())
-                .thenReturn(List.of(
-                        trainer("John.Smith2")
-                ));
+        String result = usernameGenerator.generateUsername(newUser);
 
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith3", result);
+        assertEquals("John.Doe3", result);
     }
 
     @Test
-    void given_caseInsensitiveDuplicate_when_generateUsername_then_appendSuffixOne() {
+    void givenDifferentName_whenGenerateUsername_thenIgnoresOtherUsers() {
+        persistUserToDB("john.doe", "John", "Doe");
 
-        when(traineeDao.findAll())
-                .thenReturn(List.of(
-                        trainee("john.smith")
-                ));
+        User newUser = new User();
+        newUser.setFirstName("Jane");
+        newUser.setLastName("Smith");
 
-        when(trainerDao.findAll()).thenReturn(List.of());
+        String result = usernameGenerator.generateUsername(newUser);
 
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith1", result);
+        assertEquals("Jane.Smith", result);
     }
 
     @Test
-    void given_names_with_spaces_when_generateUsername_then_trimNames() {
+    void givenEmptySpacesOnly_whenGenerateUsername_thenProducesDotOnlyOrInvalidBase() {
+        User user = new User();
+        user.setFirstName("   ");
+        user.setLastName("   ");
 
-        when(traineeDao.findAll()).thenReturn(List.of());
-        when(trainerDao.findAll()).thenReturn(List.of());
+        String result = usernameGenerator.generateUsername(user);
 
-        User user = new User(
-                null,
-                "  John  ",
-                "  Smith  ",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith", result);
+        assertEquals(".", result);
     }
 
-    @Test
-    void given_similarUsername_when_generateUsername_then_doNotTreatAsDuplicate() {
+    private User persistUserToDB(String username, String firstName, String lastName) {
+        User user = new User();
+        user.setUsername(username);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPassword("secret");
+        user.setIsActive(true);
 
-        when(traineeDao.findAll())
-                .thenReturn(List.of(
-                        trainee("John.Smithers")
-                ));
-
-        when(trainerDao.findAll()).thenReturn(List.of());
-
-        User user = new User(
-                null,
-                "John",
-                "Smith",
-                null,
-                "pass",
-                true
-        );
-
-        String result = generator.generateUsername(user);
-
-        assertEquals("John.Smith", result);
-    }
-
-    private Trainee trainee(String username) {
-        Trainee t = new Trainee();
-        t.setUsername(username);
-        return t;
-    }
-
-    private Trainer trainer(String username) {
-        Trainer t = new Trainer();
-        t.setUsername(username);
-        return t;
+        entityManager.persist(user);
+        return user;
     }
 }
