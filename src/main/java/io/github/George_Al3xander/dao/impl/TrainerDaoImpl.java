@@ -55,4 +55,15 @@ public class TrainerDaoImpl implements TrainerDao {
 
         return trainers.stream().findFirst();
     }
+
+    @Override
+    public List<Trainer> findUnassignedByTraineeUsername(String username) {
+        String qString = "SELECT t FROM Trainer t WHERE EXISTS (SELECT u FROM User u WHERE u.username = :username) AND NOT EXISTS (SELECT tr.id FROM Training tr WHERE tr.trainer = t AND tr.trainee.username = :username)";
+
+        return entityManager
+                .createQuery(qString, Trainer.class)
+                .setParameter("username", username)
+                .getResultList();
+
+    }
 }
