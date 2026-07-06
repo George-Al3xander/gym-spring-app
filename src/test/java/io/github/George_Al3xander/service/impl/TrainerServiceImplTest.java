@@ -194,4 +194,35 @@ class TrainerServiceImplTest {
         verify(customGenerator)
                 .generateUsername(trainer);
     }
+
+    @Test
+    void givenExistingUsername_whenGetTrainerByUsername_thenReturnTrainer() {
+
+        String username = "john.smith";
+
+        when(trainerDao.findByUsername(username))
+                .thenReturn(Optional.of(trainer));
+
+        Trainer result = trainerService.getTrainerByUsername(username);
+
+        assertSame(trainer, result);
+
+        verify(trainerDao).findByUsername(username);
+    }
+
+    @Test
+    void givenMissingUsername_whenGetTrainerByUsername_thenThrowEntityNotFoundException() {
+
+        String username = "missing.user";
+
+        when(trainerDao.findByUsername(username))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> trainerService.getTrainerByUsername(username)
+        );
+
+        verify(trainerDao).findByUsername(username);
+    }
 }

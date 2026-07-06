@@ -100,6 +100,26 @@ class TraineeDaoImplTest {
         assertEquals(trainee.getId(), result.getId());
     }
 
+    @Test
+    void givenExistingTrainee_whenFindByUsername_thenReturnOptionalOfTrainee() {
+        Trainee trainee = createTrainee();
+
+        entityManager.persist(trainee);
+        entityManager.flush();
+
+        Optional<Trainee> result = traineeDao.findByUsername(trainee.getUsername());
+
+        assertTrue(result.isPresent());
+        assertEquals(trainee, result.get());
+    }
+
+    @Test
+    void givenNonExistingUsername_whenFindByUsername_thenReturnEmptyOptional() {
+        Optional<Trainee> result = traineeDao.findByUsername("non-existing-username");
+
+        assertTrue(result.isEmpty());
+    }
+
     private Trainee createTrainee() {
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");

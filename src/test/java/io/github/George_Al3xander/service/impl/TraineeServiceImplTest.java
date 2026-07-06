@@ -262,4 +262,32 @@ class TraineeServiceImplTest {
         verify(traineeDao)
                 .delete(1L);
     }
+
+    @Test
+    void givenExistingUsername_whenGetTraineeByUsername_thenReturnTrainee() {
+
+        when(traineeDao.findByUsername("john.doe"))
+                .thenReturn(Optional.of(trainee));
+
+        Trainee result =
+                traineeService.getTraineeByUsername("john.doe");
+
+        assertEquals(trainee, result);
+
+        verify(traineeDao).findByUsername("john.doe");
+    }
+
+    @Test
+    void givenNonExistingUsername_whenGetTraineeByUsername_thenThrowEntityNotFoundException() {
+
+        when(traineeDao.findByUsername("missing.user"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> traineeService.getTraineeByUsername("missing.user")
+        );
+
+        verify(traineeDao).findByUsername("missing.user");
+    }
 }

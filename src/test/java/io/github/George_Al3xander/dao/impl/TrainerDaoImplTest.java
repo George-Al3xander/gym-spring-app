@@ -80,7 +80,7 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         long id = trainer.getId();
-        
+
         trainerDao.delete(id);
 
         assertTrue(trainerDao.findById(id).isEmpty());
@@ -95,6 +95,26 @@ class TrainerDaoImplTest {
         Trainer result = trainerDao.update(trainer);
 
         assertEquals(trainer, result);
+    }
+
+    @Test
+    void givenExistingTrainer_whenFindByUsername_thenReturnTrainer() {
+        Trainer trainer = generateTrainer("john.doe");
+
+        entityManager.persist(trainer);
+        entityManager.flush();
+
+        Optional<Trainer> result = trainerDao.findByUsername("john.doe");
+
+        assertTrue(result.isPresent());
+        assertEquals(trainer, result.get());
+    }
+
+    @Test
+    void givenMissingUsername_whenFindByUsername_thenReturnEmpty() {
+        Optional<Trainer> result = trainerDao.findByUsername("missing.username");
+
+        assertTrue(result.isEmpty());
     }
 
     private static Trainer generateTrainer(String username) {
