@@ -1,7 +1,9 @@
 package io.github.George_Al3xander.service.impl;
 
+import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,9 @@ class TrainerServiceImplTest {
     private TrainerDao trainerDao;
 
     @Mock
+    private TraineeDao traineeDao;
+
+    @Mock
     private UsernameGenerator usernameGenerator;
 
     @InjectMocks
@@ -34,7 +39,7 @@ class TrainerServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        trainerService = new TrainerServiceImpl(trainerDao, usernameGenerator);
+        trainerService = new TrainerServiceImpl(trainerDao, traineeDao, usernameGenerator);
         trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Smith");
@@ -180,7 +185,7 @@ class TrainerServiceImplTest {
         UsernameGenerator customGenerator =
                 mock(UsernameGenerator.class);
 
-        trainerService = new TrainerServiceImpl(trainerDao, customGenerator);
+        trainerService = new TrainerServiceImpl(trainerDao, traineeDao, customGenerator);
 
 
         when(customGenerator.generateUsername(trainer))
@@ -224,5 +229,46 @@ class TrainerServiceImplTest {
         );
 
         verify(trainerDao).findByUsername(username);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetUnassignedTrainers_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        List<Trainer> expected = List.of(new Trainer(), new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findUnassignedByTraineeUsername(username))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getUnassignedTrainersByTraineeUsername(username);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findUnassignedByTraineeUsername(username);
+    }
+
+    @Test
+    void givenMissingTrainee_whenGetUnassignedTrainers_thenThrowEntityNotFoundException() {
+
+        String username = "missing.user";
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> trainerService.getUnassignedTrainersByTraineeUsername(username)
+        );
+
+        verify(traineeDao).findByUsername(username);
+        verifyNoInteractions(trainerDao);
     }
 }
