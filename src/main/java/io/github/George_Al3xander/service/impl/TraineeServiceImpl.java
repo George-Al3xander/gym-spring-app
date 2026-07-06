@@ -38,6 +38,17 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    public Trainee getTraineeByUsername(String username) {
+        Optional<Trainee> optionalTrainee = traineeDao.findByUsername(username);
+
+        if (optionalTrainee.isEmpty()) {
+            throw new EntityNotFoundException("Trainee", username);
+        }
+
+        return optionalTrainee.get();
+    }
+
+    @Override
     public List<Trainee> getAllTrainees() {
         return traineeDao.findAll();
     }

@@ -43,4 +43,16 @@ public class TraineeDaoImpl implements TraineeDao {
     public Trainee update(Trainee entity) {
         return entityManager.merge(entity);
     }
+
+    @Override
+    public Optional<Trainee> findByUsername(String username) {
+        String qString = "SELECT t FROM Trainee t WHERE t.username = :username";
+
+        List<Trainee> trainees = entityManager
+                .createQuery(qString, Trainee.class)
+                .setParameter("username", username)
+                .getResultList();
+
+        return trainees.stream().findFirst();
+    }
 }

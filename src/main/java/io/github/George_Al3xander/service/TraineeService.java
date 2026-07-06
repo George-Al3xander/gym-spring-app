@@ -8,6 +8,8 @@ public interface TraineeService {
 
     Trainee getTraineeById(Long id);
 
+    Trainee getTraineeByUsername(String username);
+
     List<Trainee> getAllTrainees();
 
     Trainee saveTrainee(Trainee entity);

@@ -33,10 +33,19 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<Trainer> getAllTrainers() {
-        List<Trainer> trainers = trainerDao.findAll();
+    public Trainer getTrainerByUsername(String username) {
+        Optional<Trainer> optionalTrainer = trainerDao.findByUsername(username);
 
-        return trainers;
+        if (optionalTrainer.isEmpty()) {
+            throw new EntityNotFoundException("Trainer", username);
+        }
+
+        return optionalTrainer.get();
+    }
+
+    @Override
+    public List<Trainer> getAllTrainers() {
+        return trainerDao.findAll();
     }
 
     @Override

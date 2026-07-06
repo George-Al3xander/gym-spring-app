@@ -44,4 +44,15 @@ public class TrainerDaoImpl implements TrainerDao {
         return entityManager.merge(entity);
     }
 
+    @Override
+    public Optional<Trainer> findByUsername(String username) {
+        String qString = "SELECT t FROM Trainer t WHERE t.username = :username";
+
+        List<Trainer> trainers = entityManager
+                .createQuery(qString, Trainer.class)
+                .setParameter("username", username)
+                .getResultList();
+
+        return trainers.stream().findFirst();
+    }
 }

@@ -8,6 +8,8 @@ public interface TrainerService {
 
     Trainer getTrainerById(Long id);
 
+    Trainer getTrainerByUsername(String username);
+
     List<Trainer> getAllTrainers();
 
     Trainer saveTrainer(Trainer entity);
