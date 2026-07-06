@@ -2,7 +2,9 @@ package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
+import io.github.George_Al3xander.model.Training;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,6 +121,49 @@ class TrainerDaoImplTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void givenTraineeUsername_whenFindUnassignedByTraineeUsername_thenReturnUnassignedTrainers() {
+        Trainer t1 = generateTrainer("trainer.one");
+        Trainer t2 = generateTrainer("trainer.two");
+        Trainee trainee1 = generateTrainee("some.trainee1");
+        Trainee trainee2 = generateTrainee("some.trainee2");
+
+
+        entityManager.persist(trainee1);
+        entityManager.persist(trainee2);
+        entityManager.persist(t1);
+        entityManager.persist(t2);
+        entityManager.persist(generateTraining(t1, trainee2));
+        entityManager.persist(generateTraining(t2, trainee2));
+
+        entityManager.flush();
+
+        List<Trainer> result =
+                trainerDao.findUnassignedByTraineeUsername(trainee1.getUsername());
+
+        assertNotNull(result);
+        assertTrue(result.contains(t1));
+        assertTrue(result.contains(t2));
+    }
+
+    @Test
+    void givenAllTrainersAssignedToTrainee_whenFindUnassignedByTraineeUsername_thenReturnEmptyList() {
+
+        Trainer trainer = generateTrainer("trainer.one");
+        Trainee trainee = generateTrainee("john.doe");
+
+        entityManager.persist(trainee);
+        entityManager.persist(trainer);
+        entityManager.persist(generateTraining(trainer, trainee));
+
+        entityManager.flush();
+
+        List<Trainer> result =
+                trainerDao.findUnassignedByTraineeUsername("john.doe");
+
+        assertTrue(result.isEmpty());
+    }
+
     private static Trainer generateTrainer(String username) {
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");
@@ -126,5 +173,29 @@ class TrainerDaoImplTest {
         trainer.setIsActive(true);
 
         return trainer;
+    }
+
+    private static Trainee generateTrainee(String username) {
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+        trainee.setAddress("address");
+        trainee.setPassword("1234567890");
+        trainee.setFirstName("Name");
+        trainee.setLastName("Name");
+        trainee.setDateOfBirth(LocalDate.now());
+        trainee.setIsActive(true);
+
+        return trainee;
+    }
+
+    private static Training generateTraining(Trainer trainer, Trainee trainee) {
+        Training training = new Training();
+        training.setTrainer(trainer);
+        training.setTrainee(trainee);
+        training.setDurationSeconds(123);
+        training.setTrainingDate(LocalDateTime.now());
+        training.setTrainingName("Training");
+
+        return training;
     }
 }
