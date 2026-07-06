@@ -1,12 +1,16 @@
-# Gym CRM System (Spring Core Module)
+# Gym CRM System (Spring Core + JPA Module)
 
 ## Overview
 
-The system manages three core domain entities:
+The Gym CRM System manages three core domain entities:
 
 - Trainee
 - Trainer
 - Training
+
+The application is built using the Spring Framework with Java-based configuration, Hibernate ORM, JPA, transaction
+management, Aspect-Oriented Programming (AOP), Spring Profiles, and supports both H2 (development) and MySQL (
+production) databases.
 
 ---
 
@@ -14,13 +18,18 @@ The system manages three core domain entities:
 
 ```
 io.github.George_AI3xander
- ├── config        → Spring configuration classes
- ├── dao           → Data Access Objects (persistence layer)
+ ├── aspect        → Cross-cutting concerns (exception logging)
+ ├── config        → Spring, JPA and profile-specific configuration
+ ├── dao
+ │    ├── impl     → JPA DAO implementations
+ │    └── *Dao     → DAO interfaces
+ ├── dto           → Data Transfer Objects
  ├── exception     → Custom exceptions
- ├── model         → Domain entities (Trainee, Trainer, Training)
- ├── service       → Business logic layer
- ├── storage       → In-memory storage (Map-based beans)
- ├── util          → Utility classes (username/password generation, helpers)
+ ├── facade        → Unified application API
+ ├── model         → JPA entities
+ ├── service
+ │    └── impl     → Business logic implementations
+ ├── util          → Utility classes
  └── App           → Application entry point
 ```
 
@@ -30,63 +39,340 @@ io.github.George_AI3xander
 
 ```
 src/main/resources
- ├── data
- │    └── gym-data.json     → Initial dataset for storage initialization
  ├── application.properties
  └── logback.xml
 ```
 
 ---
 
+## Technologies
+
+- Spring Framework
+- Spring Context
+- Spring ORM
+- Spring JDBC
+- Spring AOP
+- Spring Transaction Management
+- Spring Profiles
+- Hibernate ORM
+- Jakarta Persistence (JPA)
+- Jakarta Validation
+- H2 Database (development)
+- MySQL (production)
+- HikariCP
+- Lombok
+- SLF4J + Logback
+
+---
+
 ## Configuration
 
-The application uses Java-based Spring configuration with annotation-driven component scanning.
+The application uses Java-based Spring configuration.
 
-### Key annotations:
+### Main features enabled
+
+- Component scanning
+- AspectJ auto proxy
+- Transaction management
+- JPA EntityManager
+- HikariCP datasource
+- Hibernate integration
+
+### Key annotations
 
 - `@Configuration`
 - `@ComponentScan`
 - `@Bean`
+- `@EnableAspectJAutoProxy`
+- `@EnableTransactionManagement`
+- `@Profile`
 - `@Service`
 - `@Repository`
-- `@Autowired`
+- `@Component`
+- `@Transactional`
 
 ---
 
-## Property Configuration
+## Spring Profiles
 
-`application.properties`:
+The application supports two runtime profiles.
 
-```properties
-storage.file.path=classpath:data/gym-data.json
+### Development (`dev`)
+
+Uses an embedded H2 in-memory database.
+
+```
+spring.profiles.active=dev
 ```
 
-This property defines the path to the initial dataset used to populate in-memory storage during application startup.
+### Production (`prod`)
+
+Uses a MySQL database configured through environment variables.
+
+```
+spring.profiles.active=prod
+```
 
 ---
 
-## Functional Requirements
+## Database Configuration
+
+### Development
+
+Database:
+
+```
+H2 In-Memory
+```
+
+Datasource:
+
+```
+jdbc:h2:mem:testdb
+```
+
+### Production
+
+Database:
+
+```
+MySQL
+```
+
+Datasource configuration is provided through environment variables:
+
+```properties
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+```
+
+Connection pooling is provided by HikariCP.
+
+Hibernate configuration includes:
+
+- automatic schema update
+- SQL logging enabled
+- automatic dialect detection
+
+---
+
+## Domain Model
+
+### User
+
+Base entity containing:
+
+- id
+- firstName
+- lastName
+- username
+- password
+- isActive
+
+Inheritance strategy:
+
+```
+JOINED
+```
+
+### Trainee
+
+Extends `User`.
+
+Additional fields:
+
+- dateOfBirth
+- address
+
+### Trainer
+
+Extends `User`.
+
+Additional field:
+
+- specialization (TrainingType)
+
+### Training
+
+Contains:
+
+- trainee
+- trainer
+- trainingName
+- trainingType
+- trainingDate
+- durationSeconds
+
+### TrainingType
+
+Represents a training specialization.
+
+---
+
+## Persistence Layer
+
+The application uses JPA repositories implemented with `EntityManager`.
+
+DAO interfaces:
+
+- UserDao
+- TraineeDao
+- TrainerDao
+- TrainingDao
+- TrainingTypeDao
+
+Each DAO implementation provides standard CRUD operations using JPA.
+
+Additional repository methods include:
+
+### UserDao
+
+- findByUsername()
+- countByName()
+
+### TraineeDao
+
+- findByUsername()
+
+### TrainerDao
+
+- findByUsername()
+- findUnassignedByTraineeUsername()
+
+### TrainingDao
+
+- findByTraineeUsername()
+- findByTrainerUsername()
+
+---
+
+## Business Services
+
+### AuthenticationService
+
+Responsible for user authentication.
+
+### UserService
+
+Provides:
+
+- password reset
+- account activation/deactivation
 
 ### TraineeService
 
-- Create trainee profile
-- Update trainee profile
-- Delete trainee profile
-- Get trainee by id
-- Get all trainees
+Provides:
+
+- create trainee
+- update trainee
+- delete trainee
+- find by id
+- find by username
+- list all trainees
 
 ### TrainerService
 
-- Create trainer profile
-- Update trainer profile
-- Get trainer by id
-- Get all trainers
+Provides:
+
+- create trainer
+- update trainer
+- find by id
+- find by username
+- list all trainers
+- retrieve unassigned trainers
 
 ### TrainingService
 
-- Create training profile
-- Get training by id
-- Get all trainings
+Provides:
+
+- create training
+- find by id
+- list all trainings
+- filter trainee trainings
+- filter trainer trainings
+
+### UsernameGenerator
+
+Generates unique usernames.
+
+---
+
+## GymFacade
+
+`GymFacade` provides a unified entry point to the application's business logic.
+
+### Public operations
+
+- create trainer
+- create trainee
+
+### Protected operations (authentication required)
+
+- retrieve trainer
+- retrieve trainee
+- update trainer
+- update trainee
+- delete trainee
+- add training
+- retrieve trainee trainings
+- retrieve trainer trainings
+- retrieve unassigned trainers
+- reset user password
+- activate/deactivate user accounts
+
+---
+
+## Authentication
+
+Protected operations require valid credentials.
+
+Authentication is performed using:
+
+```
+CredentialsDTO
+```
+
+containing:
+
+- username
+- password
+
+Before executing any protected operation, the facade delegates authentication to `AuthenticationService`.
+
+If authentication fails, a `BadCredentialsException` is thrown.
+
+---
+
+## User Management
+
+The system supports additional account management features:
+
+- password reset
+- activation/deactivation of user accounts
+
+Password reset automatically generates a new random password and persists the updated credentials.
+
+User activation toggles the account status between active and inactive.
+
+---
+
+## Training Filtering
+
+Training queries support filtering by:
+
+- date range
+- trainee first name
+- trainee last name
+- trainer first name
+- trainer last name
+- training type
+
+Filtering is represented by:
+
+```
+TrainingFilter
+```
 
 ---
 
@@ -100,7 +386,9 @@ Format:
 firstName.lastName
 ```
 
-If username already exists:
+Duplicate usernames are resolved by appending a numeric suffix.
+
+Example:
 
 ```
 john.doe
@@ -110,59 +398,78 @@ john.doe2
 
 ### Password Generation
 
-- Random string
-- Length: 10 characters
-- Generated at profile creation time
+Passwords are automatically generated during user creation.
+
+Characteristics:
+
+- random
+- fixed length of 10 characters
 
 ---
 
-## Persistence Layer
+## Validation
 
-- Each entity has its own DAO:
-    - TraineeDao
-    - TrainerDao
-    - TrainingDao
+Entities use Jakarta Validation annotations.
 
-- Each DAO uses a dedicated Map-based in-memory storage bean
-- Storage is separated per entity type
+Examples include:
 
----
-
-## Storage Initialization
-
-- Storage is implemented as a separate Spring bean
-- Initial data is loaded from:
-
-```
-src/main/resources/data/gym-data.json
-```
-
-- Initialization is performed using lifecycle hooks
-- File path is injected using:
-
-```
-${storage.file.path}
-```
+- `@NotBlank`
+- `@NotNull`
+- `@Positive`
+- `@Size`
 
 ---
 
-## Dependency Injection Rules
+## Transactions
 
-- DAO → injected into Service using field autowiring
-- Other dependencies → setter injection
+Business services use Spring transaction management.
+
+- Read-only transactions for query operations
+- Read/write transactions for data modifications
+
+---
+
+## Aspect-Oriented Programming
+
+An exception logging aspect intercepts service-layer exceptions.
+
+Features include:
+
+- centralized exception logging
+- automatic error reporting
+- SLF4J integration
+
+---
+
+## Dependency Injection
+
+The project consistently uses constructor injection.
+
+Lombok's `@RequiredArgsConstructor` is used to simplify dependency injection and encourage immutable dependencies.
+
+---
+
+## Application Entry Point
+
+The sample application demonstrates usage of the `GymFacade` by:
+
+- creating a trainee
+- automatically generating credentials
+- performing authenticated operations
+- deleting the trainee
 
 ---
 
 ## Logging
 
-Logging is implemented using SLF4J + Logback.
+Logging is implemented using SLF4J and Logback.
 
-Covers:
+Logging covers:
 
-- Application startup
-- CRUD operations
-- Storage initialization
-- Error handling
+- application startup
+- service operations
+- exception handling via AOP
+- Hibernate SQL output
 
 ---
 
@@ -170,25 +477,39 @@ Covers:
 
 Unit tests cover:
 
-- Service layer logic
-- DAO operations
-- Username generation
-- Password generation
+- service layer
+- DAO layer
+- facade layer
+- authentication
+- username generation
+- password generation
+- password reset
+- user activation/deactivation
 
-### Frameworks:
+Frameworks:
 
-- JUnit
+- JUnit 5
 - Mockito
-- Spring Test Context
+- Spring Test
 
 ---
 
 ## Key Highlights
 
-- Layered architecture (Service / DAO / Storage)
-- In-memory Map-based persistence
-- Spring IoC and DI usage
-- Bean lifecycle management
-- External configuration via properties
-- Clean modular structure
-
+- Layered architecture
+- Facade pattern
+- Spring Profiles (dev/prod)
+- JPA/Hibernate persistence
+- MySQL production support
+- H2 development environment
+- Environment-based configuration
+- Spring Transaction Management
+- Spring AOP
+- Constructor-based dependency injection
+- HikariCP connection pooling
+- Authentication layer
+- User account management
+- Dynamic training filtering
+- Jakarta Validation
+- Comprehensive unit testing
+- Clean separation of concerns
