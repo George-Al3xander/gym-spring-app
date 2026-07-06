@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
+import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -230,5 +231,45 @@ class TrainingServiceImplTest {
 
         verify(trainingDao)
                 .save(training);
+    }
+
+    @Test
+    void givenUsernameAndFilter_whenFindByTraineeUsername_thenReturnTrainings() {
+
+        String username = "john.doe";
+        TrainingFilter filter = new TrainingFilter();
+
+        List<Training> expected = List.of(new Training(), new Training());
+
+        when(trainingDao.findByTraineeUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Training> result =
+                trainingService.findByTraineeUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(trainingDao)
+                .findByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenUsernameAndFilter_whenFindByTrainerUsername_thenReturnTrainings() {
+
+        String username = "john.smith";
+        TrainingFilter filter = new TrainingFilter();
+
+        List<Training> expected = List.of(new Training());
+
+        when(trainingDao.findByTrainerUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Training> result =
+                trainingService.findByTrainerUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(trainingDao)
+                .findByTrainerUsername(username, filter);
     }
 }
