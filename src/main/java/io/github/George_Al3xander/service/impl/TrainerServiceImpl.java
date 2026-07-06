@@ -1,7 +1,9 @@
 package io.github.George_Al3xander.service.impl;
 
+import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.UsernameGenerator;
@@ -18,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerDao trainerDao;
+    private final TraineeDao traineeDao;
 
     private final UsernameGenerator usernameGenerator;
 
@@ -46,6 +49,18 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public List<Trainer> getAllTrainers() {
         return trainerDao.findAll();
+    }
+
+    @Override
+    public List<Trainer> getUnassignedTrainersByTraineeUsername(String username) {
+        Optional<Trainee> traineeOptional = traineeDao.findByUsername(username);
+
+        if (traineeOptional.isEmpty()) {
+            throw new EntityNotFoundException("Trainee", username);
+
+        }
+
+        return trainerDao.findUnassignedByTraineeUsername(traineeOptional.get().getUsername());
     }
 
     @Override

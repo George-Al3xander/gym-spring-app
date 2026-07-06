@@ -12,6 +12,8 @@ public interface TrainerService {
 
     List<Trainer> getAllTrainers();
 
+    List<Trainer> getUnassignedTrainersByTraineeUsername(String username);
+
     Trainer saveTrainer(Trainer entity);
 
     Trainer updateTrainer(Trainer entity);
