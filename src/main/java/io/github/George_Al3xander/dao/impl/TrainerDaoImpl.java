@@ -48,12 +48,12 @@ public class TrainerDaoImpl implements TrainerDao {
     public Optional<Trainer> findByUsername(String username) {
         String qString = "SELECT t FROM Trainer t WHERE t.username = :username";
 
-        List<Trainer> trainers = entityManager
+        Trainer trainer = entityManager
                 .createQuery(qString, Trainer.class)
                 .setParameter("username", username)
-                .getResultList();
+                .getSingleResult();
 
-        return trainers.stream().findFirst();
+        return Optional.of(trainer);
     }
 
     @Override

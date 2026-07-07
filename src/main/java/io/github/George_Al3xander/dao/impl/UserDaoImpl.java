@@ -48,12 +48,12 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> findByUsername(String username) {
         String qString = "SELECT u FROM User u WHERE u.username = :username";
 
-        List<User> users = entityManager
+        User user = entityManager
                 .createQuery(qString, User.class)
                 .setParameter("username", username)
-                .getResultList();
+                .getSingleResult();
 
-        return users.stream().findFirst();
+        return Optional.ofNullable(user);
     }
 
     @Override

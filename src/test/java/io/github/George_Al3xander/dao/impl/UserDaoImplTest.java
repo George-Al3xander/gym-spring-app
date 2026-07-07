@@ -4,6 +4,7 @@ import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,7 +117,7 @@ class UserDaoImplTest {
 
     @Test
     void givenMissingUsername_whenFindByUsername_thenThrowsNoResultException() {
-        assertTrue(userDao.findByUsername("missing").isEmpty());
+        assertThrows(NoResultException.class, () -> userDao.findByUsername("missing"));
     }
 
     @Test

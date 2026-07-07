@@ -48,11 +48,11 @@ public class TraineeDaoImpl implements TraineeDao {
     public Optional<Trainee> findByUsername(String username) {
         String qString = "SELECT t FROM Trainee t WHERE t.username = :username";
 
-        List<Trainee> trainees = entityManager
+        Trainee trainee = entityManager
                 .createQuery(qString, Trainee.class)
                 .setParameter("username", username)
-                .getResultList();
+                .getSingleResult();
 
-        return trainees.stream().findFirst();
+        return Optional.ofNullable(trainee);
     }
 }

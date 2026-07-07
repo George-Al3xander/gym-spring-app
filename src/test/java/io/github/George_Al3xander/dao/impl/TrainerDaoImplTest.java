@@ -6,6 +6,7 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,9 +117,7 @@ class TrainerDaoImplTest {
 
     @Test
     void givenMissingUsername_whenFindByUsername_thenReturnEmpty() {
-        Optional<Trainer> result = trainerDao.findByUsername("missing.username");
-
-        assertTrue(result.isEmpty());
+        assertThrows(NoResultException.class, () -> trainerDao.findByUsername("missing.username"));
     }
 
     @Test

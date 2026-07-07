@@ -3,6 +3,7 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.model.Trainee;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,9 +116,8 @@ class TraineeDaoImplTest {
 
     @Test
     void givenNonExistingUsername_whenFindByUsername_thenReturnEmptyOptional() {
-        Optional<Trainee> result = traineeDao.findByUsername("non-existing-username");
+        assertThrows(NoResultException.class, () -> traineeDao.findByUsername("non-existing-username"));
 
-        assertTrue(result.isEmpty());
     }
 
     private Trainee createTrainee() {
