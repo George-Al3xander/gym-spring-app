@@ -1,7 +1,14 @@
 package io.github.George_Al3xander.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
-import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,8 +23,33 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = "io.github.George_Al3xander")
-@PropertySource("classpath:application.properties")
 public class MainConfig {
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String dbDriverClassName;
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer properties() {
+        PropertySourcesPlaceholderConfigurer configurer =
+                new PropertySourcesPlaceholderConfigurer();
+
+        String profile = System.getProperty("spring.profiles.active", "dev");
+
+        configurer.setLocations(
+                new ClassPathResource("application-" + profile + ".properties")
+        );
+
+        return configurer;
+    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
 
@@ -37,6 +69,18 @@ public class MainConfig {
         emf.setJpaProperties(props);
 
         return emf;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        HikariDataSource ds = new HikariDataSource();
+
+        ds.setJdbcUrl(dbUrl);
+        ds.setUsername(dbUsername);
+        ds.setPassword(dbPassword);
+        ds.setDriverClassName(dbDriverClassName);
+
+        return ds;
     }
 
     @Bean
