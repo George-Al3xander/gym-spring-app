@@ -8,9 +8,9 @@ The Gym CRM System manages three core domain entities:
 - Trainer
 - Training
 
-The application is built using the Spring Framework with Java-based configuration, Hibernate ORM, JPA, transaction
-management, Aspect-Oriented Programming (AOP), Spring Profiles, and supports both H2 (development) and MySQL (
-production) databases.
+The application is built using the Spring Framework with Java-based configuration, Hibernate ORM, JPA, Flyway,
+transaction management, Aspect-Oriented Programming (AOP), Spring Profiles, and supports both H2 (development) and
+MySQL (production) databases.
 
 ---
 
@@ -39,14 +39,19 @@ io.github.George_AI3xander
 
 ```
 src/main/resources
- ├── application.properties
- └── logback.xml
+ ├── application-dev.properties
+ ├── application-prod.properties
+ ├── logback.xml
+ └── db
+      └── migration
+           └── V1__create_tables.sql
 ```
 
 ---
 
 ## Technologies
 
+- Java 21
 - Spring Framework
 - Spring Context
 - Spring ORM
@@ -57,6 +62,7 @@ src/main/resources
 - Hibernate ORM
 - Jakarta Persistence (JPA)
 - Jakarta Validation
+- Flyway
 - H2 Database (development)
 - MySQL (production)
 - HikariCP
@@ -76,6 +82,7 @@ The application uses Java-based Spring configuration.
 - Transaction management
 - JPA EntityManager
 - HikariCP datasource
+- Flyway database migrations
 - Hibernate integration
 
 ### Key annotations
@@ -85,7 +92,6 @@ The application uses Java-based Spring configuration.
 - `@Bean`
 - `@EnableAspectJAutoProxy`
 - `@EnableTransactionManagement`
-- `@Profile`
 - `@Service`
 - `@Repository`
 - `@Component`
@@ -95,65 +101,117 @@ The application uses Java-based Spring configuration.
 
 ## Spring Profiles
 
-The application supports two runtime profiles.
+The active profile is selected using the JVM system property:
+
+```bash
+-Dspring.profiles.active=dev
+```
+
+If no profile is specified, the application defaults to the **dev** profile.
 
 ### Development (`dev`)
 
-Uses an embedded H2 in-memory database.
+Configuration is loaded from:
 
 ```
-spring.profiles.active=dev
+application-dev.properties
 ```
+
+Uses:
+
+- H2 in-memory database
+- H2 JDBC driver
 
 ### Production (`prod`)
 
-Uses a MySQL database configured through environment variables.
+Configuration is loaded from:
 
 ```
-spring.profiles.active=prod
+application-prod.properties
 ```
+
+Uses:
+
+- MySQL database
+- Environment variables for datasource configuration
 
 ---
 
 ## Database Configuration
 
+Datasource configuration is loaded automatically from the active Spring profile.
+
 ### Development
 
-Database:
+Configuration file:
 
 ```
-H2 In-Memory
+application-dev.properties
 ```
 
-Datasource:
-
-```
-jdbc:h2:mem:testdb
+```properties
+spring.datasource.url=jdbc:h2:mem:store
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.datasource.driver-class-name=org.h2.Driver
 ```
 
 ### Production
 
-Database:
+Configuration file:
 
 ```
-MySQL
+application-prod.properties
 ```
-
-Datasource configuration is provided through environment variables:
 
 ```properties
 spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=${DB_DRIVER_CLASS_NAME}
 ```
 
 Connection pooling is provided by HikariCP.
 
 Hibernate configuration includes:
 
-- automatic schema update
+- schema validation (`hibernate.hbm2ddl.auto=validate`)
 - SQL logging enabled
 - automatic dialect detection
+
+---
+
+## Database Migration
+
+Database schema management is handled by **Flyway**.
+
+At application startup:
+
+1. Flyway executes all pending SQL migrations.
+2. Hibernate validates the resulting schema.
+3. The `EntityManagerFactory` is initialized only after successful migration.
+
+Migration scripts are located in:
+
+```
+src/main/resources/db/migration
+```
+
+Current migration:
+
+```
+V1__create_tables.sql
+```
+
+The initial migration creates the following tables:
+
+- users
+- trainees
+- trainers
+- trainings
+- training_types
+
+It also inserts the default training types used by the application.
 
 ---
 
@@ -176,6 +234,12 @@ Inheritance strategy:
 JOINED
 ```
 
+Primary keys use:
+
+```
+GenerationType.IDENTITY
+```
+
 ### Trainee
 
 Extends `User`.
@@ -185,13 +249,17 @@ Additional fields:
 - dateOfBirth
 - address
 
+Relationships:
+
+- One-to-many relationship with `Training`
+
 ### Trainer
 
 Extends `User`.
 
 Additional field:
 
-- specialization (TrainingType)
+- specialization (`TrainingType`)
 
 ### Training
 
@@ -202,11 +270,23 @@ Contains:
 - trainingName
 - trainingType
 - trainingDate
-- durationSeconds
+- durationSeconds (stored as `duration_seconds`)
+
+Primary keys use:
+
+```
+GenerationType.IDENTITY
+```
 
 ### TrainingType
 
 Represents a training specialization.
+
+Primary keys use:
+
+```
+GenerationType.IDENTITY
+```
 
 ---
 
@@ -244,6 +324,9 @@ Additional repository methods include:
 
 - findByTraineeUsername()
 - findByTrainerUsername()
+
+Repository lookups by username use JPA's `getSingleResult()`. If no matching entity exists, JPA throws
+`NoResultException`.
 
 ---
 
@@ -425,7 +508,7 @@ Examples include:
 Business services use Spring transaction management.
 
 - Read-only transactions for query operations
-- Read/write transactions for data modifications
+- Read/write transactions for data modification operations
 
 ---
 
@@ -467,6 +550,7 @@ Logging is implemented using SLF4J and Logback.
 Logging covers:
 
 - application startup
+- Flyway migration execution
 - service operations
 - exception handling via AOP
 - Hibernate SQL output
@@ -485,10 +569,16 @@ Unit tests cover:
 - password generation
 - password reset
 - user activation/deactivation
+- Flyway-backed persistence
+
+DAO tests additionally verify:
+
+- successful entity retrieval
+- `NoResultException` handling for missing usernames
 
 Frameworks:
 
-- JUnit 5
+- JUnit 6
 - Mockito
 - Spring Test
 
@@ -498,17 +588,18 @@ Frameworks:
 
 - Layered architecture
 - Facade pattern
-- Spring Profiles (dev/prod)
+- Spring Profiles
+- Flyway database migrations
 - JPA/Hibernate persistence
-- MySQL production support
+- Hibernate schema validation
 - H2 development environment
-- Environment-based configuration
+- MySQL production support
+- Profile-based datasource configuration
+- HikariCP connection pooling
+- Authentication layer
 - Spring Transaction Management
 - Spring AOP
 - Constructor-based dependency injection
-- HikariCP connection pooling
-- Authentication layer
-- User account management
 - Dynamic training filtering
 - Jakarta Validation
 - Comprehensive unit testing
