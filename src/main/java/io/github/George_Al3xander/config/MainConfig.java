@@ -2,11 +2,9 @@ package io.github.George_Al3xander.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -51,6 +49,7 @@ public class MainConfig {
     }
 
     @Bean
+    @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
 
         LocalContainerEntityManagerFactoryBean emf =
@@ -63,7 +62,7 @@ public class MainConfig {
         emf.setJpaVendorAdapter(vendorAdapter);
 
         Properties props = new Properties();
-        props.put("hibernate.hbm2ddl.auto", "update");
+        props.put("hibernate.hbm2ddl.auto", "validate");
         props.put("hibernate.show_sql", "true");
 
         emf.setJpaProperties(props);
@@ -74,13 +73,20 @@ public class MainConfig {
     @Bean
     public DataSource dataSource() {
         HikariDataSource ds = new HikariDataSource();
-
         ds.setJdbcUrl(dbUrl);
         ds.setUsername(dbUsername);
         ds.setPassword(dbPassword);
         ds.setDriverClassName(dbDriverClassName);
 
         return ds;
+    }
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway(DataSource dataSource) {
+        return Flyway.configure()
+                .dataSource(dataSource)
+                .locations("classpath:db/migration")
+                .load();
     }
 
     @Bean

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 public class Training {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +45,6 @@ public class Training {
     private LocalDateTime trainingDate;
 
     @Positive
-    @Column(nullable = false)
+    @Column(name = "duration_seconds", nullable = false)
     private int durationSeconds;
 }

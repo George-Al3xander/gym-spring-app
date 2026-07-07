@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 public class TrainingType {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
