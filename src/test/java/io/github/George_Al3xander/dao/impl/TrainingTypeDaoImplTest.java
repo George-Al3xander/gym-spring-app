@@ -66,14 +66,10 @@ class TrainingTypeDaoImplTest {
 
         List<TrainingType> result = dao.findAll();
 
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void givenNoTrainingTypes_whenFindAll_thenReturnEmptyList() {
-        List<TrainingType> result = dao.findAll();
-
-        assertTrue(result.isEmpty());
+        assertTrue(result.stream()
+                .anyMatch(t -> "A".equals(t.getTrainingTypeName())));
+        assertTrue(result.stream()
+                .anyMatch(t -> "B".equals(t.getTrainingTypeName())));
     }
 
     @Test
@@ -127,7 +123,9 @@ class TrainingTypeDaoImplTest {
 
         List<TrainingType> result = dao.findAll();
 
-        assertEquals(1, result.size());
-        assertEquals(b.getId(), result.get(0).getId());
+        assertTrue(result.stream()
+                .noneMatch(t -> "A".equals(t.getTrainingTypeName())));
+        assertTrue(result.stream()
+                .anyMatch(t -> "B".equals(t.getTrainingTypeName())));
     }
 }

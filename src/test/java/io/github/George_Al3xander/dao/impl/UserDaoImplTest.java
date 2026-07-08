@@ -35,7 +35,7 @@ class UserDaoImplTest {
         user.setUsername("john");
         user.setFirstName("John");
         user.setLastName("Doe");
-        user.setPassword("pass123");
+        user.setPassword("1234567890");
         user.setIsActive(true);
 
         User savedUser = userDao.save(user);
@@ -148,6 +148,7 @@ class UserDaoImplTest {
         user.setIsActive(true);
 
         entityManager.persist(user);
+        entityManager.flush();
         return user;
     }
 }
