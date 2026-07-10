@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.service.impl;
 
-import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MainConfig.class)
+@ContextConfiguration(classes = TestConfig.class)
 @Transactional
 class AuthenticationServiceImplTest {
 

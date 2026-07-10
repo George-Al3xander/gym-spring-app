@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.service;
 
-import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MainConfig.class)
+@ContextConfiguration(classes = TestConfig.class)
 @Transactional
 class UsernameGeneratorTest {
 

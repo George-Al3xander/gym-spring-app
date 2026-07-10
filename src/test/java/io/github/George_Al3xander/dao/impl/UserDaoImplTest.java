@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.dao.impl;
 
-import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
 import jakarta.persistence.EntityManager;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MainConfig.class)
+@ContextConfiguration(classes = TestConfig.class)
 @Transactional
 class UserDaoImplTest {
 

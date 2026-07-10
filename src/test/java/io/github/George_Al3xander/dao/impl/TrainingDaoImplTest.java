@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.dao.impl;
 
-import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.model.Trainee;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MainConfig.class)
+@ContextConfiguration(classes = TestConfig.class)
 @Transactional
 class TrainingDaoImplTest {
 
