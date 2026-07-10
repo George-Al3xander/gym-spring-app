@@ -19,7 +19,7 @@ import java.util.Properties;
         basePackages = "io.github.George_Al3xander",
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
-                classes = {MainConfig.class}
+                classes = {MainConfig.class, WebConfig.class}
         )
 )
 @EnableTransactionManagement
