@@ -20,7 +20,13 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
-@ComponentScan(basePackages = "io.github.George_Al3xander")
+@ComponentScan(
+        basePackages = "io.github.George_Al3xander",
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {WebConfig.class, TestConfig.class}
+        )
+)
 public class MainConfig {
     @Value("${spring.datasource.url}")
     private String dbUrl;

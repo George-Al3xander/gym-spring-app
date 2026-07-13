@@ -6,6 +6,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "io.github.George_Al3xander")
+@ComponentScan("io.github.George_Al3xander.controller")
 public class WebConfig {
 }
