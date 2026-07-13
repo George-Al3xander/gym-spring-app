@@ -1,11 +1,13 @@
 package io.github.George_Al3xander.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CredentialsDTO {
-    private final String username;
-    private final String password;
+    private String username;
+    private String password;
 }
