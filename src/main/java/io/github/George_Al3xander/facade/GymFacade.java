@@ -3,6 +3,7 @@ package io.github.George_Al3xander.facade;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -23,7 +24,7 @@ public interface GymFacade {
 
     Trainer updateTrainer(Trainer trainer);
 
-    Trainee updateTrainee(Trainee trainee);
+    TraineeProfileResponse updateTrainee(String username, UpdateTraineeRequest trainee);
 
     void toggleUserActiveStatus(String username);
 

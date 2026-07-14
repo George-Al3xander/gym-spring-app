@@ -3,6 +3,7 @@ package io.github.George_Al3xander.facade.impl;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -51,13 +52,8 @@ public class GymFacadeImpl implements GymFacade {
     @Override
     public TraineeProfileResponse getTrainee(String traineeUsername) {
         Trainee trainee = traineeService.getTraineeByUsername(traineeUsername);
-        List<TrainerSummaryResponse> trainers = trainerService
-                .getTrainersByTraineeUsername(traineeUsername, true)
-                .stream()
-                .map(trainerMapper::toSummary)
-                .toList();
 
-        return traineeMapper.toTraineeProfile(trainee, trainers);
+        return traineeMapper.toTraineeProfile(trainee, getTrainersListByUsername(traineeUsername));
     }
 
     @Override
@@ -71,8 +67,24 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Trainee updateTrainee(Trainee trainee) {
-        return traineeService.updateTrainee(trainee);
+    public TraineeProfileResponse updateTrainee(String username, UpdateTraineeRequest request) {
+        Trainee trainee = traineeService.getTraineeByUsername(username);
+
+        trainee.setFirstName(request.getFirstName());
+        trainee.setLastName(request.getLastName());
+        trainee.setIsActive(request.getIsActive());
+
+        if (request.getAddress() != null) {
+            trainee.setAddress(request.getAddress());
+        }
+
+        if (request.getDateOfBirth() != null) {
+            trainee.setDateOfBirth(request.getDateOfBirth());
+        }
+
+        traineeService.updateTrainee(trainee);
+
+        return traineeMapper.toTraineeProfile(trainee, getTrainersListByUsername(username));
     }
 
     @Override
@@ -106,4 +118,11 @@ public class GymFacadeImpl implements GymFacade {
         return trainerService.getTrainersByTraineeUsername(traineeUsername, false);
     }
 
+    private List<TrainerSummaryResponse> getTrainersListByUsername(String traineeUsername) {
+        return trainerService
+                .getTrainersByTraineeUsername(traineeUsername, true)
+                .stream()
+                .map(trainerMapper::toSummary)
+                .toList();
+    }
 }
