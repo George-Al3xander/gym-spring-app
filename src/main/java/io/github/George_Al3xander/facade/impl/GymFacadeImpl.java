@@ -1,15 +1,16 @@
 package io.github.George_Al3xander.facade.impl;
 
-import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
-import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
-import io.github.George_Al3xander.service.*;
+import io.github.George_Al3xander.service.TraineeService;
+import io.github.George_Al3xander.service.TrainerService;
+import io.github.George_Al3xander.service.TrainingService;
+import io.github.George_Al3xander.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,6 @@ public class GymFacadeImpl implements GymFacade {
     private final TrainerService trainerService;
     private final TraineeService traineeService;
     private final TrainingService trainingService;
-
-    private final AuthenticationService authenticationService;
 
     private final TraineeMapper traineeMapper;
 
@@ -41,89 +40,59 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Trainer getTrainer(CredentialsDTO credentials, String trainerUsername) {
-        authenticate(credentials);
-
+    public Trainer getTrainer(String trainerUsername) {
         return trainerService.getTrainerByUsername(trainerUsername);
     }
 
     @Override
-    public Trainee getTrainee(CredentialsDTO credentials, String traineeUsername) {
-        authenticate(credentials);
-
+    public Trainee getTrainee(String traineeUsername) {
         return traineeService.getTraineeByUsername(traineeUsername);
-
     }
 
     @Override
-    public void resetUserPassword(CredentialsDTO credentials, Long id) {
-        authenticate(credentials);
-
+    public void resetUserPassword(Long id) {
         userService.resetPassword(id);
     }
 
     @Override
-    public Trainer updateTrainer(CredentialsDTO credentials, Trainer trainer) {
-        authenticate(credentials);
-
+    public Trainer updateTrainer(Trainer trainer) {
         return trainerService.updateTrainer(trainer);
     }
 
     @Override
-    public Trainee updateTrainee(CredentialsDTO credentials, Trainee trainee) {
-        authenticate(credentials);
-
+    public Trainee updateTrainee(Trainee trainee) {
         return traineeService.updateTrainee(trainee);
     }
 
     @Override
-    public void toggleUserActiveStatus(CredentialsDTO credentials, String username) {
-        authenticate(credentials);
-
+    public void toggleUserActiveStatus(String username) {
         userService.toggleActiveStatusByUsername(username);
     }
 
     @Override
-    public void deleteTrainee(CredentialsDTO credentials, String traineeUsername) {
-        authenticate(credentials);
-
+    public void deleteTrainee(String traineeUsername) {
         Trainee trainee = traineeService.getTraineeByUsername(traineeUsername);
         traineeService.deleteTrainee(trainee.getId());
     }
 
     @Override
-    public List<Training> getTraineeTrainings(CredentialsDTO credentials, TrainingFilter criteria) {
-        authenticate(credentials);
-
-        return trainingService.findByTraineeUsername(credentials.getUsername(), criteria);
+    public List<Training> getTraineeTrainings(String username, TrainingFilter criteria) {
+        return trainingService.findByTraineeUsername(username, criteria);
     }
 
     @Override
-    public List<Training> getTrainerTrainings(CredentialsDTO credentials, TrainingFilter criteria) {
-        authenticate(credentials);
-
-        return trainingService.findByTrainerUsername(credentials.getUsername(), criteria);
+    public List<Training> getTrainerTrainings(String username, TrainingFilter criteria) {
+        return trainingService.findByTrainerUsername(username, criteria);
     }
 
     @Override
-    public Training addTraining(CredentialsDTO credentials, Training training) {
-        authenticate(credentials);
-
+    public Training addTraining(Training training) {
         return trainingService.saveTraining(training);
     }
 
     @Override
-    public List<Trainer> getUnassignedTrainers(CredentialsDTO credentials, String traineeUsername) {
-        authenticate(credentials);
-
+    public List<Trainer> getUnassignedTrainers(String traineeUsername) {
         return trainerService.getUnassignedTrainersByTraineeUsername(traineeUsername);
     }
 
-    private void authenticate(CredentialsDTO credentials) {
-        boolean allowed = authenticationService.authenticate(credentials);
-
-        if (!allowed) {
-            throw new BadCredentialsException("Invalid username or password.");
-        }
-    }
 }

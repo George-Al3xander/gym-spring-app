@@ -1,7 +1,6 @@
 package io.github.George_Al3xander;
 
 import io.github.George_Al3xander.config.MainConfig;
-import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
@@ -35,7 +34,7 @@ public class App {
 
             System.out.println(username + ": " + password);
 
-            gymFacade.deleteTrainee(new CredentialsDTO(username, password), username);
+            gymFacade.deleteTrainee(username);
 
             context.close();
         } catch (Exception e) {

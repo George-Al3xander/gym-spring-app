@@ -1,6 +1,5 @@
 package io.github.George_Al3xander.facade;
 
-import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.model.Trainee;
@@ -15,25 +14,25 @@ public interface GymFacade {
 
     Trainee createTrainee(TraineeRegistrationRequest trainee);
 
-    Trainer getTrainer(CredentialsDTO credentials, String trainerUsername);
+    Trainer getTrainer(String trainerUsername);
 
-    Trainee getTrainee(CredentialsDTO credentials, String traineeUsername);
+    Trainee getTrainee(String traineeUsername);
 
-    void resetUserPassword(CredentialsDTO credentials, Long id);
+    void resetUserPassword(Long id);
 
-    Trainer updateTrainer(CredentialsDTO credentials, Trainer trainer);
+    Trainer updateTrainer(Trainer trainer);
 
-    Trainee updateTrainee(CredentialsDTO credentials, Trainee trainee);
+    Trainee updateTrainee(Trainee trainee);
 
-    void toggleUserActiveStatus(CredentialsDTO credentials, String username);
+    void toggleUserActiveStatus(String username);
 
-    void deleteTrainee(CredentialsDTO credentials, String traineeUsername);
+    void deleteTrainee(String traineeUsername);
 
-    List<Training> getTraineeTrainings(CredentialsDTO credentials, TrainingFilter criteria);
+    List<Training> getTraineeTrainings(String username, TrainingFilter criteria);
 
-    List<Training> getTrainerTrainings(CredentialsDTO credentials, TrainingFilter criteria);
+    List<Training> getTrainerTrainings(String username, TrainingFilter criteria);
 
-    Training addTraining(CredentialsDTO credentials, Training training);
+    Training addTraining(Training training);
 
-    List<Trainer> getUnassignedTrainers(CredentialsDTO credentials, String traineeUsername);
+    List<Trainer> getUnassignedTrainers(String traineeUsername);
 }
