@@ -2,6 +2,7 @@ package io.github.George_Al3xander.facade;
 
 import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -12,7 +13,7 @@ public interface GymFacade {
 
     Trainer createTrainer(Trainer trainer);
 
-    Trainee createTrainee(Trainee trainee);
+    Trainee createTrainee(TraineeRegistrationRequest trainee);
 
     Trainer getTrainer(CredentialsDTO credentials, String trainerUsername);
 

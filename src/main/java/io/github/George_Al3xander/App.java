@@ -2,6 +2,7 @@ package io.github.George_Al3xander;
 
 import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.dto.CredentialsDTO;
+import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
 import org.slf4j.Logger;
@@ -21,17 +22,13 @@ public class App {
 
             GymFacade gymFacade = context.getBean(GymFacade.class);
 
-            Trainee user = new Trainee(
-                    null,
+            TraineeRegistrationRequest registrationRequest = new TraineeRegistrationRequest(
                     "John",
                     "Doe",
-                    null,
-                    null,
-                    true,
                     LocalDate.now().minusYears(35),
                     "Cool St."
             );
-            gymFacade.createTrainee(user);
+            Trainee user = gymFacade.createTrainee(registrationRequest);
 
             String username = user.getUsername();
             String password = user.getPassword();
@@ -39,7 +36,7 @@ public class App {
             System.out.println(username + ": " + password);
 
             gymFacade.deleteTrainee(new CredentialsDTO(username, password), username);
-            
+
             context.close();
         } catch (Exception e) {
             log.warn(e.getMessage());

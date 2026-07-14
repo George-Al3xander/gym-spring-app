@@ -2,7 +2,9 @@ package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.exception.BadCredentialsException;
+import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -26,7 +28,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GymFacadeImplTest {
-
     @Mock
     private UserService userService;
 
@@ -41,6 +42,9 @@ class GymFacadeImplTest {
 
     @Mock
     private AuthenticationService authenticationService;
+
+    @Mock
+    private TraineeMapper traineeMapper;
 
     @InjectMocks
     private GymFacadeImpl gymFacade;
@@ -67,14 +71,22 @@ class GymFacadeImplTest {
 
     @Test
     void createTrainee_whenValidTrainee_thenDelegatesToTraineeServiceAndReturnsSavedTrainee() {
-        Trainee input = newTrainee(null, "jane.doe");
+        TraineeRegistrationRequest request = new TraineeRegistrationRequest();
+        Trainee mappedTrainee = newTrainee(null, "jane.doe");
         Trainee saved = newTrainee(1L, "jane.doe");
-        when(traineeService.saveTrainee(input)).thenReturn(saved);
 
-        Trainee result = gymFacade.createTrainee(input);
+        when(traineeMapper.toTrainee(request))
+                .thenReturn(mappedTrainee);
+
+        when(traineeService.saveTrainee(mappedTrainee))
+                .thenReturn(saved);
+
+        Trainee result = gymFacade.createTrainee(request);
 
         assertEquals(saved, result);
-        verify(traineeService).saveTrainee(input);
+
+        verify(traineeMapper).toTrainee(request);
+        verify(traineeService).saveTrainee(mappedTrainee);
         verifyNoInteractions(authenticationService);
     }
 

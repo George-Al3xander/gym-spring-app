@@ -2,8 +2,10 @@ package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.facade.GymFacade;
+import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -24,13 +26,17 @@ public class GymFacadeImpl implements GymFacade {
 
     private final AuthenticationService authenticationService;
 
+    private final TraineeMapper traineeMapper;
+
     @Override
     public Trainer createTrainer(Trainer trainer) {
         return trainerService.saveTrainer(trainer);
     }
 
     @Override
-    public Trainee createTrainee(Trainee trainee) {
+    public Trainee createTrainee(TraineeRegistrationRequest request) {
+        Trainee trainee = traineeMapper.toTrainee(request);
+
         return traineeService.saveTrainee(trainee);
     }
 
