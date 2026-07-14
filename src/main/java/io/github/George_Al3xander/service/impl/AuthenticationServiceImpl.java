@@ -29,8 +29,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return user.get().getPassword().equals(credentials.getPassword());
         } catch (Exception e) {
-            e.printStackTrace();
-
             return false;
         }
     }
