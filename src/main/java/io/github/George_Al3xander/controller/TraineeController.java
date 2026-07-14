@@ -1,15 +1,13 @@
 package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.CredentialsDTO;
+import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/trainees")
@@ -25,5 +23,10 @@ public class TraineeController {
         Trainee trainee = gymFacade.createTrainee(traineeRegistrationRequest);
 
         return new CredentialsDTO(trainee.getUsername(), trainee.getPassword());
+    }
+
+    @GetMapping("/{username}")
+    public TraineeProfileResponse getTraineeByUsername(@PathVariable("username") String username) {
+        return gymFacade.getTrainee(username);
     }
 }

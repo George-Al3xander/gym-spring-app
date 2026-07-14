@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.facade;
 
 import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -16,7 +17,7 @@ public interface GymFacade {
 
     Trainer getTrainer(String trainerUsername);
 
-    Trainee getTrainee(String traineeUsername);
+    TraineeProfileResponse getTrainee(String traineeUsername);
 
     void resetUserPassword(Long id);
 
