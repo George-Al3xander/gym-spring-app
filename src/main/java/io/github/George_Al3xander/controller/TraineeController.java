@@ -3,6 +3,7 @@ package io.github.George_Al3xander.controller;
 import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
 import jakarta.validation.Valid;
@@ -28,5 +29,13 @@ public class TraineeController {
     @GetMapping("/{username}")
     public TraineeProfileResponse getTraineeByUsername(@PathVariable("username") String username) {
         return gymFacade.getTrainee(username);
+    }
+
+    @PostMapping("/{username}")
+    public TraineeProfileResponse updateTraineeByUsername(
+            @PathVariable("username") String username,
+            @RequestBody UpdateTraineeRequest request
+    ) {
+        return gymFacade.updateTrainee(username, request);
     }
 }
