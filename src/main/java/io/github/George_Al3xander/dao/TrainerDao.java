@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface TrainerDao extends CrudDao<Trainer> {
     Optional<Trainer> findByUsername(String username);
 
-    List<Trainer> findUnassignedByTraineeUsername(String username);
+    List<Trainer> findByTraineeUsername(String username, boolean assigned);
 }

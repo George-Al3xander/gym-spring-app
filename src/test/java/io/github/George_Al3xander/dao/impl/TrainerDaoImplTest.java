@@ -121,33 +121,35 @@ class TrainerDaoImplTest {
     }
 
     @Test
-    void givenTraineeUsername_whenFindUnassignedByTraineeUsername_thenReturnUnassignedTrainers() {
+    void givenTraineeUsername_whenFindByTraineeUsernameWithAssignedFalse_thenReturnUnassignedTrainers() {
         Trainer t1 = generateTrainer("trainer.one");
         Trainer t2 = generateTrainer("trainer.two");
+
         Trainee trainee1 = generateTrainee("some.trainee1");
         Trainee trainee2 = generateTrainee("some.trainee2");
-
 
         entityManager.persist(trainee1);
         entityManager.persist(trainee2);
         entityManager.persist(t1);
         entityManager.persist(t2);
+
+        // Both trainers are assigned only to trainee2
         entityManager.persist(generateTraining(t1, trainee2));
         entityManager.persist(generateTraining(t2, trainee2));
 
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findUnassignedByTraineeUsername(trainee1.getUsername());
+                trainerDao.findByTraineeUsername(trainee1.getUsername(), false);
 
         assertNotNull(result);
+        assertEquals(2, result.size());
         assertTrue(result.contains(t1));
         assertTrue(result.contains(t2));
     }
 
     @Test
-    void givenAllTrainersAssignedToTrainee_whenFindUnassignedByTraineeUsername_thenReturnEmptyList() {
-
+    void givenAllTrainersAssignedToTrainee_whenFindByTraineeUsernameWithAssignedFalse_thenReturnEmptyList() {
         Trainer trainer = generateTrainer("trainer.one");
         Trainee trainee = generateTrainee("john.doe");
 
@@ -158,9 +160,31 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findUnassignedByTraineeUsername("john.doe");
+                trainerDao.findByTraineeUsername("john.doe", false);
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenAssignedTrainer_whenFindByTraineeUsernameWithAssignedTrue_thenReturnAssignedTrainers() {
+        Trainer assignedTrainer = generateTrainer("trainer.one");
+        Trainer unassignedTrainer = generateTrainer("trainer.two");
+        Trainee trainee = generateTrainee("john.doe");
+
+        entityManager.persist(trainee);
+        entityManager.persist(assignedTrainer);
+        entityManager.persist(unassignedTrainer);
+
+        entityManager.persist(generateTraining(assignedTrainer, trainee));
+
+        entityManager.flush();
+
+        List<Trainer> result =
+                trainerDao.findByTraineeUsername("john.doe", true);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(assignedTrainer));
+        assertFalse(result.contains(unassignedTrainer));
     }
 
     private static Trainer generateTrainer(String username) {
