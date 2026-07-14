@@ -52,15 +52,14 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<Trainer> getUnassignedTrainersByTraineeUsername(String username) {
+    public List<Trainer> getTrainersByTraineeUsername(String username, boolean assigned) {
         Optional<Trainee> traineeOptional = traineeDao.findByUsername(username);
 
         if (traineeOptional.isEmpty()) {
             throw new EntityNotFoundException("Trainee", username);
-
         }
 
-        return trainerDao.findUnassignedByTraineeUsername(traineeOptional.get().getUsername());
+        return trainerDao.findByTraineeUsername(traineeOptional.get().getUsername(), assigned);
     }
 
     @Override

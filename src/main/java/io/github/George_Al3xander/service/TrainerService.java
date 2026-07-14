@@ -12,7 +12,7 @@ public interface TrainerService {
 
     List<Trainer> getAllTrainers();
 
-    List<Trainer> getUnassignedTrainersByTraineeUsername(String username);
+    List<Trainer> getTrainersByTraineeUsername(String username, boolean assigned);
 
     Trainer saveTrainer(Trainer entity);
 

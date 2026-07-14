@@ -243,16 +243,16 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.of(trainee));
 
-        when(trainerDao.findUnassignedByTraineeUsername(username))
+        when(trainerDao.findByTraineeUsername(username, false))
                 .thenReturn(expected);
 
         List<Trainer> result =
-                trainerService.getUnassignedTrainersByTraineeUsername(username);
+                trainerService.getTrainersByTraineeUsername(username, false);
 
         assertEquals(expected, result);
 
         verify(traineeDao).findByUsername(username);
-        verify(trainerDao).findUnassignedByTraineeUsername(username);
+        verify(trainerDao).findByTraineeUsername(username, false);
     }
 
     @Test
@@ -265,10 +265,34 @@ class TrainerServiceImplTest {
 
         assertThrows(
                 EntityNotFoundException.class,
-                () -> trainerService.getUnassignedTrainersByTraineeUsername(username)
+                () -> trainerService.getTrainersByTraineeUsername(username, false)
         );
 
         verify(traineeDao).findByUsername(username);
         verifyNoInteractions(trainerDao);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetTrainersByTraineeUsernameWithAssignedTrue_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        List<Trainer> expected = List.of(new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findByTraineeUsername(username, true))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, true);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findByTraineeUsername(username, true);
     }
 }
