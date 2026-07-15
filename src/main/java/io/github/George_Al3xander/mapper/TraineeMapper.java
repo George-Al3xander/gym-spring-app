@@ -2,6 +2,7 @@ package io.github.George_Al3xander.mapper;
 
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.model.Trainee;
 import org.mapstruct.Mapper;
@@ -19,5 +20,7 @@ public interface TraineeMapper {
     TraineeProfileResponse toTraineeProfile(
             Trainee trainee,
             List<TrainerSummaryResponse> trainers);
+
+    TraineeSummaryResponse toSummary(Trainee trainee);
 }
 
