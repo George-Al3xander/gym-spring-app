@@ -78,7 +78,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Trainee updateTrainee(Trainee entity) {
-        return traineeDao.save(entity);
+        return traineeDao.update(entity);
     }
 
     @Override

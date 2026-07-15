@@ -26,8 +26,6 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public Training getTrainingById(Long id) {
-
-
         Optional<Training> optionalTraining = trainingDao.findById(id);
 
         if (optionalTraining.isEmpty()) {

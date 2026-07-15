@@ -72,6 +72,6 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public Trainer updateTrainer(Trainer entity) {
-        return trainerDao.save(entity);
+        return trainerDao.update(entity);
     }
 }
