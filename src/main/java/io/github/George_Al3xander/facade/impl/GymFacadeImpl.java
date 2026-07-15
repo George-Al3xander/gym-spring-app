@@ -3,7 +3,9 @@ package io.github.George_Al3xander.facade.impl;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.facade.GymFacade;
@@ -48,8 +50,10 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Trainer getTrainer(String trainerUsername) {
-        return trainerService.getTrainerByUsername(trainerUsername);
+    public TrainerProfileResponse getTrainer(String trainerUsername) {
+        Trainer trainee = trainerService.getTrainerByUsername(trainerUsername);
+
+        return trainerMapper.toTrainerProfile(trainee, getTraineesListByUsername(trainerUsername));
     }
 
     @Override
@@ -126,6 +130,14 @@ public class GymFacadeImpl implements GymFacade {
                 .getTrainersByTraineeUsername(traineeUsername, true)
                 .stream()
                 .map(trainerMapper::toSummary)
+                .toList();
+    }
+
+    private List<TraineeSummaryResponse> getTraineesListByUsername(String trainerUsername) {
+        return traineeService
+                .getTraineesByTrainerUsername(trainerUsername, true)
+                .stream()
+                .map(traineeMapper::toSummary)
                 .toList();
     }
 }

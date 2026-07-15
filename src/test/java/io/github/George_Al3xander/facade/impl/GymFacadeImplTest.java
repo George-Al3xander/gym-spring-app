@@ -2,6 +2,8 @@ package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
+import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -109,18 +111,51 @@ class GymFacadeImplTest {
     }
 
     @Test
-    void getTrainer_whenUsernameExists_thenReturnsTrainerByUsername() {
-        Trainer trainer = newTrainer(1L, "trainer.mike");
+    void getTrainer_whenUsernameExists_thenReturnsTrainerProfile() {
+        String username = "trainer.mike";
 
-        when(trainerService.getTrainerByUsername("trainer.mike"))
+        Trainer trainer = newTrainer(1L, username);
+
+        Trainee trainee = newTrainee(2L, "trainee.anna");
+
+        TraineeSummaryResponse traineeSummary =
+                new TraineeSummaryResponse();
+
+        TrainerProfileResponse expected =
+                new TrainerProfileResponse();
+
+        when(trainerService.getTrainerByUsername(username))
                 .thenReturn(trainer);
 
-        Trainer result = gymFacade.getTrainer("trainer.mike");
+        when(traineeService.getTraineesByTrainerUsername(username, true))
+                .thenReturn(List.of(trainee));
 
-        assertEquals(trainer, result);
+        when(traineeMapper.toSummary(trainee))
+                .thenReturn(traineeSummary);
+
+        when(trainerMapper.toTrainerProfile(
+                trainer,
+                List.of(traineeSummary)))
+                .thenReturn(expected);
+
+        TrainerProfileResponse result =
+                gymFacade.getTrainer(username);
+
+        assertEquals(expected, result);
 
         verify(trainerService)
-                .getTrainerByUsername("trainer.mike");
+                .getTrainerByUsername(username);
+
+        verify(traineeService)
+                .getTraineesByTrainerUsername(username, true);
+
+        verify(traineeMapper)
+                .toSummary(trainee);
+
+        verify(trainerMapper)
+                .toTrainerProfile(
+                        trainer,
+                        List.of(traineeSummary));
     }
 
     @Test
