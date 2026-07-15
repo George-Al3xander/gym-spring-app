@@ -12,6 +12,8 @@ public interface TraineeService {
 
     List<Trainee> getAllTrainees();
 
+    List<Trainee> getTraineesByTrainerUsername(String username, boolean assigned);
+
     Trainee saveTrainee(Trainee entity);
 
     Trainee updateTrainee(Trainee entity);

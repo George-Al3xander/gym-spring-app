@@ -1,10 +1,12 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TraineeDao;
+import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.exception.EntityInUseException;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
+import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
@@ -21,6 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TraineeServiceImpl implements TraineeService {
     private final TraineeDao traineeDao;
+
+    private final TrainerDao trainerDao;
 
     private final TrainingDao trainingDao;
 
@@ -51,6 +55,17 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public List<Trainee> getAllTrainees() {
         return traineeDao.findAll();
+    }
+
+    @Override
+    public List<Trainee> getTraineesByTrainerUsername(String username, boolean assigned) {
+        Optional<Trainer> trainerOptional = trainerDao.findByUsername(username);
+
+        if (trainerOptional.isEmpty()) {
+            throw new EntityNotFoundException("Trainer", username);
+        }
+
+        return traineeDao.findAllByTrainerUsername(trainerOptional.get().getUsername(), assigned);
     }
 
     @Override

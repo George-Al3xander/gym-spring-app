@@ -1,10 +1,12 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TraineeDao;
+import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.exception.EntityInUseException;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
+import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,9 @@ class TraineeServiceImplTest {
     private TraineeDao traineeDao;
 
     @Mock
+    private TrainerDao trainerDao;
+
+    @Mock
     private TrainingDao trainingDao;
 
     @Mock
@@ -41,7 +46,12 @@ class TraineeServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        traineeService = new TraineeServiceImpl(traineeDao, trainingDao, usernameGenerator);
+        traineeService = new TraineeServiceImpl(
+                traineeDao,
+                trainerDao,
+                trainingDao,
+                usernameGenerator
+        );
 
         trainee = new Trainee(
                 1L,
@@ -289,5 +299,49 @@ class TraineeServiceImplTest {
         );
 
         verify(traineeDao).findByUsername("missing.user");
+    }
+
+    @Test
+    void givenExistingTrainer_whenGetTraineesByTrainerUsername_thenReturnTrainees() {
+
+        Trainer trainer = new Trainer();
+        trainer.setUsername("trainer.user");
+
+        List<Trainee> trainees = List.of(new Trainee(), new Trainee());
+
+        when(trainerDao.findByUsername("trainer.user"))
+                .thenReturn(Optional.of(trainer));
+
+        when(traineeDao.findAllByTrainerUsername("trainer.user", true))
+                .thenReturn(trainees);
+
+        List<Trainee> result =
+                traineeService.getTraineesByTrainerUsername("trainer.user", true);
+
+        assertEquals(trainees, result);
+
+        verify(trainerDao)
+                .findByUsername("trainer.user");
+
+        verify(traineeDao)
+                .findAllByTrainerUsername("trainer.user", true);
+    }
+
+    @Test
+    void givenNonExistingTrainer_whenGetTraineesByTrainerUsername_thenThrowEntityNotFoundException() {
+
+        when(trainerDao.findByUsername("missing.trainer"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> traineeService.getTraineesByTrainerUsername("missing.trainer", true)
+        );
+
+        verify(trainerDao)
+                .findByUsername("missing.trainer");
+
+        verify(traineeDao, never())
+                .findAllByTrainerUsername(anyString(), anyBoolean());
     }
 }
