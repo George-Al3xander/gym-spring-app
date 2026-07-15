@@ -4,6 +4,7 @@ import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -33,7 +34,9 @@ public class GymFacadeImpl implements GymFacade {
     private final TrainerMapper trainerMapper;
 
     @Override
-    public Trainer createTrainer(Trainer trainer) {
+    public Trainer createTrainer(TrainerRegistrationRequest request) {
+        Trainer trainer = trainerMapper.toTrainer(request);
+
         return trainerService.saveTrainer(trainer);
     }
 

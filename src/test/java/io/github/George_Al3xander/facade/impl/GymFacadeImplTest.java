@@ -2,6 +2,7 @@ package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
@@ -60,19 +61,27 @@ class GymFacadeImplTest {
     }
 
     @Test
-    void createTrainer_whenValidTrainer_thenDelegatesToTrainerServiceAndReturnsSavedTrainer() {
-        Trainer input = newTrainer(null, "john.doe");
-        Trainer saved = newTrainer(1L, "john.doe");
+    void createTrainer_whenValidRequest_thenMapsRequestAndDelegatesToTrainerService() {
+        TrainerRegistrationRequest request = new TrainerRegistrationRequest();
 
-        when(trainerService.saveTrainer(input))
-                .thenReturn(saved);
+        Trainer mappedTrainer = newTrainer(null, "john.doe");
+        Trainer savedTrainer = newTrainer(1L, "john.doe");
 
-        Trainer result = gymFacade.createTrainer(input);
+        when(trainerMapper.toTrainer(request))
+                .thenReturn(mappedTrainer);
 
-        assertEquals(saved, result);
+        when(trainerService.saveTrainer(mappedTrainer))
+                .thenReturn(savedTrainer);
+
+        Trainer result = gymFacade.createTrainer(request);
+
+        assertEquals(savedTrainer, result);
+
+        verify(trainerMapper)
+                .toTrainer(request);
 
         verify(trainerService)
-                .saveTrainer(input);
+                .saveTrainer(mappedTrainer);
     }
 
     @Test

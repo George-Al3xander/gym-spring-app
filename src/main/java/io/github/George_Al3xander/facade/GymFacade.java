@@ -4,6 +4,7 @@ import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -12,9 +13,9 @@ import java.util.List;
 
 public interface GymFacade {
 
-    Trainer createTrainer(Trainer trainer);
+    Trainer createTrainer(TrainerRegistrationRequest request);
 
-    Trainee createTrainee(TraineeRegistrationRequest trainee);
+    Trainee createTrainee(TraineeRegistrationRequest request);
 
     Trainer getTrainer(String trainerUsername);
 
