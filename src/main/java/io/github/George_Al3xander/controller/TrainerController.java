@@ -1,15 +1,13 @@
 package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.CredentialsDTO;
+import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/trainers")
@@ -25,5 +23,10 @@ public class TrainerController {
         Trainer trainer = gymFacade.createTrainer(trainerRegistrationRequest);
 
         return new CredentialsDTO(trainer.getUsername(), trainer.getPassword());
+    }
+
+    @GetMapping("/{username}")
+    public TrainerProfileResponse getTrainerByUsername(@PathVariable("username") String username) {
+        return gymFacade.getTrainer(username);
     }
 }
