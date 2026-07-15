@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.facade.impl;
 
+import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
@@ -43,6 +44,9 @@ class GymFacadeImplTest {
     private TrainingService trainingService;
 
     @Mock
+    private TrainingTypeDao trainingTypeDao;
+
+    @Mock
     private TraineeMapper traineeMapper;
 
     @Mock
@@ -57,6 +61,7 @@ class GymFacadeImplTest {
                 trainerService,
                 traineeService,
                 trainingService,
+                trainingTypeDao,
                 traineeMapper,
                 trainerMapper
         );

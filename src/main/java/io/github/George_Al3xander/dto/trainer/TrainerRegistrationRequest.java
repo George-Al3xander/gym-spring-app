@@ -1,6 +1,5 @@
 package io.github.George_Al3xander.dto.trainer;
 
-import io.github.George_Al3xander.dto.TrainingTypeResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,5 +17,5 @@ public class TrainerRegistrationRequest {
     private String lastName;
 
     @NotNull
-    private TrainingTypeResponse specialization;
+    private Long specializationId;
 }

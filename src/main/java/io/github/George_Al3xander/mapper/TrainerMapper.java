@@ -17,6 +17,8 @@ public interface TrainerMapper {
     Trainer toTrainer(TrainerRegistrationRequest request);
 
     @Mapping(target = "trainees", source = "trainees")
+    @Mapping(source = "trainer.specialization.trainingTypeName", target = "trainingTypeResponse.trainingTypeName")
+    @Mapping(source = "trainer.specialization.id", target = "trainingTypeResponse.id")
     TrainerProfileResponse toTrainerProfile(
             Trainer trainer,
             List<TraineeSummaryResponse> trainees

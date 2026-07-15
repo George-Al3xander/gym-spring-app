@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.facade.impl;
 
+import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
@@ -8,12 +9,14 @@ import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
+import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
+import io.github.George_Al3xander.model.TrainingType;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +35,7 @@ public class GymFacadeImpl implements GymFacade {
     private final TrainerService trainerService;
     private final TraineeService traineeService;
     private final TrainingService trainingService;
+    private final TrainingTypeDao trainingTypeDao;
 
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
@@ -38,6 +43,7 @@ public class GymFacadeImpl implements GymFacade {
     @Override
     public Trainer createTrainer(TrainerRegistrationRequest request) {
         Trainer trainer = trainerMapper.toTrainer(request);
+        trainer.setSpecialization(getTrainingTypeById(request.getSpecializationId()));
 
         return trainerService.saveTrainer(trainer);
     }
@@ -51,9 +57,11 @@ public class GymFacadeImpl implements GymFacade {
 
     @Override
     public TrainerProfileResponse getTrainer(String trainerUsername) {
-        Trainer trainee = trainerService.getTrainerByUsername(trainerUsername);
+        Trainer trainer = trainerService.getTrainerByUsername(trainerUsername);
 
-        return trainerMapper.toTrainerProfile(trainee, getTraineesListByUsername(trainerUsername));
+        System.out.println(trainer.getSpecialization().getTrainingTypeName());
+
+        return trainerMapper.toTrainerProfile(trainer, getTraineesListByUsername(trainerUsername));
     }
 
     @Override
@@ -139,5 +147,15 @@ public class GymFacadeImpl implements GymFacade {
                 .stream()
                 .map(traineeMapper::toSummary)
                 .toList();
+    }
+
+    private TrainingType getTrainingTypeById(Long id) {
+        Optional<TrainingType> trainingTypeOptional = trainingTypeDao.findById(id);
+
+        if (trainingTypeOptional.isEmpty()) {
+            throw new EntityNotFoundException("Training type", id);
+        }
+
+        return trainingTypeOptional.get();
     }
 }
