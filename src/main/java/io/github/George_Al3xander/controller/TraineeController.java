@@ -36,7 +36,7 @@ public class TraineeController {
 
     @PutMapping("/{username}")
     public ResponseEntity<TraineeProfileResponse> updateTraineeByUsername(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
             @Valid @RequestBody UpdateTraineeRequest request
     ) {
@@ -49,7 +49,7 @@ public class TraineeController {
 
     @DeleteMapping("/{username}")
     public ResponseEntity<Void> deleteTraineeByUsername(
-            @PathVariable String username,
+            @PathVariable("username") String username,
             @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
     ) {
         if (!username.equals(authUsername)) {
