@@ -23,8 +23,6 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
 
-        System.out.println(errors);
-
         return ResponseEntity.badRequest().body(errors);
     }
 
