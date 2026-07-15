@@ -59,7 +59,7 @@ public class TrainerServiceImpl implements TrainerService {
             throw new EntityNotFoundException("Trainee", username);
         }
 
-        return trainerDao.findByTraineeUsername(traineeOptional.get().getUsername(), assigned);
+        return trainerDao.findAllByTraineeUsername(traineeOptional.get().getUsername(), assigned);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class TrainerDaoImpl implements TrainerDao {
     }
 
     @Override
-    public List<Trainer> findByTraineeUsername(String username, boolean assigned) {
+    public List<Trainer> findAllByTraineeUsername(String username, boolean assigned) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Trainer> cq = cb.createQuery(Trainer.class);
 

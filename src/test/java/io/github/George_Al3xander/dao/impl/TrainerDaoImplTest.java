@@ -133,14 +133,13 @@ class TrainerDaoImplTest {
         entityManager.persist(t1);
         entityManager.persist(t2);
 
-        // Both trainers are assigned only to trainee2
         entityManager.persist(generateTraining(t1, trainee2));
         entityManager.persist(generateTraining(t2, trainee2));
 
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findByTraineeUsername(trainee1.getUsername(), false);
+                trainerDao.findAllByTraineeUsername(trainee1.getUsername(), false);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -160,7 +159,7 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findByTraineeUsername("john.doe", false);
+                trainerDao.findAllByTraineeUsername("john.doe", false);
 
         assertTrue(result.isEmpty());
     }
@@ -180,7 +179,7 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findByTraineeUsername("john.doe", true);
+                trainerDao.findAllByTraineeUsername("john.doe", true);
 
         assertEquals(1, result.size());
         assertTrue(result.contains(assignedTrainer));

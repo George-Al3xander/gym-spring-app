@@ -243,7 +243,7 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.of(trainee));
 
-        when(trainerDao.findByTraineeUsername(username, false))
+        when(trainerDao.findAllByTraineeUsername(username, false))
                 .thenReturn(expected);
 
         List<Trainer> result =
@@ -252,7 +252,7 @@ class TrainerServiceImplTest {
         assertEquals(expected, result);
 
         verify(traineeDao).findByUsername(username);
-        verify(trainerDao).findByTraineeUsername(username, false);
+        verify(trainerDao).findAllByTraineeUsername(username, false);
     }
 
     @Test
@@ -284,7 +284,7 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.of(trainee));
 
-        when(trainerDao.findByTraineeUsername(username, true))
+        when(trainerDao.findAllByTraineeUsername(username, true))
                 .thenReturn(expected);
 
         List<Trainer> result =
@@ -293,6 +293,6 @@ class TrainerServiceImplTest {
         assertEquals(expected, result);
 
         verify(traineeDao).findByUsername(username);
-        verify(trainerDao).findByTraineeUsername(username, true);
+        verify(trainerDao).findAllByTraineeUsername(username, true);
     }
 }
