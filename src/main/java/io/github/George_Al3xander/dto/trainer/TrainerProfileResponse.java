@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrainerProfileResponse {
+    private String username;
+
     private String firstName;
 
     private String lastName;

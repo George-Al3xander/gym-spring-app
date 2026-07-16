@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TraineeProfileResponse {
+    private String username;
+    
     private String firstName;
 
     private String lastName;
