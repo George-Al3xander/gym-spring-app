@@ -1,7 +1,9 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.config.TestConfig;
+import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.dto.CredentialsDTO;
+import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
 import jakarta.persistence.EntityManager;
@@ -15,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -28,6 +29,9 @@ class AuthenticationServiceImplTest {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private UserDao userDao;
 
     @Test
     void givenValidCredentials_whenAuthenticate_thenReturnTrue() {
@@ -97,6 +101,40 @@ class AuthenticationServiceImplTest {
         );
 
         assertFalse(result);
+    }
+
+    @Test
+    void givenExistingUser_whenChangePassword_thenPasswordIsUpdated() {
+        String username = unique("john");
+        String oldPassword = "oldPass!!!";
+        String newPassword = "newPass!!!";
+
+        entityManager.persist(createValidUser(username, oldPassword));
+        entityManager.flush();
+
+        authenticationService.changePassword(
+                new CredentialsDTO(username, newPassword)
+        );
+
+        entityManager.flush();
+        entityManager.clear();
+
+        User updatedUser = userDao.findByUsername(username).orElseThrow();
+
+        assertEquals(newPassword, updatedUser.getPassword());
+    }
+
+    @Test
+    void givenUnknownUsername_whenChangePassword_thenThrowNoResultException() {
+        CredentialsDTO credentials = new CredentialsDTO(
+                "unknown_user_" + UUID.randomUUID(),
+                "newPassword"
+        );
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> authenticationService.changePassword(credentials)
+        );
     }
 
     private User createValidUser(String username, String password10) {
