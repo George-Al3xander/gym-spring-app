@@ -7,10 +7,12 @@ import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
+import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
+import io.github.George_Al3xander.model.TrainingType;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
@@ -23,8 +25,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +74,7 @@ class GymFacadeImplTest {
     @Test
     void createTrainer_whenValidRequest_thenMapsRequestAndDelegatesToTrainerService() {
         TrainerRegistrationRequest request = new TrainerRegistrationRequest();
+        request.setSpecializationId(1L);
 
         Trainer mappedTrainer = newTrainer(null, "john.doe");
         Trainer savedTrainer = newTrainer(1L, "john.doe");
@@ -79,6 +84,9 @@ class GymFacadeImplTest {
 
         when(trainerService.saveTrainer(mappedTrainer))
                 .thenReturn(savedTrainer);
+
+        when(trainingTypeDao.findById(any(Long.class)))
+                .thenReturn(Optional.of(new TrainingType(1L, "Training")));
 
         Trainer result = gymFacade.createTrainer(request);
 
@@ -209,6 +217,66 @@ class GymFacadeImplTest {
                 .toTraineeProfile(
                         trainee,
                         List.of(trainerSummary));
+    }
+
+    @Test
+    void updateTrainer_whenUsernameExists_thenUpdatesTrainerAndReturnsProfile() {
+        String username = "trainer.mike";
+
+        UpdateTrainerRequest request = new UpdateTrainerRequest();
+        request.setFirstName("Michael");
+        request.setLastName("Smith");
+        request.setIsActive(true);
+
+        Trainer trainer = newTrainer(1L, username);
+
+        Trainee trainee = newTrainee(2L, "trainee.anna");
+
+        TraineeSummaryResponse traineeSummary =
+                new TraineeSummaryResponse();
+
+        TrainerProfileResponse expected =
+                new TrainerProfileResponse();
+
+        when(trainerService.getTrainerByUsername(username))
+                .thenReturn(trainer);
+
+        when(traineeService.getTraineesByTrainerUsername(username, true))
+                .thenReturn(List.of(trainee));
+
+        when(traineeMapper.toSummary(trainee))
+                .thenReturn(traineeSummary);
+
+        when(trainerMapper.toTrainerProfile(
+                trainer,
+                List.of(traineeSummary)))
+                .thenReturn(expected);
+
+        TrainerProfileResponse result =
+                gymFacade.updateTrainer(username, request);
+
+        assertEquals(expected, result);
+
+        assertEquals("Michael", trainer.getFirstName());
+        assertEquals("Smith", trainer.getLastName());
+        assertEquals(true, trainer.getIsActive());
+
+        verify(trainerService)
+                .getTrainerByUsername(username);
+
+        verify(trainerService)
+                .updateTrainer(trainer);
+
+        verify(traineeService)
+                .getTraineesByTrainerUsername(username, true);
+
+        verify(traineeMapper)
+                .toSummary(trainee);
+
+        verify(trainerMapper)
+                .toTrainerProfile(
+                        trainer,
+                        List.of(traineeSummary));
     }
 
     @Test

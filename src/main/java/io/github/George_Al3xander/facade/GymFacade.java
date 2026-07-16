@@ -6,6 +6,7 @@ import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
+import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -24,9 +25,9 @@ public interface GymFacade {
 
     void resetUserPassword(Long id);
 
-    Trainer updateTrainer(Trainer trainer);
+    TrainerProfileResponse updateTrainer(String username, UpdateTrainerRequest request);
 
-    TraineeProfileResponse updateTrainee(String username, UpdateTraineeRequest trainee);
+    TraineeProfileResponse updateTrainee(String username, UpdateTraineeRequest request);
 
     void toggleUserActiveStatus(String username);
 

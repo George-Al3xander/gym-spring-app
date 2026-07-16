@@ -9,6 +9,7 @@ import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
+import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -59,8 +60,6 @@ public class GymFacadeImpl implements GymFacade {
     public TrainerProfileResponse getTrainer(String trainerUsername) {
         Trainer trainer = trainerService.getTrainerByUsername(trainerUsername);
 
-        System.out.println(trainer.getSpecialization().getTrainingTypeName());
-
         return trainerMapper.toTrainerProfile(trainer, getTraineesListByUsername(trainerUsername));
     }
 
@@ -77,8 +76,16 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Trainer updateTrainer(Trainer trainer) {
-        return trainerService.updateTrainer(trainer);
+    public TrainerProfileResponse updateTrainer(String username, UpdateTrainerRequest request) {
+        Trainer trainer = trainerService.getTrainerByUsername(username);
+
+        trainer.setFirstName(request.getFirstName());
+        trainer.setLastName(request.getLastName());
+        trainer.setIsActive(request.getIsActive());
+
+        trainerService.updateTrainer(trainer);
+
+        return trainerMapper.toTrainerProfile(trainer, getTraineesListByUsername(username));
     }
 
     @Override
