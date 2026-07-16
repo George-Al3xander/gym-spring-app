@@ -7,6 +7,7 @@ import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -40,5 +41,5 @@ public interface GymFacade {
 
     Training addTraining(Training training);
 
-    List<Trainer> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter);
+    List<TrainerSummaryResponse> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter);
 }

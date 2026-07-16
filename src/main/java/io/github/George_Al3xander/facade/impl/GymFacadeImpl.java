@@ -137,8 +137,10 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public List<Trainer> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter) {
-        return trainerService.getTrainersByTraineeUsername(traineeUsername, filter);
+    public List<TrainerSummaryResponse> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter) {
+        List<Trainer> trainerList = trainerService.getTrainersByTraineeUsername(traineeUsername, filter);
+        
+        return trainerList.stream().map(trainerMapper::toSummary).toList();
     }
 
     private List<TrainerSummaryResponse> getTrainersListByUsername(String traineeUsername) {

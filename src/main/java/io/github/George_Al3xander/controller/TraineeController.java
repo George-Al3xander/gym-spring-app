@@ -1,9 +1,11 @@
 package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.web.AuthHttpHeader;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/trainees")
@@ -58,5 +62,22 @@ public class TraineeController {
 
         gymFacade.deleteTrainee(username);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{username}/unassigned-trainers")
+    public ResponseEntity<List<TrainerSummaryResponse>> getUnassignedTrainers(
+            @PathVariable("username") String username,
+            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
+    ) {
+        if (!username.equals(authUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(
+                gymFacade.getTrainersByTraineeUsername(
+                        username,
+                        new TrainerFilter(true, false)
+                )
+        );
     }
 }
