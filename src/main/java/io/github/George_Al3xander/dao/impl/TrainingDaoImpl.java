@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
-import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.model.Training;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

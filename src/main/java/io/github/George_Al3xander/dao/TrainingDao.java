@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.dao;
 
-import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.model.Training;
 
 import java.util.List;

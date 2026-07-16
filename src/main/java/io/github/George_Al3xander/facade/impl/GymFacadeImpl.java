@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dao.TrainingTypeDao;
-import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;

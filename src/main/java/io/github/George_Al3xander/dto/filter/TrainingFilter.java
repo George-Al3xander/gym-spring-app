@@ -1,4 +1,4 @@
-package io.github.George_Al3xander.dto;
+package io.github.George_Al3xander.dto.filter;
 
 import io.github.George_Al3xander.model.TrainingType;
 import lombok.*;

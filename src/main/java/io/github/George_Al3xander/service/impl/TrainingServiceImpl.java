@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
-import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.TraineeService;

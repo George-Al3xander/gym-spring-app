@@ -2,7 +2,7 @@ package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.TrainingDao;
-import io.github.George_Al3xander.dto.TrainingFilter;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
