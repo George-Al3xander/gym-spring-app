@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import jakarta.persistence.EntityManager;
@@ -62,7 +63,7 @@ public class TrainerDaoImpl implements TrainerDao {
     }
 
     @Override
-    public List<Trainer> findAllByTraineeUsername(String username, boolean assigned) {
+    public List<Trainer> findAllByTraineeUsername(String username, TrainerFilter filter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Trainer> cq = cb.createQuery(Trainer.class);
 
@@ -71,19 +72,19 @@ public class TrainerDaoImpl implements TrainerDao {
         Subquery<Long> sq = cq.subquery(Long.class);
         Root<Training> training = sq.from(Training.class);
 
-        sq.select(cb.literal(1L))
+        sq.select(training.get("id"))
                 .where(
                         cb.equal(training.get("trainer"), trainer),
                         cb.equal(training.get("trainee").get("username"), username)
                 );
 
-        if (assigned) {
-            cq.where(cb.exists(sq));
-        } else {
-            cq.where(cb.not(cb.exists(sq)));
-        }
+        cq.where(
+                cb.equal(trainer.get("isActive"), filter.getActive()),
+                filter.getAssigned()
+                        ? cb.exists(sq)
+                        : cb.not(cb.exists(sq))
+        );
 
         return entityManager.createQuery(cq).getResultList();
-
     }
 }

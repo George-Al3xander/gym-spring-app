@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.config.TestConfig;
-import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -32,7 +32,7 @@ class TrainerDaoImplTest {
     private EntityManager entityManager;
 
     @Autowired
-    private TrainerDao trainerDao;
+    private TrainerDaoImpl trainerDao;
 
     private static TrainingType trainingType;
 
@@ -150,7 +150,7 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findAllByTraineeUsername(trainee1.getUsername(), false);
+                trainerDao.findAllByTraineeUsername(trainee1.getUsername(), new TrainerFilter(true, false));
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -170,7 +170,7 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findAllByTraineeUsername("john.doe", false);
+                trainerDao.findAllByTraineeUsername("john.doe", new TrainerFilter(true, false));
 
         assertTrue(result.isEmpty());
     }
@@ -190,11 +190,62 @@ class TrainerDaoImplTest {
         entityManager.flush();
 
         List<Trainer> result =
-                trainerDao.findAllByTraineeUsername("john.doe", true);
+                trainerDao.findAllByTraineeUsername("john.doe", new TrainerFilter(true, true));
 
         assertEquals(1, result.size());
         assertTrue(result.contains(assignedTrainer));
         assertFalse(result.contains(unassignedTrainer));
+    }
+
+    @Test
+    void givenInactiveTrainer_whenFindByTraineeUsername_thenInactiveTrainerIsNotReturned() {
+        Trainer activeTrainer = generateTrainer("trainer.active");
+        Trainer inactiveTrainer = generateTrainer("trainer.inactive");
+        inactiveTrainer.setIsActive(false);
+
+        Trainee trainee = generateTrainee("john.doe");
+
+        entityManager.persist(trainee);
+        entityManager.persist(activeTrainer);
+        entityManager.persist(inactiveTrainer);
+
+        entityManager.flush();
+
+        List<Trainer> result = trainerDao.findAllByTraineeUsername(
+                trainee.getUsername(),
+                new TrainerFilter(true, false)
+        );
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(activeTrainer));
+        assertFalse(result.contains(inactiveTrainer));
+    }
+
+    @Test
+    void givenAssignedInactiveTrainer_whenAssignedTrue_thenOnlyActiveAssignedTrainerReturned() {
+        Trainer activeTrainer = generateTrainer("trainer.active");
+        Trainer inactiveTrainer = generateTrainer("trainer.inactive");
+        inactiveTrainer.setIsActive(false);
+
+        Trainee trainee = generateTrainee("john.doe");
+
+        entityManager.persist(trainee);
+        entityManager.persist(activeTrainer);
+        entityManager.persist(inactiveTrainer);
+
+        entityManager.persist(generateTraining(activeTrainer, trainee));
+        entityManager.persist(generateTraining(inactiveTrainer, trainee));
+
+        entityManager.flush();
+
+        List<Trainer> result = trainerDao.findAllByTraineeUsername(
+                trainee.getUsername(),
+                new TrainerFilter(true, true)
+        );
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(activeTrainer));
+        assertFalse(result.contains(inactiveTrainer));
     }
 
     private static Trainer generateTrainer(String username) {
