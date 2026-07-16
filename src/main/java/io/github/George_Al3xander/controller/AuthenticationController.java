@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.controller;
 
-import io.github.George_Al3xander.dto.CredentialsDTO;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import jakarta.validation.Valid;

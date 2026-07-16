@@ -1,4 +1,4 @@
-package io.github.George_Al3xander.dto;
+package io.github.George_Al3xander.dto.auth;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

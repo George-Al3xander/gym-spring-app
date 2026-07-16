@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.controller;
 
-import io.github.George_Al3xander.dto.CredentialsDTO;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
