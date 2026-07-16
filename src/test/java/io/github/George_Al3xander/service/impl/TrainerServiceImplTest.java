@@ -164,7 +164,7 @@ class TrainerServiceImplTest {
     void givenExistingTrainer_whenUpdateTrainer_thenSaveAndReturnUpdatedTrainer() {
         Trainer updatedTrainer = new Trainer();
 
-        when(trainerDao.save(updatedTrainer))
+        when(trainerDao.update(updatedTrainer))
                 .thenReturn(updatedTrainer);
 
         Trainer result = trainerService.updateTrainer(updatedTrainer);
@@ -175,7 +175,7 @@ class TrainerServiceImplTest {
         );
 
         verify(trainerDao)
-                .save(updatedTrainer);
+                .update(updatedTrainer);
 
         verifyNoInteractions(usernameGenerator);
     }

@@ -294,9 +294,9 @@ class TrainingDaoImplTest {
         training.setTrainingName("Strength Training");
         training.setDurationSeconds(60);
 
-        TrainingType type = new TrainingType();
-        type.setTrainingTypeName("CARDIO");
-        entityManager.persist(type);
+        TrainingType trainingType = new TrainingType();
+        trainingType.setTrainingTypeName("CARDIO");
+        entityManager.persist(trainingType);
 
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");
@@ -304,6 +304,7 @@ class TrainingDaoImplTest {
         trainer.setUsername(trainerUsername);
         trainer.setPassword("1234567890");
         trainer.setIsActive(true);
+        trainer.setSpecialization(trainingType);
 
         Trainee trainee = new Trainee();
         trainee.setFirstName("Jane");
@@ -316,7 +317,7 @@ class TrainingDaoImplTest {
 
         training.setTrainer(trainer);
         training.setTrainee(trainee);
-        training.setTrainingType(type);
+        training.setTrainingType(trainingType);
 
         return training;
     }

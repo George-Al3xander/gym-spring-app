@@ -5,9 +5,11 @@ import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
+import io.github.George_Al3xander.model.TrainingType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,15 @@ class TrainerDaoImplTest {
 
     @Autowired
     private TrainerDao trainerDao;
+
+    private static TrainingType trainingType;
+
+    @BeforeEach
+    public void setup() {
+        trainingType = new TrainingType(null, "Training");
+        entityManager.persist(trainingType);
+        entityManager.flush();
+    }
 
     @Test
     void givenTrainerWithoutId_whenSave_thenTrainerIsStoredWithGeneratedId() {
@@ -192,6 +203,7 @@ class TrainerDaoImplTest {
         trainer.setLastName("Doe");
         trainer.setUsername(username);
         trainer.setPassword("1234567890");
+        trainer.setSpecialization(trainingType);
         trainer.setIsActive(true);
 
         return trainer;
@@ -216,6 +228,7 @@ class TrainerDaoImplTest {
         training.setTrainee(trainee);
         training.setDurationSeconds(123);
         training.setTrainingDate(LocalDateTime.now());
+        trainer.setSpecialization(trainingType);
         training.setTrainingName("Training");
 
         return training;

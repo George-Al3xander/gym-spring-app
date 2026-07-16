@@ -186,7 +186,7 @@ class TraineeServiceImplTest {
 
         Trainee trainee = new Trainee();
 
-        when(traineeDao.save(trainee))
+        when(traineeDao.update(trainee))
                 .thenReturn(trainee);
 
         Trainee result =
@@ -195,7 +195,7 @@ class TraineeServiceImplTest {
         assertEquals(trainee, result);
 
         verify(traineeDao)
-                .save(trainee);
+                .update(trainee);
     }
 
     @Test
