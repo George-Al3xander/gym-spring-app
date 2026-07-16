@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dao.TrainingTypeDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
@@ -136,13 +137,13 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public List<Trainer> getUnassignedTrainers(String traineeUsername) {
-        return trainerService.getTrainersByTraineeUsername(traineeUsername, false);
+    public List<Trainer> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter) {
+        return trainerService.getTrainersByTraineeUsername(traineeUsername, filter);
     }
 
     private List<TrainerSummaryResponse> getTrainersListByUsername(String traineeUsername) {
         return trainerService
-                .getTrainersByTraineeUsername(traineeUsername, true)
+                .getTrainersByTraineeUsername(traineeUsername, null)
                 .stream()
                 .map(trainerMapper::toSummary)
                 .toList();

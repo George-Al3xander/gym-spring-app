@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.facade;
 
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
@@ -39,5 +40,5 @@ public interface GymFacade {
 
     Training addTraining(Training training);
 
-    List<Trainer> getUnassignedTrainers(String traineeUsername);
+    List<Trainer> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter);
 }

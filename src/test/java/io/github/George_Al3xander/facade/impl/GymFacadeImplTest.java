@@ -188,7 +188,7 @@ class GymFacadeImplTest {
         when(traineeService.getTraineeByUsername(username))
                 .thenReturn(trainee);
 
-        when(trainerService.getTrainersByTraineeUsername(username, true))
+        when(trainerService.getTrainersByTraineeUsername(username, null))
                 .thenReturn(List.of(trainer));
 
         when(trainerMapper.toSummary(trainer))
@@ -208,7 +208,7 @@ class GymFacadeImplTest {
                 .getTraineeByUsername(username);
 
         verify(trainerService)
-                .getTrainersByTraineeUsername(username, true);
+                .getTrainersByTraineeUsername(username, null);
 
         verify(trainerMapper)
                 .toSummary(trainer);
