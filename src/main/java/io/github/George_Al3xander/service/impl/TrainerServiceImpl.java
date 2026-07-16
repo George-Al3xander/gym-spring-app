@@ -2,6 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -52,14 +53,14 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<Trainer> getTrainersByTraineeUsername(String username, boolean assigned) {
+    public List<Trainer> getTrainersByTraineeUsername(String username, TrainerFilter filter) {
         Optional<Trainee> traineeOptional = traineeDao.findByUsername(username);
 
         if (traineeOptional.isEmpty()) {
             throw new EntityNotFoundException("Trainee", username);
         }
 
-        return trainerDao.findAllByTraineeUsername(traineeOptional.get().getUsername(), assigned);
+        return trainerDao.findAllByTraineeUsername(traineeOptional.get().getUsername(), filter);
     }
 
     @Override

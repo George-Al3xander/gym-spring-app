@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.service;
 
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.model.Trainer;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface TrainerService {
 
     List<Trainer> getAllTrainers();
 
-    List<Trainer> getTrainersByTraineeUsername(String username, boolean assigned);
+    List<Trainer> getTrainersByTraineeUsername(String username, TrainerFilter filter);
 
     Trainer saveTrainer(Trainer entity);
 

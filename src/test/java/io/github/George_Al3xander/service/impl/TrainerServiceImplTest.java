@@ -2,6 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -243,16 +244,18 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.of(trainee));
 
-        when(trainerDao.findAllByTraineeUsername(username, false))
+        TrainerFilter filter = new TrainerFilter(true, false);
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
                 .thenReturn(expected);
 
         List<Trainer> result =
-                trainerService.getTrainersByTraineeUsername(username, false);
+                trainerService.getTrainersByTraineeUsername(username, filter);
 
         assertEquals(expected, result);
 
         verify(traineeDao).findByUsername(username);
-        verify(trainerDao).findAllByTraineeUsername(username, false);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
     }
 
     @Test
@@ -263,9 +266,11 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.empty());
 
+        TrainerFilter filter = new TrainerFilter(true, false);
+
         assertThrows(
                 EntityNotFoundException.class,
-                () -> trainerService.getTrainersByTraineeUsername(username, false)
+                () -> trainerService.getTrainersByTraineeUsername(username, filter)
         );
 
         verify(traineeDao).findByUsername(username);
@@ -284,15 +289,141 @@ class TrainerServiceImplTest {
         when(traineeDao.findByUsername(username))
                 .thenReturn(Optional.of(trainee));
 
-        when(trainerDao.findAllByTraineeUsername(username, true))
+        TrainerFilter filter = new TrainerFilter(true, true);
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
                 .thenReturn(expected);
 
         List<Trainer> result =
-                trainerService.getTrainersByTraineeUsername(username, true);
+                trainerService.getTrainersByTraineeUsername(username, filter);
 
         assertEquals(expected, result);
 
         verify(traineeDao).findByUsername(username);
-        verify(trainerDao).findAllByTraineeUsername(username, true);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetActiveAssignedTrainers_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        TrainerFilter filter = new TrainerFilter(true, true);
+        List<Trainer> expected = List.of(new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetActiveUnassignedTrainers_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        TrainerFilter filter = new TrainerFilter(true, false);
+        List<Trainer> expected = List.of(new Trainer(), new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetInactiveAssignedTrainers_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        TrainerFilter filter = new TrainerFilter(false, true);
+        List<Trainer> expected = List.of(new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetInactiveUnassignedTrainers_thenReturnTrainerList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        TrainerFilter filter = new TrainerFilter(false, false);
+        List<Trainer> expected = List.of(new Trainer());
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
+                .thenReturn(expected);
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, filter);
+
+        assertEquals(expected, result);
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
+    }
+
+    @Test
+    void givenExistingTrainee_whenGetTrainersWithEmptyResult_thenReturnEmptyList() {
+        String username = "john.doe";
+
+        Trainee trainee = new Trainee();
+        trainee.setUsername(username);
+
+        TrainerFilter filter = new TrainerFilter(true, false);
+
+        when(traineeDao.findByUsername(username))
+                .thenReturn(Optional.of(trainee));
+
+        when(trainerDao.findAllByTraineeUsername(username, filter))
+                .thenReturn(Collections.emptyList());
+
+        List<Trainer> result =
+                trainerService.getTrainersByTraineeUsername(username, filter);
+
+        assertTrue(result.isEmpty());
+
+        verify(traineeDao).findByUsername(username);
+        verify(trainerDao).findAllByTraineeUsername(username, filter);
     }
 }
