@@ -4,10 +4,7 @@ import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
-import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
-import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
-import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
-import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
+import io.github.George_Al3xander.dto.trainer.*;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -137,8 +134,19 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public List<Training> getTrainerTrainings(String username, TrainingFilter criteria) {
-        return trainingService.findByTrainerUsername(username, criteria);
+    public List<TrainerTrainingResponse> getTrainerTrainings(String username, TrainingFilter criteria) {
+        List<Training> trainings = trainingService.findByTraineeUsername(username, criteria);
+
+        return trainings.stream().map(t -> {
+            TrainerTrainingResponse response = trainingMapper.toTrainerResponse(t);
+
+            Trainee trainee = t.getTrainee();
+            String traineeName = trainee.getFirstName() + " " + trainee.getLastName();
+
+            response.setTraineeName(traineeName);
+
+            return response;
+        }).toList();
     }
 
     @Override
