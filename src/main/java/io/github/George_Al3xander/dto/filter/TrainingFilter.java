@@ -1,6 +1,5 @@
 package io.github.George_Al3xander.dto.filter;
 
-import io.github.George_Al3xander.model.TrainingType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,5 +19,5 @@ public class TrainingFilter {
     private String trainerFirstName;
     private String trainerLastName;
 
-    private TrainingType trainingType;
+    private Long trainingTypeId;
 }

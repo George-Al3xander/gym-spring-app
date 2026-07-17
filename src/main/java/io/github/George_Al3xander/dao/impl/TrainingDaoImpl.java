@@ -107,9 +107,9 @@ public class TrainingDaoImpl implements TrainingDao {
                 params.put("trainerLastName", filter.getTrainerLastName());
             }
 
-            if (filter.getTrainingType() != null) {
-                jpql.append(" AND t.trainingType = :trainingType");
-                params.put("trainingType", filter.getTrainingType());
+            if (filter.getTrainingTypeId() != null) {
+                jpql.append(" AND t.trainingType.id = :trainingTypeId");
+                params.put("trainingTypeId", filter.getTrainingTypeId());
             }
         }
 

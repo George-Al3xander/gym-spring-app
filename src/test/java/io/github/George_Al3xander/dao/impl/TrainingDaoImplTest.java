@@ -212,7 +212,7 @@ class TrainingDaoImplTest {
                 "jane.trainee");
 
         TrainingFilter filter = new TrainingFilter();
-        filter.setTrainingType(training.getTrainingType());
+        filter.setTrainingTypeId(training.getTrainingType().getId());
 
         List<Training> result =
                 trainingDao.findByTraineeUsername("jane.trainee", filter);
@@ -233,7 +233,7 @@ class TrainingDaoImplTest {
                 .traineeLastName("Smith")
                 .trainerFirstName("John")
                 .trainerLastName("Doe")
-                .trainingType(training.getTrainingType())
+                .trainingTypeId(training.getTrainingType().getId())
                 .build();
 
         List<Training> result =
