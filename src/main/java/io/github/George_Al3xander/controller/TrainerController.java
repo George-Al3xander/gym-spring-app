@@ -1,8 +1,10 @@
 package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
+import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
+import io.github.George_Al3xander.dto.trainer.TrainerTrainingResponse;
 import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainer;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/trainers")
@@ -45,5 +49,23 @@ public class TrainerController {
         }
 
         return ResponseEntity.ok(gymFacade.updateTrainer(username, request));
+    }
+
+    @GetMapping("/{username}/trainings")
+    public ResponseEntity<List<TrainerTrainingResponse>> getTrainings(
+            @PathVariable("username") String username,
+            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
+            @Valid @RequestBody TrainingFilter trainingFilter
+    ) {
+        if (!username.equals(authUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(
+                gymFacade.getTrainerTrainings(
+                        username,
+                        trainingFilter
+                )
+        );
     }
 }
