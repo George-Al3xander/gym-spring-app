@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.dto.filter;
 
+import io.github.George_Al3xander.validation.date.ChronologicalDates;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@ChronologicalDates(from = "fromDate", to = "toDate")
 public class TrainingFilter {
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
