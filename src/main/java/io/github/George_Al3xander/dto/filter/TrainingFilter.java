@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.dto.filter;
 
+import io.github.George_Al3xander.validation.common.CompleteOptionalPair;
 import io.github.George_Al3xander.validation.date.ChronologicalDates;
 import lombok.*;
 
@@ -11,6 +12,16 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @ChronologicalDates(from = "fromDate", to = "toDate")
+@CompleteOptionalPair.List({
+        @CompleteOptionalPair(
+                first = "traineeFirstName",
+                second = "traineeLastName"
+        ),
+        @CompleteOptionalPair(
+                first = "trainerFirstName",
+                second = "trainerLastName"
+        )
+})
 public class TrainingFilter {
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
