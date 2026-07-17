@@ -3,10 +3,7 @@ package io.github.George_Al3xander.facade.impl;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
-import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
-import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
-import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
-import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
@@ -15,6 +12,7 @@ import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
+import io.github.George_Al3xander.mapper.TrainingMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -41,6 +39,7 @@ public class GymFacadeImpl implements GymFacade {
 
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
+    private final TrainingMapper trainingMapper;
 
     @Override
     public Trainer createTrainer(TrainerRegistrationRequest request) {
@@ -122,8 +121,19 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public List<Training> getTraineeTrainings(String username, TrainingFilter criteria) {
-        return trainingService.findByTraineeUsername(username, criteria);
+    public List<TraineeTrainingResponse> getTraineeTrainings(String username, TrainingFilter criteria) {
+        List<Training> trainings = trainingService.findByTraineeUsername(username, criteria);
+
+        return trainings.stream().map(t -> {
+            TraineeTrainingResponse response = trainingMapper.toTraineeResponse(t);
+
+            Trainer trainer = t.getTrainer();
+            String trainerName = trainer.getFirstName() + " " + trainer.getLastName();
+
+            response.setTrainerName(trainerName);
+
+            return response;
+        }).toList();
     }
 
     @Override
@@ -139,7 +149,7 @@ public class GymFacadeImpl implements GymFacade {
     @Override
     public List<TrainerSummaryResponse> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter) {
         List<Trainer> trainerList = trainerService.getTrainersByTraineeUsername(traineeUsername, filter);
-        
+
         return trainerList.stream().map(trainerMapper::toSummary).toList();
     }
 

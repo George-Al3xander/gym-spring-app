@@ -10,6 +10,7 @@ import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
+import io.github.George_Al3xander.mapper.TrainingMapper;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.TrainingType;
@@ -56,6 +57,9 @@ class GymFacadeImplTest {
     @Mock
     private TrainerMapper trainerMapper;
 
+    @Mock
+    private TrainingMapper trainingMapper;
+
     private GymFacadeImpl gymFacade;
 
     @BeforeEach
@@ -67,7 +71,8 @@ class GymFacadeImplTest {
                 trainingService,
                 trainingTypeDao,
                 traineeMapper,
-                trainerMapper
+                trainerMapper,
+                trainingMapper
         );
     }
 

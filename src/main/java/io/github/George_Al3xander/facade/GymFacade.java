@@ -4,6 +4,7 @@ import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
+import io.github.George_Al3xander.dto.trainee.TraineeTrainingResponse;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
@@ -35,7 +36,7 @@ public interface GymFacade {
 
     void deleteTrainee(String traineeUsername);
 
-    List<Training> getTraineeTrainings(String username, TrainingFilter criteria);
+    List<TraineeTrainingResponse> getTraineeTrainings(String username, TrainingFilter criteria);
 
     List<Training> getTrainerTrainings(String username, TrainingFilter criteria);
 
