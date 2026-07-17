@@ -5,6 +5,7 @@ import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.*;
+import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
@@ -150,7 +151,17 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Training addTraining(Training training) {
+    public Training addTraining(AddTrainingRequest request) {
+        Training training = trainingMapper.toTraining(request);
+
+        Trainer trainer = trainerService.getTrainerByUsername(request.getTrainerUsername());
+        training.setTrainer(trainer);
+
+        Trainee trainee = traineeService.getTraineeByUsername(request.getTraineeUsername());
+        training.setTrainee(trainee);
+
+        training.setTrainingType(training.getTrainingType());
+
         return trainingService.saveTraining(training);
     }
 
