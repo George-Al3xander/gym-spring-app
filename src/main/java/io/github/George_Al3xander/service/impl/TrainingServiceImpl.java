@@ -57,4 +57,11 @@ public class TrainingServiceImpl implements TrainingService {
     public List<Training> findByTrainerUsername(String username, TrainingFilter filter) {
         return trainingDao.findByTrainerUsername(username, filter);
     }
+
+    @Override
+    public int deleteForTraineeByTrainerUsernames(String traineeUsername, List<String> trainerUsernames) {
+        if (trainerUsernames == null || trainerUsernames.isEmpty()) return -1;
+
+        return trainingDao.deleteForTraineeByTrainerUsernames(traineeUsername, trainerUsernames);
+    }
 }

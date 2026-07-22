@@ -272,4 +272,50 @@ class TrainingServiceImplTest {
         verify(trainingDao)
                 .findByTrainerUsername(username, filter);
     }
+
+    @Test
+    void givenValidTrainerUsernames_whenDeleteForTraineeByTrainerUsernames_thenReturnDeletedCount() {
+
+        String traineeUsername = "john.doe";
+        List<String> trainerUsernames = List.of("mike.smith", "alex.brown");
+
+        when(trainingDao.deleteForTraineeByTrainerUsernames(
+                traineeUsername, trainerUsernames))
+                .thenReturn(2);
+
+        int result = trainingService.deleteForTraineeByTrainerUsernames(
+                traineeUsername, trainerUsernames);
+
+        assertEquals(2, result);
+
+        verify(trainingDao)
+                .deleteForTraineeByTrainerUsernames(
+                        traineeUsername, trainerUsernames);
+    }
+
+    @Test
+    void givenNullTrainerUsernames_whenDeleteForTraineeByTrainerUsernames_thenReturnMinusOne() {
+
+        String traineeUsername = "john.doe";
+
+        int result = trainingService.deleteForTraineeByTrainerUsernames(
+                traineeUsername, null);
+
+        assertEquals(-1, result);
+
+        verifyNoInteractions(trainingDao);
+    }
+
+    @Test
+    void givenEmptyTrainerUsernames_whenDeleteForTraineeByTrainerUsernames_thenReturnMinusOne() {
+
+        String traineeUsername = "john.doe";
+
+        int result = trainingService.deleteForTraineeByTrainerUsernames(
+                traineeUsername, Collections.emptyList());
+
+        assertEquals(-1, result);
+
+        verifyNoInteractions(trainingDao);
+    }
 }

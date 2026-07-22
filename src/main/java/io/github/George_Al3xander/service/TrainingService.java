@@ -15,4 +15,6 @@ public interface TrainingService {
     List<Training> findByTraineeUsername(String username, TrainingFilter filter);
 
     List<Training> findByTrainerUsername(String username, TrainingFilter filter);
+
+    int deleteForTraineeByTrainerUsernames(String traineeUsername, List<String> trainerUsernames);
 }
