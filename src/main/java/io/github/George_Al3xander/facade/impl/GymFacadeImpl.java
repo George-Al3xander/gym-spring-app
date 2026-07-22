@@ -108,8 +108,8 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public void toggleUserActiveStatus(String username) {
-        userService.toggleActiveStatusByUsername(username);
+    public void updateActiveStatusByUsername(String username, boolean active) {
+        userService.updateActiveStatusByUsername(username, active);
     }
 
     @Override

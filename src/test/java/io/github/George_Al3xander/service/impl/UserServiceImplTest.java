@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
+import io.github.George_Al3xander.exception.ActivationStateConflictException;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.util.PasswordGenerator;
@@ -75,53 +76,81 @@ class UserServiceImplTest {
     }
 
     @Test
-    void givenActiveUser_whenToggleActiveStatus_thenUserBecomesInactiveAndIsPersisted() {
+    void givenActiveUser_whenUpdateActiveStatusToInactive_thenUserBecomesInactiveAndIsPersisted() {
         User user = new User();
         user.setUsername("john");
         user.setIsActive(true);
 
         when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
 
-        userService.toggleActiveStatusByUsername("john");
+        userService.updateActiveStatusByUsername("john", false);
 
         assertFalse(user.getIsActive());
         verify(userDao).update(user);
     }
 
     @Test
-    void givenInactiveUser_whenToggleActiveStatus_thenUserBecomesActiveAndIsPersisted() {
+    void givenInactiveUser_whenUpdateActiveStatusToActive_thenUserBecomesActiveAndIsPersisted() {
         User user = new User();
         user.setUsername("john");
         user.setIsActive(false);
 
         when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
 
-        userService.toggleActiveStatusByUsername("john");
+        userService.updateActiveStatusByUsername("john", true);
 
         assertTrue(user.getIsActive());
         verify(userDao).update(user);
     }
 
     @Test
-    void givenNullActiveUser_whenToggleActiveStatus_thenUserBecomesActive() {
+    void givenNullActiveStatusUser_whenUpdateActiveStatusToActive_thenUserBecomesActiveAndIsPersisted() {
         User user = new User();
         user.setUsername("john");
         user.setIsActive(null);
 
         when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
 
-        userService.toggleActiveStatusByUsername("john");
+        userService.updateActiveStatusByUsername("john", true);
 
         assertTrue(user.getIsActive());
         verify(userDao).update(user);
     }
 
     @Test
-    void givenNonExistingUser_whenToggleActiveStatus_thenThrowsEntityNotFoundException() {
+    void givenNonExistingUser_whenUpdateActiveStatus_thenThrowsEntityNotFoundException() {
         when(userDao.findByUsername("john")).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> userService.toggleActiveStatusByUsername("john"));
+                () -> userService.updateActiveStatusByUsername("john", true));
+
+        verify(userDao, never()).update(any());
+    }
+
+    @Test
+    void givenActiveUser_whenUpdateActiveStatusToActive_thenThrowsActivationStateConflictException() {
+        User user = new User();
+        user.setUsername("john");
+        user.setIsActive(true);
+
+        when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
+
+        assertThrows(ActivationStateConflictException.class,
+                () -> userService.updateActiveStatusByUsername("john", true));
+
+        verify(userDao, never()).update(any());
+    }
+
+    @Test
+    void givenInactiveUser_whenUpdateActiveStatusToInactive_thenThrowsActivationStateConflictException() {
+        User user = new User();
+        user.setUsername("john");
+        user.setIsActive(false);
+
+        when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
+
+        assertThrows(ActivationStateConflictException.class,
+                () -> userService.updateActiveStatusByUsername("john", false));
 
         verify(userDao, never()).update(any());
     }

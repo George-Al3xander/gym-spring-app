@@ -27,7 +27,7 @@ public interface GymFacade {
 
     TraineeProfileResponse updateTrainee(String username, UpdateTraineeRequest request);
 
-    void toggleUserActiveStatus(String username);
+    void updateActiveStatusByUsername(String username, boolean active);
 
     void deleteTrainee(String traineeUsername);
 

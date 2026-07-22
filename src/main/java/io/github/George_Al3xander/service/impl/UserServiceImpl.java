@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
+import io.github.George_Al3xander.exception.ActivationStateConflictException;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.UserService;
@@ -28,14 +29,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void toggleActiveStatusByUsername(String username) {
+    public void updateActiveStatusByUsername(String username, boolean active) {
         User user = userDao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User", username));
 
         boolean previousActiveStatus = Boolean.TRUE.equals(user.getIsActive());
 
-        user.setIsActive(!previousActiveStatus);
+        if (previousActiveStatus == active) {
+            throw new ActivationStateConflictException(
+                    "User " + username + " is already " + (active ? "active" : "inactive")
+            );
+        }
 
+        user.setIsActive(active);
         userDao.update(user);
     }
 }
