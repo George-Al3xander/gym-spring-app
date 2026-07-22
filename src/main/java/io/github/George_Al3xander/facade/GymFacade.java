@@ -2,10 +2,7 @@ package io.github.George_Al3xander.facade;
 
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
-import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
-import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
-import io.github.George_Al3xander.dto.trainee.TraineeTrainingResponse;
-import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.*;
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.model.Trainee;
@@ -41,4 +38,6 @@ public interface GymFacade {
     Training addTraining(AddTrainingRequest request);
 
     List<TrainerSummaryResponse> getTrainersByTraineeUsername(String traineeUsername, TrainerFilter filter);
+
+    List<TrainerSummaryResponse> updateTrainersListByTraineeUsername(String traineeUsername, UpdateTraineeTrainerListRequest request);
 }
