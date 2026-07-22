@@ -5,6 +5,7 @@ import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
+import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.web.AuthHttpHeader;
@@ -111,5 +112,20 @@ public class TraineeController {
         return ResponseEntity.ok(
                 gymFacade.updateTrainersListByTraineeUsername(username, request)
         );
+    }
+
+    @PatchMapping("/{username}/activate")
+    public ResponseEntity<Void> activateTrainee(
+            @PathVariable("username") String username,
+            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
+            @Valid @RequestBody ActivateUserRequest request
+    ) {
+        if (!username.equals(authUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        gymFacade.updateActiveStatusByUsername(username, request.isActive());
+
+        return ResponseEntity.noContent().build();
     }
 }
