@@ -9,4 +9,6 @@ public interface TrainingDao extends CrudDao<Training> {
     List<Training> findByTraineeUsername(String username, TrainingFilter filter);
 
     List<Training> findByTrainerUsername(String username, TrainingFilter filter);
+
+    int deleteForTraineeByTrainerUsernames(String traineeUsername, List<String> usernames);
 }

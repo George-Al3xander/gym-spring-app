@@ -275,16 +275,101 @@ class TrainingDaoImplTest {
         assertEquals(1, result.size());
     }
 
-    private Training persistTraining(String trainerUsername, String traineeUsername) {
-        Training training = generateTraining(trainerUsername, traineeUsername);
+    @Test
+    void givenMatchingTrainerUsernames_whenDeleteForTrainee_thenDeleteMatchingTrainings() {
+        Training t1 = persistTraining("trainer1", "trainee");
+        Training t2 = persistTraining("trainer2", "trainee");
+        Training t3 = persistTraining("trainer3", "trainee");
 
-        entityManager.persist(training.getTrainer());
-        entityManager.persist(training.getTrainee());
-        entityManager.persist(training);
+        int deleted = trainingDao.deleteForTraineeByTrainerUsernames(
+                "trainee",
+                List.of("trainer1", "trainer3")
+        );
 
         entityManager.flush();
+        entityManager.clear();
 
+        assertEquals(2, deleted);
+        assertTrue(trainingDao.findById(t1.getId()).isEmpty());
+        assertFalse(trainingDao.findById(t2.getId()).isEmpty());
+        assertTrue(trainingDao.findById(t3.getId()).isEmpty());
+    }
+
+    @Test
+    void givenUnknownTrainerUsernames_whenDeleteForTrainee_thenDeleteNothing() {
+        Training training = persistTraining("trainer1", "trainee");
+
+        int deleted = trainingDao.deleteForTraineeByTrainerUsernames(
+                "trainee",
+                List.of("unknown")
+        );
+
+        entityManager.flush();
+        entityManager.clear();
+
+        assertEquals(0, deleted);
+        assertTrue(trainingDao.findById(training.getId()).isPresent());
+    }
+
+    @Test
+    void givenAnotherTraineeWithSameTrainer_whenDeleteForTrainee_thenOnlySpecifiedTraineeDeleted() {
+        Training trainee1Training = persistTraining("trainer1", "trainee1");
+        Training trainee2Training = persistTraining("trainer1", "trainee2");
+
+        int deleted = trainingDao.deleteForTraineeByTrainerUsernames(
+                "trainee1",
+                List.of("trainer1")
+        );
+
+        entityManager.flush();
+        entityManager.clear();
+
+        assertEquals(1, deleted);
+        assertTrue(trainingDao.findById(trainee1Training.getId()).isEmpty());
+        assertTrue(trainingDao.findById(trainee2Training.getId()).isPresent());
+    }
+
+    private Training persistTraining(
+            String trainerUsername,
+            String traineeUsername) {
+
+        Training training = generateTraining(trainerUsername, traineeUsername);
+
+        Trainer trainer = findTrainer(trainerUsername);
+        if (trainer != null) {
+            training.setTrainer(trainer);
+        } else {
+            entityManager.persist(training.getTrainer());
+        }
+
+        Trainee trainee = findTrainee(traineeUsername);
+        if (trainee != null) {
+            training.setTrainee(trainee);
+        } else {
+            entityManager.persist(training.getTrainee());
+        }
+
+        entityManager.persist(training);
+        entityManager.flush();
         return training;
+    }
+
+    private Trainer findTrainer(String username) {
+        return entityManager.createQuery(
+                        "from Trainer t where t.username = :u", Trainer.class)
+                .setParameter("u", username)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Trainee findTrainee(String username) {
+        return entityManager.createQuery(
+                        "from Trainee t where t.username = :username", Trainee.class)
+                .setParameter("username", username)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
     }
 
     private Training generateTraining(String trainerUsername, String traineeUsername) {

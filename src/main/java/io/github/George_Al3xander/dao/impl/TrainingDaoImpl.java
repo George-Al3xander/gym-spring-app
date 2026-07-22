@@ -6,6 +6,9 @@ import io.github.George_Al3xander.model.Training;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -57,6 +60,26 @@ public class TrainingDaoImpl implements TrainingDao {
     @Override
     public List<Training> findByTrainerUsername(String username, TrainingFilter filter) {
         return findByUsername(UserRole.TRAINER, username, filter);
+    }
+
+    @Override
+    public int deleteForTraineeByTrainerUsernames(
+            String traineeUsername,
+            List<String> trainerUsernames
+    ) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Training> delete = cb.createCriteriaDelete(Training.class);
+
+        Root<Training> training = delete.from(Training.class);
+
+        delete.where(
+                cb.and(
+                        cb.equal(training.get("trainee").get("username"), traineeUsername),
+                        training.get("trainer").get("username").in(trainerUsernames)
+                )
+        );
+
+        return entityManager.createQuery(delete).executeUpdate();
     }
 
     private List<Training> findByUsername(
