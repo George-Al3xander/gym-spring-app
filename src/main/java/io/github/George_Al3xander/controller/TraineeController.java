@@ -3,10 +3,7 @@ package io.github.George_Al3xander.controller;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
-import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
-import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
-import io.github.George_Al3xander.dto.trainee.TraineeTrainingResponse;
-import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
+import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainee;
@@ -98,6 +95,21 @@ public class TraineeController {
                         username,
                         trainingFilter
                 )
+        );
+    }
+
+    @PutMapping("/{username}/trainers")
+    public ResponseEntity<List<TrainerSummaryResponse>> updateTraineeTrainersList(
+            @PathVariable("username") String username,
+            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
+            @Valid @RequestBody UpdateTraineeTrainerListRequest request
+    ) {
+        if (!username.equals(authUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(
+                gymFacade.updateTrainersListByTraineeUsername(username, request)
         );
     }
 }
