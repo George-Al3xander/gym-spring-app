@@ -3,14 +3,14 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.model.Training;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaDelete;
-import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,19 +67,40 @@ public class TrainingDaoImpl implements TrainingDao {
             String traineeUsername,
             List<String> trainerUsernames
     ) {
+        Long traineeId = entityManager.createQuery(
+                        "select t.id from Trainee t where t.username = :username",
+                        Long.class
+                )
+                .setParameter("username", traineeUsername)
+                .getSingleResult();
+
+        List<Long> trainerIds = entityManager.createQuery(
+                        "select t.id from Trainer t where t.username in :usernames",
+                        Long.class
+                )
+                .setParameter("usernames", trainerUsernames)
+                .getResultList();
+
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
         CriteriaDelete<Training> delete = cb.createCriteriaDelete(Training.class);
 
         Root<Training> training = delete.from(Training.class);
 
         delete.where(
                 cb.and(
-                        cb.equal(training.get("trainee").get("username"), traineeUsername),
-                        training.get("trainer").get("username").in(trainerUsernames)
+                        cb.equal(
+                                training.get("trainee").get("id"),
+                                traineeId
+                        ),
+                        training.get("trainer").get("id").in(trainerIds)
                 )
         );
 
-        return entityManager.createQuery(delete).executeUpdate();
+        return entityManager
+                .createQuery(delete)
+                .executeUpdate();
     }
 
     private List<Training> findByUsername(

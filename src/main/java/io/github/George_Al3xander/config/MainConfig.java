@@ -1,7 +1,9 @@
 package io.github.George_Al3xander.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import jakarta.persistence.EntityManagerFactory;
+
+import javax.persistence.EntityManagerFactory;
+
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -11,8 +13,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -22,10 +26,20 @@ import java.util.Properties;
 @EnableAspectJAutoProxy
 @ComponentScan(
         basePackages = "io.github.George_Al3xander",
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {WebConfig.class, TestConfig.class}
-        )
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {WebConfig.class, TestConfig.class}
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = Controller.class
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = RestController.class
+                )
+        }
 )
 public class MainConfig {
     @Value("${spring.datasource.url}")

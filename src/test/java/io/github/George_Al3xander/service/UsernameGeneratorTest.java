@@ -2,8 +2,10 @@ package io.github.George_Al3xander.service;
 
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.model.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

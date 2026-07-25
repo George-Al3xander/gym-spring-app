@@ -3,9 +3,11 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

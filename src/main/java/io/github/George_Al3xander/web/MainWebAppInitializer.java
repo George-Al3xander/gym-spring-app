@@ -2,9 +2,11 @@ package io.github.George_Al3xander.web;
 
 import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.config.WebConfig;
-import jakarta.servlet.FilterRegistration;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
+
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 

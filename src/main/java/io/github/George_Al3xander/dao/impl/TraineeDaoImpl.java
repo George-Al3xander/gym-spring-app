@@ -3,12 +3,14 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Training;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

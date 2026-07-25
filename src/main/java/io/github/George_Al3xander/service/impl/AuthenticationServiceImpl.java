@@ -5,7 +5,9 @@ import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.exception.EntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
-import jakarta.persistence.NoResultException;
+
+import javax.persistence.NoResultException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

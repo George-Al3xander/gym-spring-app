@@ -2,8 +2,10 @@ package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -2,7 +2,9 @@ package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

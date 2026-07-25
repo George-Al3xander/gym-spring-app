@@ -10,7 +10,9 @@ import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.web.AuthHttpHeader;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

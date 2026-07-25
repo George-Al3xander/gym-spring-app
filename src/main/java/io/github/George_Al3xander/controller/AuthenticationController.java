@@ -4,7 +4,9 @@ import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.web.AuthHttpHeader;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
