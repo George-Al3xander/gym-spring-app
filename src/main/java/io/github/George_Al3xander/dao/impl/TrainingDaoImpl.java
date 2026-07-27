@@ -81,7 +81,6 @@ public class TrainingDaoImpl implements TrainingDao {
                 .setParameter("usernames", trainerUsernames)
                 .getResultList();
 
-
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         CriteriaDelete<Training> delete = cb.createCriteriaDelete(Training.class);
@@ -94,7 +93,9 @@ public class TrainingDaoImpl implements TrainingDao {
                                 training.get("trainee").get("id"),
                                 traineeId
                         ),
-                        training.get("trainer").get("id").in(trainerIds)
+                        cb.not(
+                                training.get("trainer").get("id").in(trainerIds)
+                        )
                 )
         );
 

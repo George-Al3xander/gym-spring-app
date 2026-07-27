@@ -7,10 +7,6 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.model.TrainingType;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -278,7 +276,7 @@ class TrainingDaoImplTest {
     }
 
     @Test
-    void givenMatchingTrainerUsernames_whenDeleteForTrainee_thenDeleteMatchingTrainings() {
+    void givenNonMatchingTrainerUsernames_whenDeleteForTrainee_thenDeleteNonMatchingTrainings() {
         Training t1 = persistTraining("trainer1", "trainee");
         Training t2 = persistTraining("trainer2", "trainee");
         Training t3 = persistTraining("trainer3", "trainee");
@@ -291,14 +289,14 @@ class TrainingDaoImplTest {
         entityManager.flush();
         entityManager.clear();
 
-        assertEquals(2, deleted);
-        assertTrue(trainingDao.findById(t1.getId()).isEmpty());
-        assertFalse(trainingDao.findById(t2.getId()).isEmpty());
-        assertTrue(trainingDao.findById(t3.getId()).isEmpty());
+        assertEquals(1, deleted);
+        assertTrue(trainingDao.findById(t2.getId()).isEmpty());
+        assertTrue(trainingDao.findById(t1.getId()).isPresent());
+        assertTrue(trainingDao.findById(t3.getId()).isPresent());
     }
 
     @Test
-    void givenUnknownTrainerUsernames_whenDeleteForTrainee_thenDeleteNothing() {
+    void givenUnknownTrainerUsernames_whenDeleteForTrainee_thenDeleteAllTraineeTrainings() {
         Training training = persistTraining("trainer1", "trainee");
 
         int deleted = trainingDao.deleteForTraineeByTrainerUsernames(
@@ -309,12 +307,12 @@ class TrainingDaoImplTest {
         entityManager.flush();
         entityManager.clear();
 
-        assertEquals(0, deleted);
-        assertTrue(trainingDao.findById(training.getId()).isPresent());
+        assertEquals(1, deleted);
+        assertTrue(trainingDao.findById(training.getId()).isEmpty());
     }
 
     @Test
-    void givenAnotherTraineeWithSameTrainer_whenDeleteForTrainee_thenOnlySpecifiedTraineeDeleted() {
+    void givenAnotherTraineeWithSameTrainer_whenDeleteForTrainee_thenDoNotDeleteSpecifiedTrainerTrainings() {
         Training trainee1Training = persistTraining("trainer1", "trainee1");
         Training trainee2Training = persistTraining("trainer1", "trainee2");
 
@@ -326,8 +324,8 @@ class TrainingDaoImplTest {
         entityManager.flush();
         entityManager.clear();
 
-        assertEquals(1, deleted);
-        assertTrue(trainingDao.findById(trainee1Training.getId()).isEmpty());
+        assertEquals(0, deleted);
+        assertTrue(trainingDao.findById(trainee1Training.getId()).isPresent());
         assertTrue(trainingDao.findById(trainee2Training.getId()).isPresent());
     }
 
