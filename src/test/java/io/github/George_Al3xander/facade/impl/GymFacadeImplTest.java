@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dao.TrainingTypeDao;
+import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.TraineeSummaryResponse;
@@ -193,7 +194,7 @@ class GymFacadeImplTest {
         when(traineeService.getTraineeByUsername(username))
                 .thenReturn(trainee);
 
-        when(trainerService.getTrainersByTraineeUsername(username, null))
+        when(trainerService.getTrainersByTraineeUsername(username, new TrainerFilter()))
                 .thenReturn(List.of(trainer));
 
         when(trainerMapper.toSummary(trainer))
@@ -213,7 +214,7 @@ class GymFacadeImplTest {
                 .getTraineeByUsername(username);
 
         verify(trainerService)
-                .getTrainersByTraineeUsername(username, null);
+                .getTrainersByTraineeUsername(username, new TrainerFilter());
 
         verify(trainerMapper)
                 .toSummary(trainer);
