@@ -181,7 +181,7 @@ public class GymFacadeImpl implements GymFacade {
 
     private List<TrainerSummaryResponse> getTrainersListByUsername(String traineeUsername) {
         return trainerService
-                .getTrainersByTraineeUsername(traineeUsername, null)
+                .getTrainersByTraineeUsername(traineeUsername, new TrainerFilter())
                 .stream()
                 .map(trainerMapper::toSummary)
                 .toList();
