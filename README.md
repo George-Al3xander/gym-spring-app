@@ -1,117 +1,205 @@
-# Gym CRM System (Spring Core + JPA Module)
+# Gym CRM System (Spring REST + JPA Module)
 
 ## Overview
 
-The Gym CRM System manages three core domain entities:
+The Gym CRM System is a RESTful web application for managing gym members, trainers, and trainings.
+
+The application follows a layered architecture built with the Spring Framework and provides REST APIs documented with
+OpenAPI (Swagger). Persistence is implemented using JPA/Hibernate with Flyway-managed database migrations. The system
+supports profile-based configuration for development and production environments.
+
+Core domain entities:
 
 - Trainee
 - Trainer
 - Training
-
-The application is built using the Spring Framework with Java-based configuration, Hibernate ORM, JPA, Flyway,
-transaction management, Aspect-Oriented Programming (AOP), Spring Profiles, and supports both H2 (development) and
-MySQL (production) databases.
+- TrainingType
+- User
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```
 io.github.George_AI3xander
- ├── aspect        → Cross-cutting concerns (exception logging)
- ├── config        → Spring, JPA and profile-specific configuration
- ├── dao
- │    ├── impl     → JPA DAO implementations
- │    └── *Dao     → DAO interfaces
- ├── dto           → Data Transfer Objects
- ├── exception     → Custom exceptions
- ├── facade        → Unified application API
- ├── model         → JPA entities
- ├── service
- │    └── impl     → Business logic implementations
- ├── util          → Utility classes
- └── App           → Application entry point
+├── aspect
+│   ├── logging
+│   └── exception
+│
+├── config
+│   ├── persistence
+│   ├── security
+│   ├── swagger
+│   ├── web
+│   └── profile
+│
+├── controller
+│
+├── dao
+│   ├── impl
+│   └── interfaces
+│
+├── dto
+│   ├── request
+│   ├── response
+│   ├── mapper
+│   └── common
+│
+├── exception
+│
+├── facade
+│
+├── model
+│
+├── service
+│   ├── impl
+│   └── interfaces
+│
+├── util
+│
+└── App
+```
+
+The application follows a classic layered architecture:
+
+```
+REST Controller
+        │
+        ▼
+     Facade
+        │
+        ▼
+    Service Layer
+        │
+        ▼
+   Repository (DAO)
+        │
+        ▼
+      Database
 ```
 
 ---
 
-## Resources
+# Resources
 
 ```
 src/main/resources
- ├── application-dev.properties
- ├── application-prod.properties
- ├── logback.xml
- └── db
-      └── migration
-           └── V1__create_tables.sql
+├── application-dev.properties
+├── application-prod.properties
+├── logback.xml
+└── db
+    └── migration
+        └── V1__create_tables.sql
 ```
 
 ---
 
-## Technologies
+# Technologies
+
+## Language
 
 - Java 21
+
+## Frameworks
+
 - Spring Framework
+- Spring MVC
 - Spring Context
-- Spring ORM
 - Spring JDBC
+- Spring ORM
 - Spring AOP
 - Spring Transaction Management
 - Spring Profiles
+
+## Persistence
+
 - Hibernate ORM
 - Jakarta Persistence (JPA)
-- Jakarta Validation
 - Flyway
-- H2 Database (development)
-- MySQL (production)
-- HikariCP
+
+## Database
+
+Development
+
+- H2
+
+Production
+
+- MySQL
+
+## API
+
+- REST
+- OpenAPI 3
+- Swagger UI
+
+## Validation
+
+- Jakarta Validation
+
+## Mapping
+
+- MapStruct
+
+## Utilities
+
 - Lombok
-- SLF4J + Logback
+- HikariCP
+
+## Logging
+
+- SLF4J
+- Logback
 
 ---
 
-## Configuration
+# Configuration
 
-The application uses Java-based Spring configuration.
+The application is fully configured using Java-based Spring configuration.
 
-### Main features enabled
+Enabled features include:
 
 - Component scanning
+- Spring MVC
+- REST controllers
 - AspectJ auto proxy
 - Transaction management
+- Hibernate integration
+- Flyway migrations
 - JPA EntityManager
 - HikariCP datasource
-- Flyway database migrations
-- Hibernate integration
+- OpenAPI configuration
+- Request interceptors
 
-### Key annotations
+Main annotations used throughout the project:
 
 - `@Configuration`
 - `@ComponentScan`
-- `@Bean`
+- `@EnableWebMvc`
 - `@EnableAspectJAutoProxy`
 - `@EnableTransactionManagement`
+- `@Bean`
 - `@Service`
 - `@Repository`
-- `@Component`
+- `@RestController`
+- `@ControllerAdvice`
 - `@Transactional`
 
 ---
 
-## Spring Profiles
+# Spring Profiles
 
-The active profile is selected using the JVM system property:
+The active profile is selected using:
 
 ```bash
 -Dspring.profiles.active=dev
 ```
 
-If no profile is specified, the application defaults to the **dev** profile.
+If no profile is specified, the application starts using the **development** profile.
 
-### Development (`dev`)
+## Development
 
-Configuration is loaded from:
+Configuration file:
 
 ```
 application-dev.properties
@@ -121,10 +209,12 @@ Uses:
 
 - H2 in-memory database
 - H2 JDBC driver
+- automatic Flyway migration
+- SQL logging
 
-### Production (`prod`)
+## Production
 
-Configuration is loaded from:
+Configuration file:
 
 ```
 application-prod.properties
@@ -132,39 +222,29 @@ application-prod.properties
 
 Uses:
 
-- MySQL database
-- Environment variables for datasource configuration
+- MySQL
+- datasource configured through environment variables
+- Flyway migration
+- optimized production configuration
 
 ---
 
-## Database Configuration
+# Database Configuration
 
 Datasource configuration is loaded automatically from the active Spring profile.
 
-### Development
-
-Configuration file:
+## Development
 
 ```
-application-dev.properties
-```
-
-```properties
 spring.datasource.url=jdbc:h2:mem:store
 spring.datasource.username=sa
 spring.datasource.password=password
 spring.datasource.driver-class-name=org.h2.Driver
 ```
 
-### Production
-
-Configuration file:
+## Production
 
 ```
-application-prod.properties
-```
-
-```properties
 spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
@@ -175,21 +255,22 @@ Connection pooling is provided by HikariCP.
 
 Hibernate configuration includes:
 
-- schema validation (`hibernate.hbm2ddl.auto=validate`)
-- SQL logging enabled
+- schema validation
+- SQL logging
 - automatic dialect detection
 
 ---
 
-## Database Migration
+# Database Migration
 
-Database schema management is handled by **Flyway**.
+Database schema management is performed using Flyway.
 
-At application startup:
+At startup:
 
-1. Flyway executes all pending SQL migrations.
-2. Hibernate validates the resulting schema.
-3. The `EntityManagerFactory` is initialized only after successful migration.
+1. Flyway checks the database version.
+2. Pending SQL migrations are executed.
+3. Hibernate validates the resulting schema.
+4. Spring initializes the persistence layer.
 
 Migration scripts are located in:
 
@@ -203,7 +284,7 @@ Current migration:
 V1__create_tables.sql
 ```
 
-The initial migration creates the following tables:
+The initial migration creates:
 
 - users
 - trainees
@@ -211,15 +292,41 @@ The initial migration creates the following tables:
 - trainings
 - training_types
 
-It also inserts the default training types used by the application.
+and inserts the default training types required by the application.
 
 ---
 
-## Domain Model
+# REST Architecture
 
-### User
+The application exposes its functionality through RESTful endpoints.
 
-Base entity containing:
+The REST layer consists of:
+
+- REST controllers
+- request DTOs
+- response DTOs
+- MapStruct mappers
+- centralized exception handling
+- request logging
+- OpenAPI documentation
+
+Each controller delegates business logic to the `GymFacade`, which acts as the unified entry point for all application
+operations.
+
+Controllers return DTOs instead of exposing JPA entities directly, ensuring a clear separation between the API contract
+and the persistence model.
+
+Request validation is performed using Jakarta Validation annotations before requests reach the service layer.
+
+All API endpoints produce and consume JSON.
+
+# Domain Model
+
+## User
+
+`User` is the base entity for all system users.
+
+Fields:
 
 - id
 - firstName
@@ -234,13 +341,15 @@ Inheritance strategy:
 JOINED
 ```
 
-Primary keys use:
+Primary key strategy:
 
 ```
 GenerationType.IDENTITY
 ```
 
-### Trainee
+---
+
+## Trainee
 
 Extends `User`.
 
@@ -251,50 +360,139 @@ Additional fields:
 
 Relationships:
 
-- One-to-many relationship with `Training`
+- One-to-many with `Training`
 
-### Trainer
+Represents a gym member participating in training sessions.
+
+---
+
+## Trainer
 
 Extends `User`.
 
-Additional field:
+Additional fields:
 
 - specialization (`TrainingType`)
 
-### Training
+Relationships:
 
-Contains:
+- One-to-many with `Training`
 
+Represents a trainer responsible for conducting training sessions.
+
+---
+
+## Training
+
+Represents a completed or scheduled training session.
+
+Fields:
+
+- id
 - trainee
 - trainer
 - trainingName
 - trainingType
 - trainingDate
-- durationSeconds (stored as `duration_seconds`)
+- durationSeconds
 
-Primary keys use:
-
-```
-GenerationType.IDENTITY
-```
-
-### TrainingType
-
-Represents a training specialization.
-
-Primary keys use:
+Database column mapping:
 
 ```
-GenerationType.IDENTITY
+duration_seconds
 ```
+
+Relationships:
+
+- Many-to-one with `Trainer`
+- Many-to-one with `Trainee`
+- Many-to-one with `TrainingType`
 
 ---
 
-## Persistence Layer
+## TrainingType
 
-The application uses JPA repositories implemented with `EntityManager`.
+Represents a specialization available within the gym.
 
-DAO interfaces:
+Examples include:
+
+- Fitness
+- Yoga
+- Boxing
+- CrossFit
+
+Training types are initialized automatically during the first Flyway migration.
+
+---
+
+# Data Transfer Objects (DTOs)
+
+The REST layer does not expose JPA entities directly.
+
+Instead, dedicated request and response DTOs define the public API contract.
+
+DTOs are organized into separate packages for incoming requests and outgoing responses.
+
+## Request DTOs
+
+Used for:
+
+- authentication
+- trainee creation
+- trainer creation
+- trainee update
+- trainer update
+- training creation
+- password change
+- account activation
+- training filtering
+
+Incoming requests are validated using Jakarta Validation annotations before reaching the service layer.
+
+---
+
+## Response DTOs
+
+Response objects expose only the data required by API consumers.
+
+Typical response objects include:
+
+- trainee details
+- trainer details
+- training information
+- generated credentials
+- success responses
+- error responses
+- filtered training lists
+
+Sensitive fields are omitted unless explicitly required.
+
+---
+
+# Object Mapping
+
+The application uses **MapStruct** for object conversion.
+
+Mappings include:
+
+- Entity → Response DTO
+- Request DTO → Entity
+- Update Request → Existing Entity
+
+Benefits include:
+
+- compile-time mapper generation
+- type safety
+- reduced boilerplate
+- improved maintainability
+
+---
+
+# Persistence Layer
+
+Persistence is implemented using JPA with Hibernate.
+
+Repository interfaces include:
 
 - UserDao
 - TraineeDao
@@ -302,174 +500,101 @@ DAO interfaces:
 - TrainingDao
 - TrainingTypeDao
 
-Each DAO implementation provides standard CRUD operations using JPA.
+Each repository is implemented using `EntityManager`.
 
-Additional repository methods include:
+Supported operations include:
 
-### UserDao
+- create
+- update
+- delete
+- find by id
+- find all
+- find by username
+- custom filtering queries
 
-- findByUsername()
-- countByName()
+Additional repository methods provide:
 
-### TraineeDao
+- counting duplicate usernames
+- retrieving trainers not assigned to a trainee
+- retrieving trainings using filter criteria
 
-- findByUsername()
+Repository lookups by username use JPA's `getSingleResult()`.
 
-### TrainerDao
-
-- findByUsername()
-- findUnassignedByTraineeUsername()
-
-### TrainingDao
-
-- findByTraineeUsername()
-- findByTrainerUsername()
-
-Repository lookups by username use JPA's `getSingleResult()`. If no matching entity exists, JPA throws
-`NoResultException`.
+If no matching entity exists, JPA throws `NoResultException`.
 
 ---
 
-## Business Services
+# Business Services
 
-### AuthenticationService
+Business logic is encapsulated within the service layer.
 
-Responsible for user authentication.
+## AuthenticationService
 
-### UserService
+Responsible for:
 
-Provides:
+- user authentication
+- credential verification
+
+Invalid credentials result in a `BadCredentialsException`.
+
+---
+
+## UserService
+
+Responsible for:
 
 - password reset
-- account activation/deactivation
-
-### TraineeService
-
-Provides:
-
-- create trainee
-- update trainee
-- delete trainee
-- find by id
-- find by username
-- list all trainees
-
-### TrainerService
-
-Provides:
-
-- create trainer
-- update trainer
-- find by id
-- find by username
-- list all trainers
-- retrieve unassigned trainers
-
-### TrainingService
-
-Provides:
-
-- create training
-- find by id
-- list all trainings
-- filter trainee trainings
-- filter trainer trainings
-
-### UsernameGenerator
-
-Generates unique usernames.
+- account activation
+- account deactivation
 
 ---
 
-## GymFacade
+## TraineeService
 
-`GymFacade` provides a unified entry point to the application's business logic.
+Provides operations for:
 
-### Public operations
-
-- create trainer
-- create trainee
-
-### Protected operations (authentication required)
-
-- retrieve trainer
-- retrieve trainee
-- update trainer
-- update trainee
-- delete trainee
-- add training
-- retrieve trainee trainings
-- retrieve trainer trainings
-- retrieve unassigned trainers
-- reset user password
-- activate/deactivate user accounts
+- creating trainees
+- updating trainees
+- deleting trainees
+- retrieving trainees
+- listing trainees
 
 ---
 
-## Authentication
+## TrainerService
 
-Protected operations require valid credentials.
+Provides operations for:
 
-Authentication is performed using:
-
-```
-CredentialsDTO
-```
-
-containing:
-
-- username
-- password
-
-Before executing any protected operation, the facade delegates authentication to `AuthenticationService`.
-
-If authentication fails, a `BadCredentialsException` is thrown.
+- creating trainers
+- updating trainers
+- retrieving trainers
+- listing trainers
+- retrieving unassigned trainers
 
 ---
 
-## User Management
+## TrainingService
 
-The system supports additional account management features:
+Provides operations for:
 
-- password reset
-- activation/deactivation of user accounts
-
-Password reset automatically generates a new random password and persists the updated credentials.
-
-User activation toggles the account status between active and inactive.
+- creating trainings
+- retrieving trainings
+- filtering trainee trainings
+- filtering trainer trainings
 
 ---
 
-## Training Filtering
+## UsernameGenerator
 
-Training queries support filtering by:
+Responsible for generating unique usernames.
 
-- date range
-- trainee first name
-- trainee last name
-- trainer first name
-- trainer last name
-- training type
-
-Filtering is represented by:
-
-```
-TrainingFilter
-```
-
----
-
-## Business Rules
-
-### Username Generation
-
-Format:
+Username format:
 
 ```
 firstName.lastName
 ```
 
-Duplicate usernames are resolved by appending a numeric suffix.
+Duplicates are resolved by appending a numeric suffix.
 
 Example:
 
@@ -479,115 +604,424 @@ john.doe1
 john.doe2
 ```
 
-### Password Generation
+---
 
-Passwords are automatically generated during user creation.
+## PasswordGenerator
+
+Automatically generates secure random passwords.
 
 Characteristics:
 
 - random
-- fixed length of 10 characters
+- 10 characters
+- generated during user creation
+- generated during password reset
+
+---
+
+# GymFacade
+
+The `GymFacade` serves as the primary entry point for the application's business logic.
+
+It coordinates service interactions and exposes a simplified API for the REST controllers.
+
+## Public operations
+
+- create trainee
+- create trainer
+
+## Authenticated operations
+
+- retrieve trainee
+- retrieve trainer
+- update trainee
+- update trainer
+- delete trainee
+- create training
+- retrieve trainee trainings
+- retrieve trainer trainings
+- retrieve unassigned trainers
+- reset password
+- activate user
+- deactivate user
+
+The facade performs authentication before delegating protected operations to the corresponding service.
+
+---
+
+# Authentication
+
+Protected operations require valid user credentials.
+
+Authentication is performed using a dedicated request object containing:
+
+- username
+- password
+
+Requests are authenticated by `AuthenticationService` before business logic is executed.
+
+Invalid credentials result in an authentication exception.
+
+---
+
+# User Management
+
+The system supports account management features including:
+
+- password reset
+- account activation
+- account deactivation
+
+Password reset automatically generates a new random password and persists the updated credentials.
+
+User activation changes the account status without deleting user information.
+
+---
+
+# Training Filtering
+
+Training retrieval endpoints support filtering using multiple optional criteria.
+
+Available filters include:
+
+- start date
+- end date
+- trainee first name
+- trainee last name
+- trainer first name
+- trainer last name
+- training type
+
+Filtering is encapsulated within a dedicated filter DTO and translated into repository queries by the service layer.
+
+---
+
+# Business Rules
+
+## Username Generation
+
+Format:
+
+```
+firstName.lastName
+```
+
+Examples:
+
+```
+john.doe
+john.doe1
+john.doe2
+```
+
+---
+
+## Password Generation
+
+Passwords are:
+
+- randomly generated
+- exactly 10 characters long
+- generated during user registration
+- regenerated during password reset
 
 ---
 
 ## Validation
 
-Entities use Jakarta Validation annotations.
+Request DTOs and entities use Jakarta Validation.
 
-Examples include:
+Common constraints include:
 
 - `@NotBlank`
 - `@NotNull`
 - `@Positive`
 - `@Size`
+- `@Email` (where applicable)
+
+Validation failures are handled centrally and returned as REST error responses.
+
+# REST API
+
+The application exposes a RESTful API for managing trainees, trainers, trainings, and user accounts.
+
+The API follows standard REST principles:
+
+- JSON request/response bodies
+- Resource-oriented endpoints
+- HTTP status codes
+- Request validation
+- Centralized exception handling
 
 ---
 
-## Transactions
+## Controllers
 
-Business services use Spring transaction management.
+The REST layer is organized into dedicated controllers.
 
-- Read-only transactions for query operations
-- Read/write transactions for data modification operations
+### TraineeController
 
----
+Responsible for:
 
-## Aspect-Oriented Programming
-
-An exception logging aspect intercepts service-layer exceptions.
-
-Features include:
-
-- centralized exception logging
-- automatic error reporting
-- SLF4J integration
+- creating trainees
+- retrieving trainee profiles
+- updating trainee profiles
+- deleting trainees
+- retrieving trainee trainings
+- retrieving unassigned trainers
+- updating trainee trainer assignments
 
 ---
 
-## Dependency Injection
+### TrainerController
 
-The project consistently uses constructor injection.
+Responsible for:
 
-Lombok's `@RequiredArgsConstructor` is used to simplify dependency injection and encourage immutable dependencies.
-
----
-
-## Application Entry Point
-
-The sample application demonstrates usage of the `GymFacade` by:
-
-- creating a trainee
-- automatically generating credentials
-- performing authenticated operations
-- deleting the trainee
+- creating trainers
+- retrieving trainer profiles
+- updating trainer profiles
+- retrieving trainer trainings
 
 ---
 
-## Logging
+### TrainingController
+
+Responsible for:
+
+- creating trainings
+
+---
+
+### UserController
+
+Responsible for:
+
+- login/authentication
+- password reset
+- account activation
+- account deactivation
+
+---
+
+# Authentication
+
+Protected endpoints require authentication.
+
+Authentication credentials are supplied with each secured request and are verified by the `AuthenticationService` before
+business logic is executed.
+
+Authentication failures result in an appropriate HTTP error response.
+
+Public endpoints are limited to user registration and authentication.
+
+---
+
+# OpenAPI Documentation
+
+The REST API is documented using **OpenAPI 3**.
+
+Swagger UI provides interactive API documentation including:
+
+- available endpoints
+- request parameters
+- request bodies
+- response schemas
+- response codes
+- authentication requirements
+
+The generated documentation stays synchronized with the controller layer through OpenAPI annotations.
+
+---
+
+# Exception Handling
+
+The application provides centralized REST exception handling using `@ControllerAdvice`.
+
+Common exceptions handled include:
+
+- validation failures
+- authentication failures
+- entity not found
+- duplicate resources
+- illegal requests
+- unexpected server errors
+
+REST error responses provide:
+
+- HTTP status code
+- error message
+- timestamp
+- request information (when applicable)
+
+---
+
+# Request Validation
+
+Incoming REST requests are validated before reaching the business layer.
+
+Validation includes:
+
+- required fields
+- string length constraints
+- positive numeric values
+- valid dates
+- non-null references
+
+Validation failures return descriptive HTTP 400 (Bad Request) responses.
+
+---
+
+# Logging
 
 Logging is implemented using SLF4J and Logback.
 
-Logging covers:
+The application logs:
 
 - application startup
 - Flyway migration execution
-- service operations
-- exception handling via AOP
-- Hibernate SQL output
+- incoming REST requests
+- outgoing REST responses
+- authentication attempts
+- business operations
+- SQL statements
+- handled exceptions
+- unexpected server errors
+
+Logging concerns are implemented using Spring AOP and web interceptors, keeping business logic free from logging code.
 
 ---
 
-## Testing
+# Aspect-Oriented Programming
 
-Unit tests cover:
+The application uses Spring AOP to implement cross-cutting concerns.
 
-- service layer
-- DAO layer
-- facade layer
+Implemented aspects include:
+
+- exception logging
+- service-level error reporting
+
+This approach centralizes logging while reducing duplication throughout the service layer.
+
+---
+
+# Transactions
+
+Business services use Spring transaction management.
+
+Transaction strategy:
+
+- read-only transactions for query operations
+- read/write transactions for create, update, and delete operations
+
+Transaction boundaries are defined declaratively using `@Transactional`.
+
+---
+
+# Dependency Injection
+
+The application consistently uses constructor-based dependency injection.
+
+Dependencies are managed by the Spring IoC container.
+
+Lombok's `@RequiredArgsConstructor` is used to reduce boilerplate and encourage immutable dependencies.
+
+---
+
+# Application Flow
+
+A typical request follows this sequence:
+
+```
+HTTP Request
+      │
+      ▼
+REST Controller
+      │
+      ▼
+Authentication (if required)
+      │
+      ▼
+GymFacade
+      │
+      ▼
+Service Layer
+      │
+      ▼
+Repository (DAO)
+      │
+      ▼
+Database
+      │
+      ▼
+Entity
+      │
+      ▼
+MapStruct Mapper
+      │
+      ▼
+Response DTO
+      │
+      ▼
+HTTP Response
+```
+
+---
+
+# Testing
+
+The project includes comprehensive unit tests covering:
+
+## Service Layer
+
+- business logic
 - authentication
+- password reset
+- account activation
+- account deactivation
 - username generation
 - password generation
-- password reset
-- user activation/deactivation
+
+## Persistence Layer
+
+- CRUD operations
+- custom queries
+- username lookups
+- missing entity handling
 - Flyway-backed persistence
 
-DAO tests additionally verify:
+## Facade Layer
 
-- successful entity retrieval
-- `NoResultException` handling for missing usernames
+- controller-facing business operations
+- authentication delegation
+- service coordination
 
-Frameworks:
+## REST Layer
 
-- JUnit 6
+Tests verify:
+
+- request validation
+- endpoint behavior
+- HTTP response codes
+- JSON serialization
+- exception handling
+
+Frameworks used:
+
+- JUnit 5
 - Mockito
 - Spring Test
 
 ---
 
-## Key Highlights
+# Key Highlights
 
 - Layered architecture
+- RESTful API
+- Spring MVC
+- OpenAPI / Swagger documentation
 - Facade pattern
+- DTO-based API design
+- MapStruct object mapping
 - Spring Profiles
 - Flyway database migrations
 - JPA/Hibernate persistence
@@ -597,9 +1031,11 @@ Frameworks:
 - Profile-based datasource configuration
 - HikariCP connection pooling
 - Authentication layer
+- Centralized exception handling
 - Spring Transaction Management
 - Spring AOP
 - Constructor-based dependency injection
+- Request validation
 - Dynamic training filtering
 - Jakarta Validation
 - Comprehensive unit testing
