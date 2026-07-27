@@ -2,15 +2,17 @@ package io.github.George_Al3xander.web;
 
 import io.github.George_Al3xander.config.MainConfig;
 import io.github.George_Al3xander.config.WebConfig;
+import io.github.George_Al3xander.filter.TransactionIdFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+public class MainWebAppInitializer
+        extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-public class MainWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class<?>[]{MainConfig.class};
@@ -27,12 +29,45 @@ public class MainWebAppInitializer extends AbstractAnnotationConfigDispatcherSer
     }
 
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext)
+            throws ServletException {
+
         super.onStartup(servletContext);
 
-        FilterRegistration.Dynamic encodingFilter = servletContext.addFilter("encoding-filter", new CharacterEncodingFilter());
-        encodingFilter.setInitParameter("encoding", "UTF-8");
-        encodingFilter.setInitParameter("forceEncoding", "true");
-        encodingFilter.addMappingForUrlPatterns(null, true, "/*");
+
+        FilterRegistration.Dynamic encodingFilter =
+                servletContext.addFilter(
+                        "encoding-filter",
+                        new CharacterEncodingFilter()
+                );
+
+        encodingFilter.setInitParameter(
+                "encoding",
+                "UTF-8"
+        );
+
+        encodingFilter.setInitParameter(
+                "forceEncoding",
+                "true"
+        );
+
+        encodingFilter.addMappingForUrlPatterns(
+                null,
+                true,
+                "/*"
+        );
+
+        FilterRegistration.Dynamic transactionFilter =
+                servletContext.addFilter(
+                        "transaction-id-filter",
+                        new TransactionIdFilter()
+                );
+
+
+        transactionFilter.addMappingForUrlPatterns(
+                null,
+                false,
+                "/*"
+        );
     }
 }
