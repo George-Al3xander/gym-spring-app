@@ -11,12 +11,12 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
