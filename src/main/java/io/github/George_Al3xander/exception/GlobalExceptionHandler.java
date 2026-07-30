@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("message", ex.getMessage());
 
-        HttpStatus status = ex instanceof EntityInUseException ? HttpStatus.CONFLICT : HttpStatus.NOT_FOUND;
+        HttpStatus status = ex instanceof GymEntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
 
         return ResponseEntity.status(status).body(error);
     }
