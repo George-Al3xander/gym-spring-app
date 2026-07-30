@@ -2,7 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.exception.ActivationStateConflictException;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.UserService;
 import io.github.George_Al3xander.util.PasswordGenerator;
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String resetPassword(Long id) {
         User user = userDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User", id));
+                .orElseThrow(() -> new GymEntityNotFoundException("User", id));
 
         user.setPassword(PasswordGenerator.generatePassword(10));
 
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateActiveStatusByUsername(String username, boolean active) {
         User user = userDao.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User", username));
+                .orElseThrow(() -> new GymEntityNotFoundException("User", username));
 
         boolean previousActiveStatus = Boolean.TRUE.equals(user.getIsActive());
 

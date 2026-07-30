@@ -2,7 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
@@ -29,7 +29,7 @@ public class TrainingServiceImpl implements TrainingService {
         Optional<Training> optionalTraining = trainingDao.findById(id);
 
         if (optionalTraining.isEmpty()) {
-            throw new EntityNotFoundException("Training", id);
+            throw new GymEntityNotFoundException("Training", id);
         }
 
         return optionalTraining.get();

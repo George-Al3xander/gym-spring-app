@@ -6,7 +6,7 @@ import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.*;
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
@@ -199,7 +199,7 @@ public class GymFacadeImpl implements GymFacade {
         Optional<TrainingType> trainingTypeOptional = trainingTypeDao.findById(id);
 
         if (trainingTypeOptional.isEmpty()) {
-            throw new EntityNotFoundException("Training type", id);
+            throw new GymEntityNotFoundException("Training type", id);
         }
 
         return trainingTypeOptional.get();

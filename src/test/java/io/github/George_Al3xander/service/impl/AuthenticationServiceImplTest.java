@@ -3,13 +3,9 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -134,7 +132,7 @@ class AuthenticationServiceImplTest {
         );
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> authenticationService.changePassword(credentials)
         );
     }

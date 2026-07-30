@@ -3,7 +3,7 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.UsernameGenerator;
@@ -71,7 +71,7 @@ class TrainerServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainerService.getTrainerById(id)
         );
 
@@ -225,7 +225,7 @@ class TrainerServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainerService.getTrainerByUsername(username)
         );
 
@@ -269,7 +269,7 @@ class TrainerServiceImplTest {
         TrainerFilter filter = new TrainerFilter(true, false);
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainerService.getTrainersByTraineeUsername(username, filter)
         );
 

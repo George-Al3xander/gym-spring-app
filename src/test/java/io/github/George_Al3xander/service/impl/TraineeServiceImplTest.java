@@ -4,7 +4,7 @@ import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.exception.EntityInUseException;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -87,7 +87,7 @@ class TraineeServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> traineeService.getTraineeById(1L)
         );
 
@@ -294,7 +294,7 @@ class TraineeServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> traineeService.getTraineeByUsername("missing.user")
         );
 
@@ -334,7 +334,7 @@ class TraineeServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> traineeService.getTraineesByTrainerUsername("missing.trainer", true)
         );
 

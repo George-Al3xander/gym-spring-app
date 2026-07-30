@@ -3,7 +3,7 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.service.TrainerService;
@@ -30,7 +30,7 @@ public class TrainerServiceImpl implements TrainerService {
         Optional<Trainer> optionalTrainer = trainerDao.findById(id);
 
         if (optionalTrainer.isEmpty()) {
-            throw new EntityNotFoundException("Trainer", id);
+            throw new GymEntityNotFoundException("Trainer", id);
         }
 
         return optionalTrainer.get();
@@ -41,7 +41,7 @@ public class TrainerServiceImpl implements TrainerService {
         Optional<Trainer> optionalTrainer = trainerDao.findByUsername(username);
 
         if (optionalTrainer.isEmpty()) {
-            throw new EntityNotFoundException("Trainer", username);
+            throw new GymEntityNotFoundException("Trainer", username);
         }
 
         return optionalTrainer.get();
@@ -57,7 +57,7 @@ public class TrainerServiceImpl implements TrainerService {
         Optional<Trainee> traineeOptional = traineeDao.findByUsername(username);
 
         if (traineeOptional.isEmpty()) {
-            throw new EntityNotFoundException("Trainee", username);
+            throw new GymEntityNotFoundException("Trainee", username);
         }
 
         return trainerDao.findAllByTraineeUsername(traineeOptional.get().getUsername(), filter);

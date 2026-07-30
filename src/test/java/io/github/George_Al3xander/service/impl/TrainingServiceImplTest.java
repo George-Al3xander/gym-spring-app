@@ -2,7 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
@@ -103,7 +103,7 @@ class TrainingServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainingService.getTrainingById(1012L)
         );
 
@@ -168,12 +168,12 @@ class TrainingServiceImplTest {
     @Test
     void givenTrainingWithUnknownTrainer_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
 
-        doThrow(new EntityNotFoundException("Trainer", 101L))
+        doThrow(new GymEntityNotFoundException("Trainer", 101L))
                 .when(trainerService)
                 .getTrainerById(101L);
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainingService.saveTraining(training)
         );
 
@@ -189,12 +189,12 @@ class TrainingServiceImplTest {
     @Test
     void givenTrainingWithUnknownTrainee_whenSaveTraining_thenThrowExceptionAndDoNotSave() {
 
-        doThrow(new EntityNotFoundException("Trainee", 11L))
+        doThrow(new GymEntityNotFoundException("Trainee", 11L))
                 .when(traineeService)
                 .getTraineeById(11L);
 
         assertThrows(
-                EntityNotFoundException.class,
+                GymEntityNotFoundException.class,
                 () -> trainingService.saveTraining(training)
         );
 

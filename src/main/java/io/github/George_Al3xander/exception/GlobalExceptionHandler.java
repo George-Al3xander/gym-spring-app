@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({EntityInUseException.class, EntityNotFoundException.class, ActivationStateConflictException.class})
+    @ExceptionHandler({EntityInUseException.class, GymEntityNotFoundException.class, ActivationStateConflictException.class})
     @ResponseBody
     public ResponseEntity<Map<String, String>> handleCustomEntityExceptions(Exception ex) {
 

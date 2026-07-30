@@ -2,7 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.exception.ActivationStateConflictException;
-import io.github.George_Al3xander.exception.EntityNotFoundException;
+import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.util.PasswordGenerator;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class UserServiceImplTest {
     void givenNonExistingUser_whenResetPassword_thenThrowsEntityNotFoundException() {
         when(userDao.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.resetPassword(1L));
+        assertThrows(GymEntityNotFoundException.class, () -> userService.resetPassword(1L));
 
         verify(userDao, never()).update(any());
     }
@@ -120,7 +120,7 @@ class UserServiceImplTest {
     void givenNonExistingUser_whenUpdateActiveStatus_thenThrowsEntityNotFoundException() {
         when(userDao.findByUsername("john")).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class,
+        assertThrows(GymEntityNotFoundException.class,
                 () -> userService.updateActiveStatusByUsername("john", true));
 
         verify(userDao, never()).update(any());
