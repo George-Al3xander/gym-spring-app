@@ -7,6 +7,7 @@ import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,14 +41,21 @@ public class AuthenticationController {
                     message = "Authentication failed"
             )
     })
-    public void login(
+    public ResponseEntity<Void> login(
             @ApiParam(
                     value = "User credentials",
                     required = true
             )
-            @Valid @RequestBody CredentialsDTO credentialsDTO
+            @RequestParam String username,
+            @RequestParam String password
     ) {
-        authenticationService.authenticate(credentialsDTO);
+        boolean authenticated = authenticationService.authenticate(new CredentialsDTO(username, password));
+
+        if (!authenticated) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 
 

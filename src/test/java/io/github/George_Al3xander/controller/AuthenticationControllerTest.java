@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,9 +52,12 @@ class AuthenticationControllerTest {
         CredentialsDTO credentials =
                 new CredentialsDTO("john", "1234567890");
 
+        when(authenticationService.authenticate(credentials)).thenReturn(true);
+
         mockMvc.perform(get("/auth")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(credentials)))
+                        .param("username", credentials.getUsername())
+                        .param("password", credentials.getPassword())
+                )
                 .andExpect(status().isOk());
 
         verify(authenticationService).authenticate(credentials);
