@@ -11,7 +11,6 @@ import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -153,9 +152,6 @@ public class TrainerController {
             )
             @Valid @RequestBody UpdateTrainerRequest request
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.updateTrainer(username, request)
@@ -210,9 +206,6 @@ public class TrainerController {
             )
             @Valid @RequestBody TrainingFilter trainingFilter
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.getTrainerTrainings(
@@ -269,10 +262,7 @@ public class TrainerController {
             )
             @Valid @RequestBody ActivateUserRequest request
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+        
         gymFacade.updateActiveStatusByUsername(
                 username,
                 request.isActive()

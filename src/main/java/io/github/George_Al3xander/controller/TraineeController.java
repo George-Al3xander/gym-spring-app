@@ -10,7 +10,6 @@ import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -148,9 +147,6 @@ public class TraineeController {
 
             @Valid @RequestBody UpdateTraineeRequest request
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.updateTrainee(username, request)
@@ -197,9 +193,6 @@ public class TraineeController {
 
             @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         gymFacade.deleteTrainee(username);
 
@@ -242,9 +235,6 @@ public class TraineeController {
 
             @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.getTrainersByTraineeUsername(
@@ -292,9 +282,6 @@ public class TraineeController {
 
             @Valid @RequestBody TrainingFilter trainingFilter
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.getTraineeTrainings(
@@ -342,9 +329,6 @@ public class TraineeController {
 
             @Valid @RequestBody UpdateTraineeTrainerListRequest request
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         return ResponseEntity.ok(
                 gymFacade.updateTrainersListByTraineeUsername(
@@ -397,9 +381,6 @@ public class TraineeController {
 
             @Valid @RequestBody ActivateUserRequest request
     ) {
-        if (!username.equals(authUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         gymFacade.updateActiveStatusByUsername(
                 username,

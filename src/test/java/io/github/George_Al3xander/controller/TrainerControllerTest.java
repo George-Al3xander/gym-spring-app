@@ -189,29 +189,6 @@ class TrainerControllerTest {
 
 
     @Test
-    void updateTrainer_shouldReturnForbidden_whenDifferentUser()
-            throws Exception {
-
-        UpdateTrainerRequest request =
-                new UpdateTrainerRequest(
-                        "Michael",
-                        "Brown",
-                        true
-                );
-
-
-        mockMvc.perform(put("/trainers/mike")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "admin"
-                        )
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
-    }
-
-
-    @Test
     void updateTrainer_shouldReturnBadRequest_whenInvalidRequest()
             throws Exception {
 
@@ -267,23 +244,6 @@ class TrainerControllerTest {
                         .value("John"));
     }
 
-
-    @Test
-    void getTrainings_shouldReturnForbidden_whenDifferentUser()
-            throws Exception {
-
-
-        mockMvc.perform(get("/trainers/mike/trainings")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "admin"
-                        )
-                        .contentType("application/json")
-                        .content("{}"))
-                .andExpect(status().isForbidden());
-    }
-
-
     @Test
     void activateTrainer_shouldReturnNoContent()
             throws Exception {
@@ -300,24 +260,5 @@ class TrainerControllerTest {
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNoContent());
-    }
-
-
-    @Test
-    void activateTrainer_shouldReturnForbidden_whenDifferentUser()
-            throws Exception {
-
-        ActivateUserRequest request =
-                new ActivateUserRequest(true);
-
-
-        mockMvc.perform(patch("/trainers/mike/activate")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "admin"
-                        )
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
     }
 }

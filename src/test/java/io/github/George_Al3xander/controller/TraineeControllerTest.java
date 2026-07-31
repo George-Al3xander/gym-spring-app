@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
-import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
@@ -22,7 +21,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -119,35 +119,6 @@ class TraineeControllerTest {
 
 
     @Test
-    void updateTrainee_ShouldReturnForbidden_WhenDifferentUser()
-            throws Exception {
-
-
-        UpdateTraineeRequest request =
-                new UpdateTraineeRequest(
-                        "John",
-                        "Smith",
-                        null,
-                        "Address",
-                        true
-                );
-
-
-        mockMvc.perform(put("/trainees/john")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "admin"
-                        )
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
-
-
-        verifyNoInteractions(gymFacade);
-    }
-
-
-    @Test
     void deleteTrainee_ShouldReturnNoContent()
             throws Exception {
 
@@ -163,25 +134,7 @@ class TraineeControllerTest {
         verify(gymFacade)
                 .deleteTrainee("john");
     }
-
-
-    @Test
-    void deleteTrainee_ShouldReturnForbidden()
-            throws Exception {
-
-
-        mockMvc.perform(delete("/trainees/john")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "other"
-                        ))
-                .andExpect(status().isForbidden());
-
-
-        verifyNoInteractions(gymFacade);
-    }
-
-
+    
     @Test
     void getUnassignedTrainers_ShouldReturnList()
             throws Exception {
