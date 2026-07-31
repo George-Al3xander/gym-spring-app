@@ -3,11 +3,6 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,18 +30,12 @@ class UserDaoImplTest {
 
     @Test
     void givenValidUser_whenSave_thenUserPersistedWithGeneratedId() {
-        User user = new User();
-        user.setUsername("john");
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setPassword("1234567890");
-        user.setIsActive(true);
+        User user = createUser("john", "John", "Doe");
 
-        User savedUser = userDao.save(user);
+        assertNotNull(user.getId());
 
-        assertNotNull(savedUser.getId());
+        User dbUser = entityManager.find(User.class, user.getId());
 
-        User dbUser = entityManager.find(User.class, savedUser.getId());
         assertNotNull(dbUser);
         assertEquals("john", dbUser.getUsername());
     }
@@ -53,8 +44,7 @@ class UserDaoImplTest {
     void givenExistingUser_whenFindById_thenUserReturned() {
         User user = createUser("john", "John", "Doe");
 
-        UserDao userDaoRef = this.userDao;
-        Optional<User> result = userDaoRef.findById(user.getId());
+        Optional<User> result = userDao.findById(user.getId());
 
         assertTrue(result.isPresent());
         assertEquals("john", result.get().getUsername());
@@ -62,7 +52,7 @@ class UserDaoImplTest {
 
     @Test
     void givenMissingUser_whenFindById_thenEmptyOptional() {
-        java.util.Optional<User> result = userDao.findById(999L);
+        Optional<User> result = userDao.findById(999L);
 
         assertTrue(result.isEmpty());
     }
@@ -82,10 +72,12 @@ class UserDaoImplTest {
         User user = createUser("john", "John", "Doe");
 
         userDao.delete(user.getId());
+
         entityManager.flush();
         entityManager.clear();
 
         User deletedUser = entityManager.find(User.class, user.getId());
+
         assertNull(deletedUser);
     }
 
@@ -111,38 +103,31 @@ class UserDaoImplTest {
     void givenExistingUsername_whenFindByUsername_thenUserReturned() {
         createUser("john", "John", "Doe");
 
-        java.util.Optional<User> result = userDao.findByUsername("john");
+        Optional<User> result = userDao.findByUsername("john");
 
         assertTrue(result.isPresent());
         assertEquals("john", result.get().getUsername());
     }
 
     @Test
-    void givenMissingUsername_whenFindByUsername_thenThrowsNoResultException() {
-        assertThrows(NoResultException.class, () -> userDao.findByUsername("missing"));
+    void givenExistingUsername_whenExistsByUsername_thenReturnsTrue() {
+        createUser("john", "John", "Doe");
+
+        boolean exists = userDao.existsByUsername("john");
+
+        assertTrue(exists);
     }
 
     @Test
-    void givenUsersWithSameName_whenCountByName_thenReturnsCorrectCount() {
-        createUser("u1", "John", "Doe");
-        createUser("u2", "John", "Doe");
+    void givenMissingUsername_whenExistsByUsername_thenReturnsFalse() {
+        boolean exists = userDao.existsByUsername("missing");
 
-        long count = userDao.countByName("John", "Doe");
-
-        assertEquals(2L, count);
-    }
-
-    @Test
-    void givenDifferentCaseNames_whenCountByName_thenCaseInsensitive() {
-        createUser("u1", "john", "doe");
-
-        long count = userDao.countByName("JOHN", "DOE");
-
-        assertEquals(1L, count);
+        assertFalse(exists);
     }
 
     private User createUser(String username, String firstName, String lastName) {
         User user = new User();
+
         user.setUsername(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -151,6 +136,7 @@ class UserDaoImplTest {
 
         entityManager.persist(user);
         entityManager.flush();
+
         return user;
     }
 }

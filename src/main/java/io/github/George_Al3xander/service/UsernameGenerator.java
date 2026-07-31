@@ -13,13 +13,18 @@ public class UsernameGenerator {
 
     public String generateUsername(User user) {
         String baseUsername = buildBaseUsername(user);
-        long count = userDao.countByName(user.getFirstName(), user.getLastName());
 
-        if (count == 0) {
+        if (!userDao.existsByUsername(baseUsername)) {
             return baseUsername;
         }
-        
-        return baseUsername + count;
+
+        int suffix = 1;
+
+        while (userDao.existsByUsername(baseUsername + suffix)) {
+            suffix++;
+        }
+
+        return baseUsername + suffix;
     }
 
     private String buildBaseUsername(User user) {
