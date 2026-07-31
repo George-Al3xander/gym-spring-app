@@ -34,7 +34,7 @@ class AuthenticationControllerTest {
 
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {

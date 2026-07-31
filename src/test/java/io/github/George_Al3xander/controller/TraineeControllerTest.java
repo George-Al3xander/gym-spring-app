@@ -36,17 +36,14 @@ class TraineeControllerTest {
 
     private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper;
-
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
     @BeforeEach
     void setup() {
 
         TraineeController controller =
                 new TraineeController(gymFacade);
-
-        LocalValidatorFactoryBean validator =
-                new LocalValidatorFactoryBean();
 
         validator.afterPropertiesSet();
 
@@ -55,9 +52,7 @@ class TraineeControllerTest {
                 .setValidator(validator)
                 .build();
 
-        objectMapper = new ObjectMapper();
     }
-
 
     @Test
     void createTrainee_ShouldReturnCredentials() throws Exception {
@@ -134,7 +129,7 @@ class TraineeControllerTest {
         verify(gymFacade)
                 .deleteTrainee("john");
     }
-    
+
     @Test
     void getUnassignedTrainers_ShouldReturnList()
             throws Exception {

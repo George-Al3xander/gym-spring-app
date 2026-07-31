@@ -36,17 +36,14 @@ class TrainerControllerTest {
 
     private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper;
-
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
     @BeforeEach
     void setup() {
 
         TrainerController controller =
                 new TrainerController(gymFacade);
-
-        LocalValidatorFactoryBean validator =
-                new LocalValidatorFactoryBean();
 
         validator.afterPropertiesSet();
 
@@ -55,7 +52,6 @@ class TrainerControllerTest {
                 .setValidator(validator)
                 .build();
 
-        objectMapper = new ObjectMapper();
     }
 
 
