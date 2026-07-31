@@ -1,13 +1,13 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.dto.trainee.UpdateTraineeRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,13 +62,11 @@ class TraineeControllerTest {
     @Test
     void createTrainee_ShouldReturnCredentials() throws Exception {
 
-        Trainee trainee = new Trainee();
-        trainee.setUsername("john");
-        trainee.setPassword("1234567890");
+        CredentialsDTO credentials =
+                new CredentialsDTO("john", "1234567890");
 
         when(gymFacade.createTrainee(any()))
-                .thenReturn(trainee);
-
+                .thenReturn(credentials);
 
         TraineeRegistrationRequest request =
                 new TraineeRegistrationRequest(
@@ -78,7 +76,6 @@ class TraineeControllerTest {
                         "London"
                 );
 
-
         mockMvc.perform(post("/trainees")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
@@ -87,7 +84,6 @@ class TraineeControllerTest {
                         .value("john"))
                 .andExpect(jsonPath("$.password")
                         .value("1234567890"));
-
 
         verify(gymFacade)
                 .createTrainee(any(TraineeRegistrationRequest.class));

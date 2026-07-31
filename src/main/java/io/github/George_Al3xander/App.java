@@ -1,9 +1,9 @@
 package io.github.George_Al3xander;
 
 import io.github.George_Al3xander.config.MainConfig;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.model.Trainee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,7 +27,7 @@ public class App {
                     LocalDate.now().minusYears(35),
                     "Cool St."
             );
-            Trainee user = gymFacade.createTrainee(registrationRequest);
+            CredentialsDTO user = gymFacade.createTrainee(registrationRequest);
 
             String username = user.getUsername();
             String password = user.getPassword();

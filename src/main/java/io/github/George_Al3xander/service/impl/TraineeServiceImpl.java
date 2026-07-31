@@ -3,6 +3,7 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.exception.EntityInUseException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
@@ -11,6 +12,7 @@ import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,11 +71,20 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Trainee saveTrainee(Trainee entity) {
-        entity.setUsername(usernameGenerator.generateUsername(entity));
-        entity.setPassword(PasswordGenerator.generatePassword(10));
+    public CredentialsDTO saveTrainee(Trainee entity) {
+        String username = usernameGenerator.generateUsername(entity);
+        String plainPassword = PasswordGenerator.generatePassword(10);
 
-        return traineeDao.save(entity);
+        entity.setUsername(username);
+        entity.setPassword(
+                BCrypt.hashpw(
+                        plainPassword, BCrypt.gensalt()
+                )
+        );
+
+        traineeDao.save(entity);
+
+        return new CredentialsDTO(username, plainPassword);
     }
 
     @Override

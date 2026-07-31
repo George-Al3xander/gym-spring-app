@@ -6,6 +6,7 @@ import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return false;
             }
 
-            return user.get().getPassword().equals(credentials.getPassword());
+            return BCrypt.checkpw(credentials.getPassword(), user.get().getPassword());
         } catch (Exception e) {
             return false;
         }

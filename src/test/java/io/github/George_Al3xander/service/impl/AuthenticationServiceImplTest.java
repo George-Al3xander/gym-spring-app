@@ -8,6 +8,7 @@ import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -137,12 +138,12 @@ class AuthenticationServiceImplTest {
         );
     }
 
-    private User createValidUser(String username, String password10) {
+    private User createValidUser(String username, String password) {
         User user = new User();
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setUsername(username);
-        user.setPassword(password10);
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         user.setIsActive(true);
         return user;
     }

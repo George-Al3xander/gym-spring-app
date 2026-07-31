@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
 import io.github.George_Al3xander.dto.trainer.TrainerTrainingResponse;
@@ -62,14 +63,16 @@ class TrainerControllerTest {
     void createTrainer_shouldReturnCredentials()
             throws Exception {
 
+        CredentialsDTO credentialsDTO = new CredentialsDTO("mike.brown", "1234567890");
+
         Trainer trainer = new Trainer();
 
-        trainer.setUsername("mike.brown");
-        trainer.setPassword("1234567890");
+        trainer.setUsername(credentialsDTO.getUsername());
+        trainer.setPassword(credentialsDTO.getPassword());
 
 
         when(gymFacade.createTrainer(any()))
-                .thenReturn(trainer);
+                .thenReturn(credentialsDTO);
 
 
         TrainerRegistrationRequest request =

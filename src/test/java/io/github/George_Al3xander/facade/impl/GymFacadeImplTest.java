@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dao.TrainingTypeDao;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,20 +83,21 @@ class GymFacadeImplTest {
         request.setSpecializationId(1L);
 
         Trainer mappedTrainer = newTrainer(null, "john.doe");
-        Trainer savedTrainer = newTrainer(1L, "john.doe");
+        CredentialsDTO credentials =
+                new CredentialsDTO("john.doe", "password123");
 
         when(trainerMapper.toTrainer(request))
                 .thenReturn(mappedTrainer);
 
-        when(trainerService.saveTrainer(mappedTrainer))
-                .thenReturn(savedTrainer);
-
-        when(trainingTypeDao.findById(any(Long.class)))
+        when(trainingTypeDao.findById(1L))
                 .thenReturn(Optional.of(new TrainingType(1L, "Training")));
 
-        Trainer result = gymFacade.createTrainer(request);
+        when(trainerService.saveTrainer(mappedTrainer))
+                .thenReturn(credentials);
 
-        assertEquals(savedTrainer, result);
+        CredentialsDTO result = gymFacade.createTrainer(request);
+
+        assertEquals(credentials, result);
 
         verify(trainerMapper)
                 .toTrainer(request);
@@ -106,21 +107,22 @@ class GymFacadeImplTest {
     }
 
     @Test
-    void createTrainee_whenValidTrainee_thenDelegatesToTraineeServiceAndReturnsSavedTrainee() {
+    void createTrainee_whenValidTrainee_thenDelegatesToTraineeServiceAndReturnsCredentials() {
         TraineeRegistrationRequest request = new TraineeRegistrationRequest();
 
         Trainee mappedTrainee = newTrainee(null, "jane.doe");
-        Trainee saved = newTrainee(1L, "jane.doe");
+        CredentialsDTO credentials =
+                new CredentialsDTO("jane.doe", "password123");
 
         when(traineeMapper.toTrainee(request))
                 .thenReturn(mappedTrainee);
 
         when(traineeService.saveTrainee(mappedTrainee))
-                .thenReturn(saved);
+                .thenReturn(credentials);
 
-        Trainee result = gymFacade.createTrainee(request);
+        CredentialsDTO result = gymFacade.createTrainee(request);
 
-        assertEquals(saved, result);
+        assertEquals(credentials, result);
 
         verify(traineeMapper)
                 .toTrainee(request);

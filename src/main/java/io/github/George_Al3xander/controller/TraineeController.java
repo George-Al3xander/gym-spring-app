@@ -7,10 +7,8 @@ import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,12 +49,8 @@ public class TraineeController {
             )
             @Valid @RequestBody TraineeRegistrationRequest traineeRegistrationRequest
     ) {
-        Trainee trainee = gymFacade.createTrainee(traineeRegistrationRequest);
 
-        return new CredentialsDTO(
-                trainee.getUsername(),
-                trainee.getPassword()
-        );
+        return gymFacade.createTrainee(traineeRegistrationRequest);
     }
 
 

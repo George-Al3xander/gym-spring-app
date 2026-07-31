@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.facade.impl;
 
 import io.github.George_Al3xander.dao.TrainingTypeDao;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
@@ -40,7 +41,7 @@ public class GymFacadeImpl implements GymFacade {
     private final TrainingMapper trainingMapper;
 
     @Override
-    public Trainer createTrainer(TrainerRegistrationRequest request) {
+    public CredentialsDTO createTrainer(TrainerRegistrationRequest request) {
         Trainer trainer = trainerMapper.toTrainer(request);
         trainer.setSpecialization(getTrainingTypeById(request.getSpecializationId()));
 
@@ -48,7 +49,7 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
-    public Trainee createTrainee(TraineeRegistrationRequest request) {
+    public CredentialsDTO createTrainee(TraineeRegistrationRequest request) {
         Trainee trainee = traineeMapper.toTrainee(request);
 
         return traineeService.saveTrainee(trainee);

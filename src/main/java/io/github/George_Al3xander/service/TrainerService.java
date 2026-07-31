@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.service;
 
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.model.Trainer;
 
@@ -15,7 +16,7 @@ public interface TrainerService {
 
     List<Trainer> getTrainersByTraineeUsername(String username, TrainerFilter filter);
 
-    Trainer saveTrainer(Trainer entity);
+    CredentialsDTO saveTrainer(Trainer entity);
 
     Trainer updateTrainer(Trainer entity);
 }

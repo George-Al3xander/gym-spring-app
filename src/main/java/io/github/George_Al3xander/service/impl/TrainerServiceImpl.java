@@ -2,6 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
@@ -10,6 +11,7 @@ import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,11 +66,20 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Trainer saveTrainer(Trainer entity) {
-        entity.setUsername(usernameGenerator.generateUsername(entity));
-        entity.setPassword(PasswordGenerator.generatePassword(10));
+    public CredentialsDTO saveTrainer(Trainer entity) {
+        String username = usernameGenerator.generateUsername(entity);
+        String plainPassword = PasswordGenerator.generatePassword(10);
 
-        return trainerDao.save(entity);
+        entity.setUsername(username);
+        entity.setPassword(
+                BCrypt.hashpw(
+                        plainPassword, BCrypt.gensalt()
+                )
+        );
+
+        trainerDao.save(entity);
+
+        return new CredentialsDTO(username, plainPassword);
     }
 
     @Override

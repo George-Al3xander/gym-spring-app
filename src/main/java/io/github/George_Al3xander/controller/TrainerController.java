@@ -8,10 +8,8 @@ import io.github.George_Al3xander.dto.trainer.TrainerTrainingResponse;
 import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.annotations.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +50,8 @@ public class TrainerController {
             )
             @Valid @RequestBody TrainerRegistrationRequest trainerRegistrationRequest
     ) {
-        Trainer trainer = gymFacade.createTrainer(trainerRegistrationRequest);
 
-        return new CredentialsDTO(
-                trainer.getUsername(),
-                trainer.getPassword()
-        );
+        return gymFacade.createTrainer(trainerRegistrationRequest);
     }
 
 

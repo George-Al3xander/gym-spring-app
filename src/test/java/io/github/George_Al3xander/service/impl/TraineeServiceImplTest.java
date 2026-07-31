@@ -3,6 +3,7 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
+import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.exception.EntityInUseException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
@@ -12,6 +13,7 @@ import io.github.George_Al3xander.service.UsernameGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -139,11 +141,16 @@ class TraineeServiceImplTest {
         when(traineeDao.save(any(Trainee.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Trainee result =
+        CredentialsDTO result =
                 traineeService.saveTrainee(trainee);
 
         assertEquals("john.doe", result.getUsername());
+
         assertNotNull(result.getPassword());
+        assertEquals(10, result.getPassword().length());
+
+        assertNotEquals(result.getPassword(), trainee.getPassword());
+        assertTrue(BCrypt.checkpw(result.getPassword(), trainee.getPassword()));
 
         verify(usernameGenerator)
                 .generateUsername(trainee);
