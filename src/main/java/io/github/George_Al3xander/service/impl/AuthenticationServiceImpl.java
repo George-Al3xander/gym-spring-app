@@ -1,7 +1,9 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
+import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
+import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
@@ -37,14 +39,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void changePassword(CredentialsDTO credentials) {
-        String username = credentials.getUsername();
-        String newPassword = credentials.getPassword();
-
+    public void changePassword(String username, ChangeLoginRequest request) {
         try {
-            User user = userDao.findByUsername(username).get();
+            User user = userDao.findByUsername(username)
+                    .orElseThrow(() -> new GymEntityNotFoundException("User", username));
 
-            user.setPassword(newPassword);
+            if (!BCrypt.checkpw(request.getOldPassword(), user.getPassword())) {
+                throw new BadCredentialsException("Wrong old password");
+            }
+
+            user.setPassword(
+                    BCrypt.hashpw(request.getNewPassword(), BCrypt.gensalt())
+            );
 
             userDao.update(user);
         } catch (NoResultException | NoSuchElementException ex) {

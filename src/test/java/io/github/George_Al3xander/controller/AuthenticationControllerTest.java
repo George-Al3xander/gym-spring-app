@@ -66,7 +66,7 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn200_AndChangePassword() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("abcdefghij");
+                new ChangeLoginRequest("oldPassword", "abcdefghij");
 
         mockMvc.perform(put("/auth")
                         .header(AuthHttpHeader.USERNAME, "john")
@@ -74,15 +74,21 @@ class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<CredentialsDTO> captor =
-                ArgumentCaptor.forClass(CredentialsDTO.class);
+        ArgumentCaptor<String> usernameCaptor =
+                ArgumentCaptor.forClass(String.class);
 
-        verify(authenticationService).changePassword(captor.capture());
+        ArgumentCaptor<ChangeLoginRequest> requestCaptor =
+                ArgumentCaptor.forClass(ChangeLoginRequest.class);
 
-        CredentialsDTO actual = captor.getValue();
+        verify(authenticationService)
+                .changePassword(
+                        usernameCaptor.capture(),
+                        requestCaptor.capture()
+                );
 
-        assertEquals("john", actual.getUsername());
-        assertEquals("abcdefghij", actual.getPassword());
+        assertEquals("john", usernameCaptor.getValue());
+        assertEquals("oldPassword", requestCaptor.getValue().getOldPassword());
+        assertEquals("abcdefghij", requestCaptor.getValue().getNewPassword());
     }
 
     @Test
@@ -101,7 +107,21 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn400_WhenPasswordInvalid() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("123");
+                new ChangeLoginRequest("oldPassword", "123");
+
+        mockMvc.perform(put("/auth")
+                        .header(AuthHttpHeader.USERNAME, "john")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(authenticationService);
+    }
+
+    @Test
+    void changeLogin_ShouldReturn400_WhenOldPasswordMissing() throws Exception {
+        ChangeLoginRequest request =
+                new ChangeLoginRequest(null, "abcdefghij");
 
         mockMvc.perform(put("/auth")
                         .header(AuthHttpHeader.USERNAME, "john")

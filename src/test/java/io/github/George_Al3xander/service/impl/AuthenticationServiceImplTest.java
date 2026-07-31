@@ -2,7 +2,9 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
+import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
+import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
@@ -66,7 +68,10 @@ class AuthenticationServiceImplTest {
     @Test
     void givenUnknownUsername_whenAuthenticate_thenReturnFalse() {
         boolean result = authenticationService.authenticate(
-                new CredentialsDTO("unknown_user_" + UUID.randomUUID(), "1234567890")
+                new CredentialsDTO(
+                        "unknown_user_" + UUID.randomUUID(),
+                        "1234567890"
+                )
         );
 
         assertFalse(result);
@@ -105,7 +110,7 @@ class AuthenticationServiceImplTest {
     }
 
     @Test
-    void givenExistingUser_whenChangePassword_thenPasswordIsUpdated() {
+    void givenCorrectOldPassword_whenChangePassword_thenPasswordIsUpdated() {
         String username = unique("john");
         String oldPassword = "oldPass!!!";
         String newPassword = "newPass!!!";
@@ -114,7 +119,8 @@ class AuthenticationServiceImplTest {
         entityManager.flush();
 
         authenticationService.changePassword(
-                new CredentialsDTO(username, newPassword)
+                username,
+                new ChangeLoginRequest(oldPassword, newPassword)
         );
 
         entityManager.flush();
@@ -122,19 +128,37 @@ class AuthenticationServiceImplTest {
 
         User updatedUser = userDao.findByUsername(username).orElseThrow();
 
-        assertEquals(newPassword, updatedUser.getPassword());
+        assertTrue(
+                BCrypt.checkpw(newPassword, updatedUser.getPassword())
+        );
     }
 
     @Test
-    void givenUnknownUsername_whenChangePassword_thenThrowNoResultException() {
-        CredentialsDTO credentials = new CredentialsDTO(
-                "unknown_user_" + UUID.randomUUID(),
-                "newPassword"
+    void givenWrongOldPassword_whenChangePassword_thenThrowBadCredentialsException() {
+        String username = unique("john");
+
+        entityManager.persist(createValidUser(username, "oldPass!!!"));
+        entityManager.flush();
+
+        assertThrows(
+                BadCredentialsException.class,
+                () -> authenticationService.changePassword(
+                        username,
+                        new ChangeLoginRequest("wrongPassword", "newPass!!!")
+                )
         );
+    }
+
+    @Test
+    void givenUnknownUsername_whenChangePassword_thenThrowGymEntityNotFoundException() {
+        String username = "unknown_user_" + UUID.randomUUID();
 
         assertThrows(
                 GymEntityNotFoundException.class,
-                () -> authenticationService.changePassword(credentials)
+                () -> authenticationService.changePassword(
+                        username,
+                        new ChangeLoginRequest("oldPassword", "newPassword")
+                )
         );
     }
 

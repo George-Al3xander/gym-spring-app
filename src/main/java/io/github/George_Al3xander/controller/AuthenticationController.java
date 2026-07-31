@@ -105,7 +105,8 @@ public class AuthenticationController {
             @Valid @RequestBody ChangeLoginRequest request
     ) {
         authenticationService.changePassword(
-                new CredentialsDTO(username, request.getNewPassword())
+                username,
+                request
         );
     }
 
