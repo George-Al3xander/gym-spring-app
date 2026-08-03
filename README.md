@@ -1,12 +1,12 @@
-# Gym CRM System (Spring REST + JPA Module)
+# Gym CRM System (Spring Boot REST API)
 
 ## Overview
 
-The Gym CRM System is a RESTful web application for managing gym members, trainers, and trainings.
+The Gym CRM System is a Spring Boot REST application for managing trainees, trainers, and trainings.
 
-The application follows a layered architecture built with the Spring Framework and provides REST APIs documented with
-OpenAPI (Swagger). Persistence is implemented using JPA/Hibernate with Flyway-managed database migrations. The system
-supports profile-based configuration for development and production environments.
+The application follows a layered architecture and exposes a RESTful API documented with OpenAPI 3. Persistence is
+implemented using Spring Data JPA and Hibernate, database schema management is handled by Flyway, and the application
+supports both H2 (development) and MySQL (production) databases.
 
 Core domain entities:
 
@@ -18,46 +18,64 @@ Core domain entities:
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```
-io.github.George_AI3xander
-├── aspect
-│   ├── logging
-│   └── exception
+src
+├── main
+│   ├── java
+│   │   └── io.github.George_Al3xander
+│   │       ├── actuator      → Custom Spring Boot Actuator health indicators
+│   │       ├── aspect        → Aspect-oriented exception logging
+│   │       ├── config        → Spring Boot, MVC, Swagger and metrics configuration
+│   │       ├── controller    → REST API controllers
+│   │       ├── dao
+│   │       │   ├── impl      → JPA DAO implementations
+│   │       │   └── *Dao      → DAO interfaces
+│   │       ├── dto
+│   │       │   ├── auth      → Authentication DTOs
+│   │       │   ├── filter    → Request filter DTOs
+│   │       │   ├── trainee   → Trainee request/response DTOs
+│   │       │   ├── trainer   → Trainer request/response DTOs
+│   │       │   ├── training  → Training request DTOs
+│   │       │   ├── user      → User management DTOs
+│   │       │   └── *Response → Shared response DTOs
+│   │       ├── exception     → Custom exceptions and global exception handler
+│   │       ├── facade
+│   │       │   ├── impl      → GymFacade implementation
+│   │       │   └── GymFacade → Application facade
+│   │       ├── filter        → Servlet filters
+│   │       ├── logging       → REST request/response logging
+│   │       ├── mapper        → MapStruct mappers
+│   │       ├── model         → JPA entities
+│   │       ├── service
+│   │       │   ├── impl      → Service implementations
+│   │       │   └── interfaces
+│   │       ├── util          → Utility classes
+│   │       ├── validation    → Custom validation annotations and validators
+│   │       ├── web           → MVC interceptors and HTTP header utilities
+│   │       └── App           → Spring Boot application entry point
+│   │
+│   ├── resources
+│   │   ├── application.properties
+│   │   ├── application-dev.properties
+│   │   ├── application-prod.properties
+│   │   ├── logback.xml
+│   │   └── db
+│   │       └── migration
+│   │           └── V1__create_tables.sql
+│   │
+│   └── webapp
+│       └── WEB-INF
 │
-├── config
-│   ├── persistence
-│   ├── security
-│   ├── swagger
-│   ├── web
-│   └── profile
-│
-├── controller
-│
-├── dao
-│   ├── impl
-│   └── interfaces
-│
-├── dto
-│   ├── request
-│   ├── response
-│   ├── mapper
-│   └── common
-│
-├── exception
-│
-├── facade
-│
-├── model
-│
-├── service
-│   ├── impl
-│   └── interfaces
-│
-├── util
-│
-└── App
+└── test
+    └── java
+        └── io.github.George_Al3xander
+            ├── controller
+            ├── dao
+            ├── facade
+            ├── service
+            └── util
 ```
 
 The application follows a classic layered architecture:
@@ -84,6 +102,7 @@ REST Controller
 
 ```
 src/main/resources
+├── application.properties
 ├── application-dev.properties
 ├── application-prod.properties
 ├── logback.xml
@@ -102,19 +121,18 @@ src/main/resources
 
 ## Frameworks
 
-- Spring Framework
-- Spring MVC
-- Spring Context
-- Spring JDBC
-- Spring ORM
+- Spring Boot
+- Spring Web MVC
+- Spring Data JPA
 - Spring AOP
-- Spring Transaction Management
+- Spring Validation
+- Spring Boot Actuator
 - Spring Profiles
 
 ## Persistence
 
 - Hibernate ORM
-- Jakarta Persistence (JPA)
+- Spring Data JPA
 - Flyway
 
 ## Database
@@ -130,8 +148,14 @@ Production
 ## API
 
 - REST
-- OpenAPI 3
+- OpenAPI 3 (springdoc-openapi)
 - Swagger UI
+
+## Monitoring
+
+- Spring Boot Actuator
+- Micrometer
+- Prometheus
 
 ## Validation
 
@@ -155,21 +179,20 @@ Production
 
 # Configuration
 
-The application is fully configured using Java-based Spring configuration.
+The application is fully configured using Spring Boot auto-configuration supplemented by custom configuration classes..
 
 Enabled features include:
 
+- Spring Boot auto configuration
 - Component scanning
 - Spring MVC
-- REST controllers
-- AspectJ auto proxy
-- Transaction management
-- Hibernate integration
+- Spring Data JPA
 - Flyway migrations
-- JPA EntityManager
-- HikariCP datasource
-- OpenAPI configuration
-- Request interceptors
+- REST controllers
+- OpenAPI documentation
+- Request interception
+- Spring Boot Actuator
+- Micrometer metrics
 
 Main annotations used throughout the project:
 
@@ -298,16 +321,16 @@ and inserts the default training types required by the application.
 
 # REST Architecture
 
-The application exposes its functionality through RESTful endpoints.
+Business logic is exposed through Spring Boot REST controllers.
 
 The REST layer consists of:
 
-- REST controllers
-- request DTOs
-- response DTOs
+- Controllers
+- Request DTOs
+- Response DTOs
 - MapStruct mappers
-- centralized exception handling
-- request logging
+- Global exception handling
+- Request logging interceptor
 - OpenAPI documentation
 
 Each controller delegates business logic to the `GymFacade`, which acts as the unified entry point for all application
@@ -471,13 +494,20 @@ Sensitive fields are omitted unless explicitly required.
 
 # Object Mapping
 
-The application uses **MapStruct** for object conversion.
+The application uses MapStruct with Spring integration.
 
-Mappings include:
+Mapper interfaces include:
 
-- Entity → Response DTO
-- Request DTO → Entity
-- Update Request → Existing Entity
+- TraineeMapper
+- TrainerMapper
+- TrainingMapper
+
+Mappings convert between:
+
+- request DTOs
+- entities
+- response DTOs
+- summary DTOs
 
 Benefits include:
 
@@ -651,7 +681,11 @@ The facade performs authentication before delegating protected operations to the
 
 # Authentication
 
-Protected operations require valid user credentials.
+Protected endpoints require Username and Password HTTP headers.
+
+Authentication is delegated to AuthenticationService.
+
+OpenAPI documents these headers using API security schemes.
 
 Authentication is performed using a dedicated request object containing:
 
@@ -818,18 +852,25 @@ Public endpoints are limited to user registration and authentication.
 
 # OpenAPI Documentation
 
-The REST API is documented using **OpenAPI 3**.
+The REST API is documented using springdoc-openapi.
 
-Swagger UI provides interactive API documentation including:
+Documentation is generated automatically from OpenAPI annotations.
 
-- available endpoints
-- request parameters
-- request bodies
+Swagger UI provides:
+
+- endpoint documentation
+- request examples
 - response schemas
-- response codes
 - authentication requirements
+- response codes
 
-The generated documentation stays synchronized with the controller layer through OpenAPI annotations.
+OpenAPI annotations used include:
+
+- @OpenAPIDefinition
+- @Tag
+- @Operation
+- @Parameter
+- @ApiResponse
 
 ---
 
@@ -852,6 +893,16 @@ REST error responses provide:
 - error message
 - timestamp
 - request information (when applicable)
+
+---
+
+# Monitoring
+
+The application exposes operational metrics using Spring Boot Actuator.
+
+Metrics can be exported through Micrometer using the Prometheus registry.
+
+These endpoints can be used for application health checks and monitoring.
 
 ---
 
@@ -969,7 +1020,22 @@ HTTP Response
 
 # Testing
 
-The project includes comprehensive unit tests covering:
+The project uses Spring Boot testing support.
+
+Tests cover:
+
+- REST controllers
+- service layer
+- persistence layer
+- authentication
+- Flyway migrations
+
+Frameworks:
+
+- Spring Boot Test
+- Spring Data JPA Test
+- Mockito
+- JUnit 5
 
 ## Service Layer
 
@@ -1015,28 +1081,27 @@ Frameworks used:
 
 # Key Highlights
 
-- Layered architecture
+- Spring Boot application
 - RESTful API
-- Spring MVC
-- OpenAPI / Swagger documentation
-- Facade pattern
-- DTO-based API design
-- MapStruct object mapping
-- Spring Profiles
+- Spring Data JPA
+- OpenAPI 3 (springdoc-openapi)
+- Swagger UI
 - Flyway database migrations
-- JPA/Hibernate persistence
-- Hibernate schema validation
+- Spring Boot Actuator
+- Micrometer metrics
+- Prometheus monitoring
+- MapStruct object mapping
+- REST request logging
+- Spring Profiles
 - H2 development environment
 - MySQL production support
-- Profile-based datasource configuration
-- HikariCP connection pooling
+- Profile-based configuration
+- Hibernate schema validation
 - Authentication layer
 - Centralized exception handling
 - Spring Transaction Management
 - Spring AOP
 - Constructor-based dependency injection
-- Request validation
-- Dynamic training filtering
 - Jakarta Validation
 - Comprehensive unit testing
-- Clean separation of concerns
+- Clean layered architecture
