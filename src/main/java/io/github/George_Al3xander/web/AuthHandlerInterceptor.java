@@ -3,12 +3,11 @@ package io.github.George_Al3xander.web;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
-        if (uri.contains("api-docs") || uri.contains("swagger")) {
+        if (uri.contains("api-docs") || uri.contains("swagger") || uri.contains("/actuator")) {
             return true;
         }
 
