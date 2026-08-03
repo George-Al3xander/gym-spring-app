@@ -4,8 +4,9 @@ import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import java.util.List;
 import java.util.Optional;
 

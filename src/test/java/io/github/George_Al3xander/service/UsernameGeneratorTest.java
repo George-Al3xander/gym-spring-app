@@ -1,23 +1,21 @@
 package io.github.George_Al3xander.service;
 
-import io.github.George_Al3xander.config.TestConfig;
+import io.github.George_Al3xander.dao.impl.UserDaoImpl;
 import io.github.George_Al3xander.model.User;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
-@Transactional
+@DataJpaTest
+@Import({
+        UsernameGenerator.class,
+        UserDaoImpl.class
+})
 class UsernameGeneratorTest {
 
     @Autowired

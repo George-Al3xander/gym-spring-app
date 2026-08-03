@@ -12,7 +12,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
 

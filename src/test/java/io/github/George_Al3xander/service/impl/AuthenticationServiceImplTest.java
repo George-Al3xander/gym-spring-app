@@ -1,37 +1,36 @@
 package io.github.George_Al3xander.service.impl;
 
-import io.github.George_Al3xander.config.TestConfig;
 import io.github.George_Al3xander.dao.UserDao;
+import io.github.George_Al3xander.dao.impl.UserDaoImpl;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.exception.BadCredentialsException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
-import io.github.George_Al3xander.service.AuthenticationService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
-@Transactional
+@DataJpaTest
+@Import({
+        AuthenticationServiceImpl.class,
+        UserDaoImpl.class
+})
 class AuthenticationServiceImplTest {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private AuthenticationServiceImpl authenticationService;
 
     @Autowired
     private UserDao userDao;

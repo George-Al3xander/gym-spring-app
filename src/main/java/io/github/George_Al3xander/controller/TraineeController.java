@@ -7,233 +7,133 @@ import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.TrainerSummaryResponse;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.web.AuthHttpHeader;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/trainees")
+@RequestMapping("/trainees")
 @RequiredArgsConstructor
-@Api(tags = "Trainee Management", description = "Operations related to trainee profiles and trainings")
+@Tag(
+        name = "Trainee Management",
+        description = "Operations related to trainee profiles and trainings"
+)
 public class TraineeController {
 
     private final GymFacade gymFacade;
 
-
     @PostMapping
-    @ApiOperation(
-            value = "Create trainee",
-            notes = "Registers a new trainee and returns generated credentials"
+    @Operation(
+            summary = "Create trainee",
+            description = "Registers a new trainee and returns generated credentials"
     )
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "Trainee successfully created",
-                    response = CredentialsDTO.class
+                    responseCode = "200",
+                    description = "Trainee successfully created",
+                    content = @Content(schema = @Schema(implementation = CredentialsDTO.class))
             ),
             @ApiResponse(
-                    code = 400,
-                    message = "Validation error"
+                    responseCode = "400",
+                    description = "Validation error"
             )
     })
     public CredentialsDTO createTrainee(
-            @ApiParam(
-                    value = "Trainee registration data",
-                    required = true
-            )
+            @Parameter(description = "Trainee registration data", required = true)
             @Valid @RequestBody TraineeRegistrationRequest traineeRegistrationRequest
     ) {
-
         return gymFacade.createTrainee(traineeRegistrationRequest);
     }
 
-
     @GetMapping("/{username}")
-    @ApiOperation(
-            value = "Get trainee profile",
-            notes = "Returns trainee profile information by username"
+    @Operation(
+            summary = "Get trainee profile",
+            description = "Returns trainee profile information by username"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "Profile found",
-                    response = TraineeProfileResponse.class
+                    responseCode = "200",
+                    description = "Profile found",
+                    content = @Content(schema = @Schema(implementation = TraineeProfileResponse.class))
             ),
-            @ApiResponse(
-                    code = 403,
-                    message = "Forbidden"
-            ),
-            @ApiResponse(
-                    code = 404,
-                    message = "Trainee not found"
-            )
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Trainee not found")
     })
     public TraineeProfileResponse getTraineeByUsername(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username
+            @Parameter(description = "Trainee username")
+            @PathVariable String username
     ) {
         return gymFacade.getTrainee(username);
     }
 
-
     @PutMapping("/{username}")
-    @ApiOperation(
-            value = "Update trainee profile",
-            notes = "Updates trainee personal information"
+    @Operation(
+            summary = "Update trainee profile",
+            description = "Updates trainee personal information"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "Trainee updated",
-                    response = TraineeProfileResponse.class
+                    responseCode = "200",
+                    description = "Trainee updated",
+                    content = @Content(schema = @Schema(implementation = TraineeProfileResponse.class))
             ),
-            @ApiResponse(
-                    code = 403,
-                    message = "Forbidden"
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Validation error"
-            )
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<TraineeProfileResponse> updateTraineeByUsername(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
-
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
-
+            @Parameter(description = "Trainee username")
+            @PathVariable String username,
             @Valid @RequestBody UpdateTraineeRequest request
     ) {
-
         return ResponseEntity.ok(
                 gymFacade.updateTrainee(username, request)
         );
     }
 
     @DeleteMapping("/{username}")
-    @ApiOperation(
-            value = "Delete trainee",
-            notes = "Deletes trainee profile"
+    @Operation(
+            summary = "Delete trainee",
+            description = "Deletes trainee profile"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
-            @ApiResponse(
-                    code = 204,
-                    message = "Trainee deleted"
-            ),
-            @ApiResponse(
-                    code = 403,
-                    message = "Forbidden"
-            )
+            @ApiResponse(responseCode = "204", description = "Trainee deleted"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<Void> deleteTraineeByUsername(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
-
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
+            @Parameter(description = "Trainee username")
+            @PathVariable String username
     ) {
 
         gymFacade.deleteTrainee(username);
-
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/{username}/unassigned-trainers")
-    @ApiOperation(
-            value = "Get unassigned trainers",
-            notes = "Returns active trainers not assigned to trainee"
+    @Operation(
+            summary = "Get unassigned trainers",
+            description = "Returns active trainers not assigned to trainee"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponse(
-            code = 200,
-            message = "List of available trainers",
-            response = TrainerSummaryResponse.class
+            responseCode = "200",
+            description = "List of available trainers",
+            content = @Content(
+                    array = @ArraySchema(schema = @Schema(implementation = TrainerSummaryResponse.class))
+            )
     )
     public ResponseEntity<List<TrainerSummaryResponse>> getUnassignedTrainers(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
-
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername
+            @Parameter(description = "Trainee username")
+            @PathVariable String username
     ) {
 
         return ResponseEntity.ok(
@@ -244,89 +144,45 @@ public class TraineeController {
         );
     }
 
-
     @GetMapping("/{username}/trainings")
-    @ApiOperation(
-            value = "Get trainee trainings",
-            notes = "Returns trainee training history filtered by criteria"
+    @Operation(
+            summary = "Get trainee trainings",
+            description = "Returns trainee training history filtered by criteria"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponse(
-            code = 200,
-            message = "Training list",
-            response = TraineeTrainingResponse.class
+            responseCode = "200",
+            description = "Training list",
+            content = @Content(
+                    array = @ArraySchema(schema = @Schema(implementation = TraineeTrainingResponse.class))
+            )
     )
     public ResponseEntity<List<TraineeTrainingResponse>> getTrainings(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
 
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
-
+            @Parameter(description = "Trainee username")
+            @PathVariable String username,
             @Valid @RequestBody TrainingFilter trainingFilter
     ) {
 
         return ResponseEntity.ok(
-                gymFacade.getTraineeTrainings(
-                        username,
-                        trainingFilter
-                )
+                gymFacade.getTraineeTrainings(username, trainingFilter)
         );
     }
 
-
     @PutMapping("/{username}/trainers")
-    @ApiOperation(
-            value = "Update trainee trainers list",
-            notes = "Assigns trainers to trainee"
+    @Operation(
+            summary = "Update trainee trainers list",
+            description = "Assigns trainers to trainee"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponse(
-            code = 200,
-            message = "Updated trainers list",
-            response = TrainerSummaryResponse.class
+            responseCode = "200",
+            description = "Updated trainers list",
+            content = @Content(
+                    array = @ArraySchema(schema = @Schema(implementation = TrainerSummaryResponse.class))
+            )
     )
     public ResponseEntity<List<TrainerSummaryResponse>> updateTraineeTrainersList(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
-
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
-
+            @Parameter(description = "Trainee username")
+            @PathVariable String username,
             @Valid @RequestBody UpdateTraineeTrainerListRequest request
     ) {
 
@@ -338,47 +194,18 @@ public class TraineeController {
         );
     }
 
-
     @PatchMapping("/{username}/activate")
-    @ApiOperation(
-            value = "Activate or deactivate trainee",
-            notes = "Changes trainee active status"
+    @Operation(
+            summary = "Activate or deactivate trainee",
+            description = "Changes trainee active status"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
-            @ApiResponse(
-                    code = 204,
-                    message = "Status updated"
-            ),
-            @ApiResponse(
-                    code = 403,
-                    message = "Forbidden"
-            )
+            @ApiResponse(responseCode = "204", description = "Status updated"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<Void> activateTrainee(
-            @ApiParam(
-                    value = "Trainee username",
-                    required = true
-            )
-            @PathVariable("username") String username,
-
-            @RequestHeader(AuthHttpHeader.USERNAME) String authUsername,
-
+            @Parameter(description = "Trainee username")
+            @PathVariable String username,
             @Valid @RequestBody ActivateUserRequest request
     ) {
 

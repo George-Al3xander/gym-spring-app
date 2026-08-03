@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.dto.trainee;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

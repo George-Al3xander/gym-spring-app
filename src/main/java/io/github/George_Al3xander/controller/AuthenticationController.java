@@ -4,52 +4,65 @@ import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.web.AuthHttpHeader;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RestController
-@RequestMapping(value = "/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-@Api(tags = "Authentication", description = "Authentication and credential management operations")
+@Tag(
+        name = "Authentication",
+        description = "Authentication and credential management operations"
+)
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(
-            value = "Authenticate user",
-            notes = "Validates user credentials and authenticates the user"
+    @Operation(
+            summary = "Authenticate user",
+            description = "Validates user credentials and authenticates the user"
     )
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "Authentication successful"
+                    responseCode = "200",
+                    description = "Authentication successful"
             ),
             @ApiResponse(
-                    code = 400,
-                    message = "Invalid credentials format"
+                    responseCode = "400",
+                    description = "Invalid credentials format"
             ),
             @ApiResponse(
-                    code = 401,
-                    message = "Authentication failed"
+                    responseCode = "401",
+                    description = "Authentication failed"
             )
     })
     public ResponseEntity<Void> login(
-            @ApiParam(
-                    value = "User credentials",
+            @Parameter(
+                    description = "Username",
                     required = true
             )
             @RequestParam String username,
+
+            @Parameter(
+                    description = "Password",
+                    required = true
+            )
             @RequestParam String password
     ) {
-        boolean authenticated = authenticationService.authenticate(new CredentialsDTO(username, password));
+        boolean authenticated = authenticationService.authenticate(
+                new CredentialsDTO(username, password)
+        );
 
         if (!authenticated) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -58,56 +71,41 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(
-            value = "Change password",
-            notes = "Changes password for authenticated user"
+    @Operation(
+            summary = "Change password",
+            description = "Changes password for the authenticated user"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "Current user password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "Password successfully changed"
+                    responseCode = "200",
+                    description = "Password successfully changed"
             ),
             @ApiResponse(
-                    code = 400,
-                    message = "Invalid password format"
+                    responseCode = "400",
+                    description = "Invalid password format"
             ),
             @ApiResponse(
-                    code = 401,
-                    message = "Unauthorized request"
+                    responseCode = "401",
+                    description = "Unauthorized request"
             )
     })
     public void changeLogin(
+            @Parameter(
+                    name = AuthHttpHeader.USERNAME,
+                    description = "Authenticated username",
+                    required = true,
+                    in = ParameterIn.HEADER
+            )
             @RequestHeader(AuthHttpHeader.USERNAME) String username,
 
-            @ApiParam(
-                    value = "New password request",
+            @Parameter(
+                    description = "New password request",
                     required = true
             )
             @Valid @RequestBody ChangeLoginRequest request
     ) {
-        authenticationService.changePassword(
-                username,
-                request
-        );
+        authenticationService.changePassword(username, request);
     }
-
 }

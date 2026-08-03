@@ -2,8 +2,12 @@ package io.github.George_Al3xander.controller;
 
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.web.AuthHttpHeader;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,59 +16,43 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 @RestController
-@RequestMapping(value = "/trainings")
+@RequestMapping("/trainings")
 @RequiredArgsConstructor
-@Api(tags = "Training Management", description = "Operations related to adding trainings")
+@Tag(
+        name = "Training Management",
+        description = "Operations related to adding trainings"
+)
 public class TrainingController {
 
     private final GymFacade gymFacade;
 
-
     @PostMapping
-    @ApiOperation(
-            value = "Add training",
-            notes = "Creates a new training session between trainee and trainer"
+    @Operation(
+            summary = "Add training",
+            description = "Creates a new training session between trainee and trainer"
     )
-    @ApiImplicitParams({
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.USERNAME,
-                    value = "Authenticated username",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            ),
-            @ApiImplicitParam(
-                    name = AuthHttpHeader.PASSWORD,
-                    value = "User password",
-                    required = true,
-                    paramType = "header",
-                    dataType = "string"
-            )
-    })
     @ApiResponses({
             @ApiResponse(
-                    code = 201,
-                    message = "Training successfully created"
+                    responseCode = "201",
+                    description = "Training successfully created"
             ),
             @ApiResponse(
-                    code = 400,
-                    message = "Validation error"
+                    responseCode = "400",
+                    description = "Validation error"
             ),
             @ApiResponse(
-                    code = 401,
-                    message = "Authentication failed"
+                    responseCode = "401",
+                    description = "Authentication failed"
             ),
             @ApiResponse(
-                    code = 404,
-                    message = "Trainee, trainer, or training type not found"
+                    responseCode = "404",
+                    description = "Trainee, trainer, or training type not found"
             )
     })
     public ResponseEntity<Void> addTraining(
-            @ApiParam(
-                    value = "Training creation data",
+            @Parameter(
+                    description = "Training creation data",
                     required = true
             )
             @Valid @RequestBody AddTrainingRequest request
@@ -73,5 +61,4 @@ public class TrainingController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 }

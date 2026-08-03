@@ -3,8 +3,8 @@ package io.github.George_Al3xander.dao.impl;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.model.TrainingType;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 
