@@ -1,6 +1,7 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
@@ -9,7 +10,6 @@ import io.github.George_Al3xander.dto.trainer.UpdateTrainerRequest;
 import io.github.George_Al3xander.dto.user.ActivateUserRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import io.github.George_Al3xander.model.Trainer;
-import io.github.George_Al3xander.web.AuthHttpHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

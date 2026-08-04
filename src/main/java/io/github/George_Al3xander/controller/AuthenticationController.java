@@ -1,9 +1,9 @@
 package io.github.George_Al3xander.controller;
 
+import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
-import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

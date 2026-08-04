@@ -1,4 +1,4 @@
-package io.github.George_Al3xander.web;
+package io.github.George_Al3xander.auth;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

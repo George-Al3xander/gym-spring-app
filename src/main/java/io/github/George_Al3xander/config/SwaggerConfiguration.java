@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.config;
 
-import io.github.George_Al3xander.web.AuthHttpHeader;
+import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;

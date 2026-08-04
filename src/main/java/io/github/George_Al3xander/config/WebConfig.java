@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.config;
 
+import io.github.George_Al3xander.auth.UsernameAuthorizationInterceptor;
 import io.github.George_Al3xander.logging.RestLoggingInterceptor;
-import io.github.George_Al3xander.web.UsernameAuthorizationInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

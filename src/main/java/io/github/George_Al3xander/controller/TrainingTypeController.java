@@ -1,8 +1,8 @@
 package io.github.George_Al3xander.controller;
 
+import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.TrainingTypeResponse;
-import io.github.George_Al3xander.web.AuthHttpHeader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

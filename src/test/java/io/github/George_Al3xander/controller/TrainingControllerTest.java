@@ -1,9 +1,9 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.facade.GymFacade;
-import io.github.George_Al3xander.web.AuthHttpHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
