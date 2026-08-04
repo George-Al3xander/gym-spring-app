@@ -23,7 +23,6 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
 
         if (uri.contains("api-docs") || uri.contains("swagger") || uri.contains("/actuator")) {
-            //TODO: micrometer
             return true;
         }
 

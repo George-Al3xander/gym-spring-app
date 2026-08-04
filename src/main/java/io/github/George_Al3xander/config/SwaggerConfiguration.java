@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,7 +45,11 @@ import org.springframework.context.annotation.Configuration;
                         name = "Apache License 2.0",
                         url = "https://www.apache.org/licenses/LICENSE-2.0"
                 )
-        )
+        ),
+        security = {
+                @SecurityRequirement(name = AuthHttpHeader.USERNAME),
+                @SecurityRequirement(name = AuthHttpHeader.PASSWORD)
+        }
 )
 @SecurityScheme(
         name = AuthHttpHeader.USERNAME,

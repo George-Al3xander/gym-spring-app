@@ -37,7 +37,8 @@ public class TraineeController {
     @PostMapping
     @Operation(
             summary = "Create trainee",
-            description = "Registers a new trainee and returns generated credentials"
+            description = "Registers a new trainee and returns generated credentials",
+            security = {}
     )
     @ApiResponses({
             @ApiResponse(

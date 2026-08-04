@@ -38,7 +38,8 @@ public class TrainerController {
     @PostMapping
     @Operation(
             summary = "Create trainer",
-            description = "Registers a new trainer and returns generated credentials"
+            description = "Registers a new trainer and returns generated credentials",
+            security = {}
     )
     @ApiResponses({
             @ApiResponse(
