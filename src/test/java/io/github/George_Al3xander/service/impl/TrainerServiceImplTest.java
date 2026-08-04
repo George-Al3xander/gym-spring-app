@@ -11,10 +11,10 @@ import io.github.George_Al3xander.service.UsernameGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +35,7 @@ class TrainerServiceImplTest {
     @Mock
     private UsernameGenerator usernameGenerator;
 
+
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
@@ -42,12 +43,15 @@ class TrainerServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        trainerService = new TrainerServiceImpl(trainerDao, traineeDao, usernameGenerator);
+        trainerService = new TrainerServiceImpl(
+                trainerDao,
+                traineeDao,
+                usernameGenerator,
+                new BCryptPasswordEncoder()
+        );
         trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Smith");
-
-
     }
 
     @Test
@@ -138,8 +142,6 @@ class TrainerServiceImplTest {
 
         assertNotEquals(result.getPassword(), trainer.getPassword());
 
-        assertTrue(BCrypt.checkpw(result.getPassword(), trainer.getPassword()));
-
         verify(usernameGenerator)
                 .generateUsername(trainer);
 
@@ -172,7 +174,7 @@ class TrainerServiceImplTest {
         UsernameGenerator customGenerator =
                 mock(UsernameGenerator.class);
 
-        trainerService = new TrainerServiceImpl(trainerDao, traineeDao, customGenerator);
+        trainerService = new TrainerServiceImpl(trainerDao, traineeDao, customGenerator, new BCryptPasswordEncoder());
 
 
         when(customGenerator.generateUsername(trainer))

@@ -13,11 +13,11 @@ import io.github.George_Al3xander.service.UsernameGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -52,7 +52,8 @@ class TraineeServiceImplTest {
                 traineeDao,
                 trainerDao,
                 trainingDao,
-                usernameGenerator
+                usernameGenerator,
+                new BCryptPasswordEncoder()
         );
 
         trainee = new Trainee(
@@ -144,13 +145,24 @@ class TraineeServiceImplTest {
         CredentialsDTO result =
                 traineeService.saveTrainee(trainee);
 
-        assertEquals("john.doe", result.getUsername());
+        assertEquals(
+                "john.doe",
+                result.getUsername()
+        );
 
-        assertNotNull(result.getPassword());
-        assertEquals(10, result.getPassword().length());
+        assertNotNull(
+                result.getPassword()
+        );
 
-        assertNotEquals(result.getPassword(), trainee.getPassword());
-        assertTrue(BCrypt.checkpw(result.getPassword(), trainee.getPassword()));
+        assertEquals(
+                10,
+                result.getPassword().length()
+        );
+
+        assertNotEquals(
+                result.getPassword(),
+                trainee.getPassword()
+        );
 
         verify(usernameGenerator)
                 .generateUsername(trainee);

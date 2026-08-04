@@ -11,7 +11,7 @@ import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.UsernameGenerator;
 import io.github.George_Al3xander.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,8 @@ public class TrainerServiceImpl implements TrainerService {
     private final TraineeDao traineeDao;
 
     private final UsernameGenerator usernameGenerator;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Trainer getTrainerById(Long id) {
@@ -72,9 +74,7 @@ public class TrainerServiceImpl implements TrainerService {
 
         entity.setUsername(username);
         entity.setPassword(
-                BCrypt.hashpw(
-                        plainPassword, BCrypt.gensalt()
-                )
+                passwordEncoder.encode(plainPassword)
         );
 
         trainerDao.save(entity);

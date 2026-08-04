@@ -9,31 +9,42 @@ import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({
-        AuthenticationServiceImpl.class,
-        UserDaoImpl.class
-})
+@Import(UserDaoImpl.class)
 class AuthenticationServiceImplTest {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
+    private UserDao userDao;
+
+    @InjectMocks
     private AuthenticationServiceImpl authenticationService;
 
-    @Autowired
-    private UserDao userDao;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @BeforeEach
+    void setUp() {
+        authenticationService = new AuthenticationServiceImpl(
+                userDao,
+                new BCryptPasswordEncoder()
+        );
+
+    }
 
     @Test
     void givenValidCredentials_whenAuthenticate_thenReturnTrue() {
@@ -49,6 +60,7 @@ class AuthenticationServiceImplTest {
 
         assertTrue(result);
     }
+
 
     @Test
     void givenValidUsernameButWrongPassword_whenAuthenticate_thenReturnFalse() {
@@ -128,7 +140,10 @@ class AuthenticationServiceImplTest {
         User updatedUser = userDao.findByUsername(username).orElseThrow();
 
         assertTrue(
-                BCrypt.checkpw(newPassword, updatedUser.getPassword())
+                passwordEncoder.matches(
+                        newPassword,
+                        updatedUser.getPassword()
+                )
         );
     }
 
@@ -166,8 +181,9 @@ class AuthenticationServiceImplTest {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setUsername(username);
-        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setPassword(passwordEncoder.encode(password));
         user.setIsActive(true);
+
         return user;
     }
 
