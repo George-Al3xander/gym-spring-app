@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -124,8 +125,7 @@ public class TrainerController {
     public ResponseEntity<List<TrainerTrainingResponse>> getTrainings(
             @Parameter(description = "Trainer username")
             @PathVariable String username,
-            @Parameter(description = "Training filter criteria", required = true)
-            @Valid @RequestBody TrainingFilter trainingFilter
+            @ParameterObject @ModelAttribute TrainingFilter trainingFilter
     ) {
 
         return ResponseEntity.ok(

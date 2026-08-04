@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -160,7 +161,7 @@ public class TraineeController {
 
             @Parameter(description = "Trainee username")
             @PathVariable String username,
-            @Valid @RequestBody TrainingFilter trainingFilter
+            @ParameterObject @ModelAttribute TrainingFilter trainingFilter
     ) {
 
         return ResponseEntity.ok(
