@@ -5,12 +5,14 @@ import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.auth.LoginResponse;
 import io.github.George_Al3xander.service.AuthenticationService;
+import io.github.George_Al3xander.service.BruteForceProtectionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final JwtUtil jwtUtil;
+    private final BruteForceProtectionService bruteForceProtectionService;
 
     @PostMapping("/login")
     @Operation(
@@ -48,16 +51,31 @@ public class AuthenticationController {
     })
     public ResponseEntity<LoginResponse> login(
             @Parameter(description = "User credentials", required = true)
-            @Valid @RequestBody CredentialsDTO credentials
+            @Valid @RequestBody CredentialsDTO credentials,
+            HttpServletRequest httpRequest
     ) {
+        String key =
+                credentials.getUsername() + ":" +
+                        httpRequest.getRemoteAddr();
+
+
+        if (bruteForceProtectionService.isBlocked(key)) {
+
+            return ResponseEntity
+                    .status(HttpStatus.TOO_MANY_REQUESTS)
+                    .build();
+        }
 
         boolean authenticated =
                 authenticationService.authenticate(credentials);
 
         if (!authenticated) {
+            bruteForceProtectionService.loginFailed(key);
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
+        } else {
+            bruteForceProtectionService.loginSucceeded(key);
         }
 
         return ResponseEntity.ok(

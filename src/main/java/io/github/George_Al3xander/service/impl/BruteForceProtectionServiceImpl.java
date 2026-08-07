@@ -9,51 +9,72 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class BruteForceProtectionServiceImpl implements BruteForceProtectionService {
+public class BruteForceProtectionServiceImpl
+        implements BruteForceProtectionService {
 
     private final int maxAttempts;
     private final long lockTimeMillis;
+
+    private final Map<String, AttemptInfo> attempts =
+            new ConcurrentHashMap<>();
 
     public BruteForceProtectionServiceImpl(
             @Value("${security.brute-force.max-attempts:3}") int maxAttempts,
             @Value("${security.brute-force.lock-time-minutes:5}") long lockTimeMinutes) {
         this.maxAttempts = maxAttempts;
-        this.lockTimeMillis = TimeUnit.MINUTES.toMillis(lockTimeMinutes);
+        this.lockTimeMillis =
+                TimeUnit.MINUTES.toMillis(lockTimeMinutes);
     }
-
-    private final Map<String, Integer> attemptsCache = new ConcurrentHashMap<>();
-    private final Map<String, Long> lockCache = new ConcurrentHashMap<>();
 
     @Override
     public void loginSucceeded(String key) {
-        attemptsCache.remove(key);
-        lockCache.remove(key);
+        attempts.remove(key);
     }
 
     @Override
     public void loginFailed(String key) {
-        int attempts = attemptsCache.getOrDefault(key, 0);
-        attempts++;
 
-        attemptsCache.put(key, attempts);
+        attempts.compute(key, (k, info) -> {
 
-        if (attempts >= maxAttempts) {
-            lockCache.put(key, System.currentTimeMillis());
-        }
+            if (info == null) {
+                return new AttemptInfo(1, 0);
+            }
+
+            int newAttempts = info.attempts + 1;
+
+            if (newAttempts >= maxAttempts) {
+                return new AttemptInfo(
+                        newAttempts,
+                        System.currentTimeMillis()
+                );
+            }
+
+            return new AttemptInfo(
+                    newAttempts,
+                    info.lockedAt
+            );
+        });
     }
 
     @Override
     public boolean isBlocked(String key) {
-        if (!lockCache.containsKey(key)) {
+
+        AttemptInfo info = attempts.get(key);
+
+        if (info == null || info.lockedAt == 0) {
             return false;
         }
 
-        long lockTime = lockCache.get(key);
-        if (System.currentTimeMillis() - lockTime > lockTimeMillis) {
-            lockCache.remove(key);
+        if (System.currentTimeMillis() -
+                info.lockedAt > lockTimeMillis) {
+
+            attempts.remove(key);
             return false;
         }
 
         return true;
+    }
+
+    private record AttemptInfo(int attempts, long lockedAt) {
     }
 }
