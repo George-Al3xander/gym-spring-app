@@ -2,10 +2,9 @@ package io.github.George_Al3xander.dao.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.User;
-import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,11 +58,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean existsByUsername(String username) {
-        String qString = "SELECT COUNT(u) FROM User u WHERE u.username = :username";
+        String qString = """
+                SELECT COUNT(u)
+                FROM User u
+                WHERE LOWER(u.username) = LOWER(:username)
+                """;
 
         Long count = entityManager
                 .createQuery(qString, Long.class)
-                .setParameter("username", username.toLowerCase())
+                .setParameter("username", username)
                 .getSingleResult();
 
         return count > 0;
