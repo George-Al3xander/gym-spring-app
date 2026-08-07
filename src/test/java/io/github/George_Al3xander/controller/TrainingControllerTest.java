@@ -1,7 +1,6 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.facade.GymFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +62,6 @@ class TrainingControllerTest {
 
 
         mockMvc.perform(post("/trainings")
-                        .header(AuthHttpHeader.USERNAME, "admin")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());

@@ -6,5 +6,5 @@ import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 public interface AuthenticationService {
     boolean authenticate(CredentialsDTO credentials);
 
-    void changePassword(String username, ChangeLoginRequest request);
+    void changePassword(ChangeLoginRequest request);
 }

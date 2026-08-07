@@ -1,7 +1,6 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainee.TraineeProfileResponse;
 import io.github.George_Al3xander.dto.trainee.TraineeRegistrationRequest;
@@ -98,11 +97,7 @@ class TraineeControllerTest {
                 .thenReturn(response);
 
 
-        mockMvc.perform(get("/trainees/john")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "john"
-                        ))
+        mockMvc.perform(get("/trainees/john"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username")
                         .value("john"));
@@ -118,11 +113,7 @@ class TraineeControllerTest {
             throws Exception {
 
 
-        mockMvc.perform(delete("/trainees/john")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "john"
-                        ))
+        mockMvc.perform(delete("/trainees/john"))
                 .andExpect(status().isNoContent());
 
 
@@ -149,11 +140,7 @@ class TraineeControllerTest {
                 ));
 
 
-        mockMvc.perform(get("/trainees/john/unassigned-trainers")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "john"
-                        ))
+        mockMvc.perform(get("/trainees/john/unassigned-trainers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].username")
                         .value("trainer1"));
@@ -170,10 +157,6 @@ class TraineeControllerTest {
 
 
         mockMvc.perform(patch("/trainees/john/activate")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "john"
-                        )
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNoContent());

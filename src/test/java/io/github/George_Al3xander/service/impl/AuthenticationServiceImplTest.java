@@ -130,8 +130,7 @@ class AuthenticationServiceImplTest {
         entityManager.flush();
 
         authenticationService.changePassword(
-                username,
-                new ChangeLoginRequest(oldPassword, newPassword)
+                new ChangeLoginRequest(username, oldPassword, newPassword)
         );
 
         entityManager.flush();
@@ -157,8 +156,7 @@ class AuthenticationServiceImplTest {
         assertThrows(
                 BadCredentialsException.class,
                 () -> authenticationService.changePassword(
-                        username,
-                        new ChangeLoginRequest("wrongPassword", "newPass!!!")
+                        new ChangeLoginRequest(username, "wrongPassword", "newPass!!!")
                 )
         );
     }
@@ -170,8 +168,7 @@ class AuthenticationServiceImplTest {
         assertThrows(
                 GymEntityNotFoundException.class,
                 () -> authenticationService.changePassword(
-                        username,
-                        new ChangeLoginRequest("oldPassword", "newPassword")
+                        new ChangeLoginRequest(username, "oldPassword", "newPassword")
                 )
         );
     }

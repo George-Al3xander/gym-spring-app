@@ -1,7 +1,6 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.trainer.TrainerProfileResponse;
 import io.github.George_Al3xander.dto.trainer.TrainerRegistrationRequest;
@@ -126,11 +125,7 @@ class TrainerControllerTest {
                 .thenReturn(response);
 
 
-        mockMvc.perform(get("/trainers/mike")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "mike"
-                        ))
+        mockMvc.perform(get("/trainers/mike"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username")
                         .value("mike"))
@@ -170,10 +165,6 @@ class TrainerControllerTest {
 
 
         mockMvc.perform(put("/trainers/mike")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "mike"
-                        )
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -197,10 +188,6 @@ class TrainerControllerTest {
 
 
         mockMvc.perform(put("/trainers/mike")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "mike"
-                        )
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -227,10 +214,6 @@ class TrainerControllerTest {
 
 
         mockMvc.perform(get("/trainers/mike/trainings")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "mike"
-                        )
                         .contentType("application/json")
                         .content("{}"))
                 .andExpect(status().isOk())
@@ -249,10 +232,6 @@ class TrainerControllerTest {
 
 
         mockMvc.perform(patch("/trainers/mike/activate")
-                        .header(
-                                AuthHttpHeader.USERNAME,
-                                "mike"
-                        )
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNoContent());

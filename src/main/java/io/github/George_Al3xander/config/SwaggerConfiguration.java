@@ -1,6 +1,5 @@
 package io.github.George_Al3xander.config;
 
-import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -27,14 +26,8 @@ import org.springframework.context.annotation.Configuration;
                         - Account activation/deactivation
                         - Password management
                         
-                        Features:
-                        - Spring Framework based architecture
-                        - JPA/Hibernate persistence
-                        - Flyway database migrations
-                        - H2 development database
-                        - MySQL production database
-                        - Transaction management
-                        - AOP exception logging
+                        Security:
+                        - JWT Bearer authentication
                         """,
                 contact = @Contact(
                         name = "George Al3xander",
@@ -47,21 +40,16 @@ import org.springframework.context.annotation.Configuration;
                 )
         ),
         security = {
-                @SecurityRequirement(name = AuthHttpHeader.USERNAME),
-                @SecurityRequirement(name = AuthHttpHeader.PASSWORD)
+                @SecurityRequirement(name = "bearerAuth")
         }
 )
 @SecurityScheme(
-        name = AuthHttpHeader.USERNAME,
-        type = SecuritySchemeType.APIKEY,
-        in = SecuritySchemeIn.HEADER,
-        paramName = AuthHttpHeader.USERNAME
-)
-@SecurityScheme(
-        name = AuthHttpHeader.PASSWORD,
-        type = SecuritySchemeType.APIKEY,
-        in = SecuritySchemeIn.HEADER,
-        paramName = AuthHttpHeader.PASSWORD
+        name = "bearerAuth",
+        description = "JWT authentication. Enter: Bearer {token}",
+        scheme = "bearer",
+        bearerFormat = "JWT",
+        type = SecuritySchemeType.HTTP,
+        in = SecuritySchemeIn.HEADER
 )
 public class SwaggerConfiguration {
 }

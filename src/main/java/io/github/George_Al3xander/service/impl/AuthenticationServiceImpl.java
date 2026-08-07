@@ -40,7 +40,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void changePassword(String username, ChangeLoginRequest request) {
+    public void changePassword(ChangeLoginRequest request) {
+        String username = request.getUsername();
+
         try {
             User user = userDao.findByUsername(username)
                     .orElseThrow(() -> new GymEntityNotFoundException("User", username));

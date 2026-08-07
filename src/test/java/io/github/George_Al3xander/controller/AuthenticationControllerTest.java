@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.George_Al3xander.auth.AuthHttpHeader;
+import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
@@ -19,7 +19,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,6 +28,9 @@ class AuthenticationControllerTest {
 
     @Mock
     private AuthenticationService authenticationService;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private AuthenticationController controller;
@@ -52,43 +55,73 @@ class AuthenticationControllerTest {
         CredentialsDTO credentials =
                 new CredentialsDTO("john", "1234567890");
 
-        when(authenticationService.authenticate(credentials)).thenReturn(true);
+        when(authenticationService.authenticate(credentials))
+                .thenReturn(true);
 
-        mockMvc.perform(get("/auth")
-                        .param("username", credentials.getUsername())
-                        .param("password", credentials.getPassword())
-                )
+        when(jwtUtil.generateToken("john"))
+                .thenReturn("jwt-token");
+
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(credentials)))
                 .andExpect(status().isOk());
 
-        verify(authenticationService).authenticate(credentials);
+        verify(authenticationService)
+                .authenticate(credentials);
+
+        verify(jwtUtil)
+                .generateToken("john");
+    }
+
+    @Test
+    void login_ShouldReturn401_WhenCredentialsInvalid() throws Exception {
+        CredentialsDTO credentials =
+                new CredentialsDTO("john", "1234567890");
+
+        when(authenticationService.authenticate(credentials))
+                .thenReturn(false);
+
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(credentials)))
+                .andExpect(status().isUnauthorized());
+
+        verify(authenticationService)
+                .authenticate(credentials);
+
+        verifyNoInteractions(jwtUtil);
     }
 
     @Test
     void changeLogin_ShouldReturn200_AndChangePassword() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("oldPassword", "abcdefghij");
+                new ChangeLoginRequest("john", "oldPassword", "abcdefghij");
 
-        mockMvc.perform(put("/auth")
-                        .header(AuthHttpHeader.USERNAME, "john")
+        mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
-
-        ArgumentCaptor<String> usernameCaptor =
-                ArgumentCaptor.forClass(String.class);
 
         ArgumentCaptor<ChangeLoginRequest> requestCaptor =
                 ArgumentCaptor.forClass(ChangeLoginRequest.class);
 
         verify(authenticationService)
                 .changePassword(
-                        usernameCaptor.capture(),
                         requestCaptor.capture()
                 );
 
-        assertEquals("john", usernameCaptor.getValue());
-        assertEquals("oldPassword", requestCaptor.getValue().getOldPassword());
-        assertEquals("abcdefghij", requestCaptor.getValue().getNewPassword());
+        assertEquals(
+                "john",
+                requestCaptor.getValue().getUsername()
+        );
+        assertEquals(
+                "oldPassword",
+                requestCaptor.getValue().getOldPassword()
+        );
+        assertEquals(
+                "abcdefghij",
+                requestCaptor.getValue().getNewPassword()
+        );
     }
 
     @Test
@@ -96,7 +129,7 @@ class AuthenticationControllerTest {
         CredentialsDTO credentials =
                 new CredentialsDTO("john", "short");
 
-        mockMvc.perform(get("/auth")
+        mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(credentials)))
                 .andExpect(status().isBadRequest());
@@ -107,10 +140,9 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn400_WhenPasswordInvalid() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("oldPassword", "123");
+                new ChangeLoginRequest("username", "oldPassword", "123");
 
-        mockMvc.perform(put("/auth")
-                        .header(AuthHttpHeader.USERNAME, "john")
+        mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -121,10 +153,9 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn400_WhenOldPasswordMissing() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest(null, "abcdefghij");
+                new ChangeLoginRequest(null, null, "abcdefghij");
 
-        mockMvc.perform(put("/auth")
-                        .header(AuthHttpHeader.USERNAME, "john")
+        mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());

@@ -1,6 +1,5 @@
 package io.github.George_Al3xander.controller;
 
-import io.github.George_Al3xander.auth.AuthHttpHeader;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.TrainingTypeResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,8 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,10 +35,6 @@ public class TrainingTypeController {
             summary = "Get training types",
             description = "Returns all available training types"
     )
-    @SecurityRequirements({
-            @SecurityRequirement(name = AuthHttpHeader.USERNAME),
-            @SecurityRequirement(name = AuthHttpHeader.PASSWORD)
-    })
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
