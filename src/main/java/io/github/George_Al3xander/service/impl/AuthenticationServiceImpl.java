@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -27,13 +26,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean authenticate(CredentialsDTO credentials) {
         try {
-            Optional<User> user = userDao.findByUsername(credentials.getUsername());
+            User user = findUser(credentials.getUsername());
 
-            if (user.isEmpty()) {
-                return false;
-            }
+            validatePassword(credentials.getPassword(), user.getPassword());
 
-            return passwordEncoder.matches(credentials.getPassword(), user.get().getPassword());
+            return true;
         } catch (Exception e) {
             return false;
         }
@@ -44,12 +41,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String username = request.getUsername();
 
         try {
-            User user = userDao.findByUsername(username)
-                    .orElseThrow(() -> new GymEntityNotFoundException("User", username));
+            User user = findUser(username);
 
-            if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-                throw new BadCredentialsException("Wrong old password");
-            }
+            validatePassword(request.getOldPassword(), user.getPassword());
 
             user.setPassword(
                     passwordEncoder.encode(request.getNewPassword())
@@ -58,6 +52,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             userDao.update(user);
         } catch (NoResultException | NoSuchElementException ex) {
             throw new GymEntityNotFoundException("User", username);
+        }
+    }
+
+    private User findUser(String username) {
+        return userDao.findByUsername(username)
+                .orElseThrow(() -> new GymEntityNotFoundException("User", username));
+    }
+
+    private void validatePassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new BadCredentialsException("Wrong old password");
         }
     }
 }
