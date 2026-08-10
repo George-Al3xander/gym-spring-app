@@ -10,4 +10,8 @@ public interface JwtService {
 
     boolean isTokenValid(String token, String usernameFromUserDetails);
 
+    void revokeUserToken(String token);
+
+    void revokeAllUserTokens(String username);
+
 }

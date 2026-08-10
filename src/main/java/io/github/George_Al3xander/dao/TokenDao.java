@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface TokenDao extends JpaRepository<Token, Long> {
-    List<Token> findAllByUserIdAndExpiredFalseAndRevokedFalse(Long userId);
+    List<Token> findAllByUserUsernameAndExpiredFalseAndRevokedFalse(String username);
 
     Optional<Token> findByToken(String token);
 }

@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -237,4 +238,119 @@ class JwtServiceImplTest {
         );
     }
 
+    @Test
+    void givenValidToken_whenRevokeUserToken_thenMarksTokenAsExpiredAndRevoked() {
+        String username = "john.doe";
+
+        User user = new User();
+        user.setUsername(username);
+
+        when(userDao.findByUsername(username))
+                .thenReturn(Optional.of(user));
+
+        when(tokenDao.save(any(Token.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        Token token = jwtService.saveToken(username);
+
+        when(tokenDao.findByToken(token.getToken()))
+                .thenReturn(Optional.of(token));
+
+        jwtService.revokeUserToken(token.getToken());
+
+        assertTrue(token.isExpired());
+        assertTrue(token.isRevoked());
+
+        verify(tokenDao).findByToken(token.getToken());
+        verify(tokenDao, times(2)).save(token);
+    }
+
+    @Test
+    void givenUnknownToken_whenRevokeUserToken_thenThrowsException() {
+        String token = "unknown-token";
+
+        when(tokenDao.findByToken(token))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                Exception.class,
+                () -> jwtService.revokeUserToken(token)
+        );
+
+        verify(tokenDao).findByToken(token);
+        verify(tokenDao, never()).save(any(Token.class));
+    }
+
+    @Test
+    void givenActiveUserTokens_whenRevokeAllUserTokens_thenRevokesAllTokens() {
+        String username = "john.doe";
+
+        Token token1 = new Token();
+        token1.setToken("token-1");
+        token1.setExpired(false);
+        token1.setRevoked(false);
+
+        Token token2 = new Token();
+        token2.setToken("token-2");
+        token2.setExpired(false);
+        token2.setRevoked(false);
+
+        List<Token> tokens = List.of(token1, token2);
+
+        when(tokenDao.findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username))
+                .thenReturn(tokens);
+
+        when(tokenDao.saveAll(tokens))
+                .thenReturn(tokens);
+
+        jwtService.revokeAllUserTokens(username);
+
+        assertTrue(token1.isExpired());
+        assertTrue(token1.isRevoked());
+
+        assertTrue(token2.isExpired());
+        assertTrue(token2.isRevoked());
+
+        verify(tokenDao)
+                .findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username);
+
+        verify(tokenDao)
+                .saveAll(tokens);
+    }
+
+    @Test
+    void givenNoActiveUserTokens_whenRevokeAllUserTokens_thenDoesNotSaveAnything() {
+        String username = "john.doe";
+
+        when(tokenDao.findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username))
+                .thenReturn(List.of());
+
+        jwtService.revokeAllUserTokens(username);
+
+        verify(tokenDao)
+                .findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username);
+
+        verify(tokenDao, never()).saveAll(anyList());
+    }
+
+    @Test
+    void givenRevokedAndExpiredTokens_whenRevokeAllUserTokens_thenOnlyActiveTokensAreProcessed() {
+        String username = "john.doe";
+
+        Token activeToken = new Token();
+        activeToken.setToken("active-token");
+        activeToken.setExpired(false);
+        activeToken.setRevoked(false);
+
+        when(tokenDao.findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username))
+                .thenReturn(List.of(activeToken));
+
+        jwtService.revokeAllUserTokens(username);
+
+        assertTrue(activeToken.isExpired());
+        assertTrue(activeToken.isRevoked());
+
+        verify(tokenDao)
+                .saveAll(List.of(activeToken));
+    }
 }

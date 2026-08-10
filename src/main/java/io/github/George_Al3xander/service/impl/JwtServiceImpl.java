@@ -18,6 +18,7 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +35,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Token saveToken(String username) {
-        User user = userDao.findByUsername(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
         Token tokenEntity = new Token();
-        tokenEntity.setUser(user);
+        tokenEntity.setUser(findUser(username));
         tokenEntity.setToken(generateToken(username));
         tokenEntity.setTokenType(TokenType.BEARER);
         tokenEntity.setRevoked(false);
@@ -66,14 +65,48 @@ public class JwtServiceImpl implements JwtService {
                 return false;
             }
 
-            Token tokenEntity = tokenDao.findByToken(token)
-                    .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-
+            Token tokenEntity = findToken(token);
 
             return !tokenEntity.isExpired() && !tokenEntity.isRevoked();
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public void revokeUserToken(String token) {
+        Token tokenEntity = findToken(token);
+
+        tokenEntity.setExpired(true);
+        tokenEntity.setRevoked(true);
+
+        tokenDao.save(tokenEntity);
+    }
+
+    @Override
+    public void revokeAllUserTokens(String username) {
+        List<Token> tokenList = tokenDao.findAllByUserUsernameAndExpiredFalseAndRevokedFalse(username);
+
+        if (tokenList.isEmpty()) {
+            return;
+        }
+
+        tokenList.forEach(t -> {
+            t.setExpired(true);
+            t.setRevoked(true);
+        });
+
+        tokenDao.saveAll(tokenList);
+    }
+
+    private User findUser(String username) {
+        return userDao.findByUsername(username)
+                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+    }
+
+    private Token findToken(String token) {
+        return tokenDao.findByToken(token)
+                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
     }
 
     private String generateToken(String username) {
