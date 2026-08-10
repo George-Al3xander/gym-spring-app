@@ -3,6 +3,7 @@ package io.github.George_Al3xander.controller;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.auth.LoginResponse;
+import io.github.George_Al3xander.model.Token;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.service.BruteForceProtectionService;
 import io.github.George_Al3xander.service.JwtService;
@@ -78,10 +79,10 @@ public class AuthenticationController {
             bruteForceProtectionService.loginSucceeded(key);
         }
 
+        Token token = jwtService.saveToken(credentials.getUsername());
+
         return ResponseEntity.ok(
-                new LoginResponse(
-                        jwtService.generateToken(credentials.getUsername())
-                )
+                new LoginResponse(token.getToken())
         );
     }
 

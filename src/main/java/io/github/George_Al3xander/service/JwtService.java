@@ -1,8 +1,10 @@
 package io.github.George_Al3xander.service;
 
+import io.github.George_Al3xander.model.Token;
+
 public interface JwtService {
 
-    String generateToken(String username);
+    Token saveToken(String username);
 
     String extractUsername(String token);
 

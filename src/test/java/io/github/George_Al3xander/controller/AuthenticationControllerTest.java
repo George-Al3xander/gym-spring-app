@@ -3,6 +3,7 @@ package io.github.George_Al3xander.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
+import io.github.George_Al3xander.model.Token;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.service.BruteForceProtectionService;
 import io.github.George_Al3xander.service.JwtService;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +43,7 @@ class AuthenticationControllerTest {
 
     private MockMvc mockMvc;
 
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -55,26 +57,24 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void login_ShouldReturn200_AndAuthenticate() throws Exception {
+    void login_ShouldReturn200_AndJwtToken() throws Exception {
         CredentialsDTO credentials =
                 new CredentialsDTO("john", "1234567890");
+
+        Token token = new Token();
+        token.setToken("jwt-token");
 
         when(authenticationService.authenticate(credentials))
                 .thenReturn(true);
 
-        when(jwtService.generateToken("john"))
-                .thenReturn("jwt-token");
+        when(jwtService.saveToken("john"))
+                .thenReturn(token);
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(credentials)))
-                .andExpect(status().isOk());
-
-        verify(authenticationService)
-                .authenticate(credentials);
-
-        verify(jwtService)
-                .generateToken("john");
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("jwt-token"));
     }
 
     @Test
@@ -90,16 +90,17 @@ class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(credentials)))
                 .andExpect(status().isUnauthorized());
 
-        verify(authenticationService)
-                .authenticate(credentials);
-
         verifyNoInteractions(jwtService);
     }
 
     @Test
     void changeLogin_ShouldReturn200_AndChangePassword() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("john", "oldPassword", "abcdefghij");
+                new ChangeLoginRequest(
+                        "john",
+                        "oldPassword",
+                        "abcdefghij"
+                );
 
         mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,9 +111,7 @@ class AuthenticationControllerTest {
                 ArgumentCaptor.forClass(ChangeLoginRequest.class);
 
         verify(authenticationService)
-                .changePassword(
-                        requestCaptor.capture()
-                );
+                .changePassword(requestCaptor.capture());
 
         assertEquals(
                 "john",
@@ -144,7 +143,11 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn400_WhenPasswordInvalid() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest("username", "oldPassword", "123");
+                new ChangeLoginRequest(
+                        "username",
+                        "oldPassword",
+                        "123"
+                );
 
         mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +160,11 @@ class AuthenticationControllerTest {
     @Test
     void changeLogin_ShouldReturn400_WhenOldPasswordMissing() throws Exception {
         ChangeLoginRequest request =
-                new ChangeLoginRequest(null, null, "abcdefghij");
+                new ChangeLoginRequest(
+                        null,
+                        null,
+                        "abcdefghij"
+                );
 
         mockMvc.perform(put("/change-password")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -166,4 +173,5 @@ class AuthenticationControllerTest {
 
         verifyNoInteractions(authenticationService);
     }
+
 }
