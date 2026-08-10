@@ -5,6 +5,7 @@ import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
+import io.github.George_Al3xander.service.BruteForceProtectionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,9 @@ class AuthenticationControllerTest {
 
     @Mock
     private AuthenticationService authenticationService;
+
+    @Mock
+    private BruteForceProtectionService bruteForceProtectionService;
 
     @Mock
     private JwtUtil jwtUtil;
