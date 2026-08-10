@@ -115,4 +115,57 @@ public class AuthenticationController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+            summary = "Logout current session",
+            description = "Revokes the JWT token used for the current authenticated session"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Logout successful"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized request"
+            )
+    })
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        jwtService.revokeUserToken(getToken(request));
+
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @PostMapping("/logout-all")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+            summary = "Logout all sessions",
+            description = "Revokes all active JWT tokens belonging to the authenticated user"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "All sessions successfully revoked"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized request"
+            )
+    })
+    public ResponseEntity<Void> logoutAll(HttpServletRequest request) {
+        String username = jwtService.extractUsername(getToken(request));
+
+        jwtService.revokeAllUserTokens(username);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private String getToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        return authHeader.substring(7);
+    }
 }

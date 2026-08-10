@@ -174,4 +174,30 @@ class AuthenticationControllerTest {
         verifyNoInteractions(authenticationService);
     }
 
+    @Test
+    void logout_ShouldReturn204_AndRevokeCurrentToken() throws Exception {
+        String token = "jwt-token";
+
+        mockMvc.perform(post("/logout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        verify(jwtService).revokeUserToken(token);
+    }
+
+    @Test
+    void logoutAll_ShouldReturn204_AndRevokeAllUserTokens() throws Exception {
+        String token = "jwt-token";
+        String username = "john";
+
+        when(jwtService.extractUsername(token))
+                .thenReturn(username);
+
+        mockMvc.perform(post("/logout-all")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        verify(jwtService).extractUsername(token);
+        verify(jwtService).revokeAllUserTokens(username);
+    }
 }
