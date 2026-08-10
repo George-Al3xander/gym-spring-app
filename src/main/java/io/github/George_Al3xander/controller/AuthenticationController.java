@@ -1,11 +1,11 @@
 package io.github.George_Al3xander.controller;
 
-import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.auth.LoginResponse;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.service.BruteForceProtectionService;
+import io.github.George_Al3xander.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final BruteForceProtectionService bruteForceProtectionService;
 
     @PostMapping("/login")
@@ -80,7 +80,7 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(
                 new LoginResponse(
-                        jwtUtil.generateToken(credentials.getUsername())
+                        jwtService.generateToken(credentials.getUsername())
                 )
         );
     }

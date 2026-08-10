@@ -1,11 +1,11 @@
 package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.service.AuthenticationService;
 import io.github.George_Al3xander.service.BruteForceProtectionService;
+import io.github.George_Al3xander.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class AuthenticationControllerTest {
     private BruteForceProtectionService bruteForceProtectionService;
 
     @Mock
-    private JwtUtil jwtUtil;
+    private JwtService jwtService;
 
     @InjectMocks
     private AuthenticationController controller;
@@ -62,7 +62,7 @@ class AuthenticationControllerTest {
         when(authenticationService.authenticate(credentials))
                 .thenReturn(true);
 
-        when(jwtUtil.generateToken("john"))
+        when(jwtService.generateToken("john"))
                 .thenReturn("jwt-token");
 
         mockMvc.perform(post("/login")
@@ -73,7 +73,7 @@ class AuthenticationControllerTest {
         verify(authenticationService)
                 .authenticate(credentials);
 
-        verify(jwtUtil)
+        verify(jwtService)
                 .generateToken("john");
     }
 
@@ -93,7 +93,7 @@ class AuthenticationControllerTest {
         verify(authenticationService)
                 .authenticate(credentials);
 
-        verifyNoInteractions(jwtUtil);
+        verifyNoInteractions(jwtService);
     }
 
     @Test

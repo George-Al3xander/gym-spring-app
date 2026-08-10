@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.auth;
 
+import io.github.George_Al3xander.service.JwtService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,11 +14,11 @@ import java.util.Map;
 @Component
 public class UsernameAuthorizationInterceptor implements HandlerInterceptor {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final Counter counter;
 
-    public UsernameAuthorizationInterceptor(JwtUtil jwtUtil, MeterRegistry meterRegistry) {
-        this.jwtUtil = jwtUtil;
+    public UsernameAuthorizationInterceptor(JwtService jwtService, MeterRegistry meterRegistry) {
+        this.jwtService = jwtService;
         counter = Counter.builder("api_username_authorization_forbidden_requests")
                 .description("Number of requests rejected due to username authorization failure")
                 .register(meterRegistry);
@@ -42,7 +43,7 @@ public class UsernameAuthorizationInterceptor implements HandlerInterceptor {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            username = jwtService.extractUsername(jwt);
         }
 
         if (username == null) {
@@ -52,7 +53,7 @@ public class UsernameAuthorizationInterceptor implements HandlerInterceptor {
 
         String pathUsername = pathVariables.get("username");
 
-        if (pathUsername != null && !pathUsername.equals(jwtUtil.extractUsername(jwt))) {
+        if (pathUsername != null && !pathUsername.equals(jwtService.extractUsername(jwt))) {
             counter.increment();
 
             response.sendError(HttpServletResponse.SC_FORBIDDEN);

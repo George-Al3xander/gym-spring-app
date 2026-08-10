@@ -1,5 +1,6 @@
-package io.github.George_Al3xander.auth;
+package io.github.George_Al3xander.service.impl;
 
+import io.github.George_Al3xander.service.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,9 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JwtUtilTest {
+class JwtServiceImplTest {
 
-    private JwtUtil jwtUtil;
+    private JwtService jwtService;
 
     private static final String SECRET =
             Base64.getEncoder()
@@ -29,15 +30,15 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        jwtUtil = new JwtUtil();
+        jwtService = new JwtServiceImpl();
 
-        Field secretField = JwtUtil.class.getDeclaredField("secret");
+        Field secretField = JwtServiceImpl.class.getDeclaredField("secret");
         secretField.setAccessible(true);
-        secretField.set(jwtUtil, SECRET);
+        secretField.set(jwtService, SECRET);
 
-        Field expirationField = JwtUtil.class.getDeclaredField("expiration");
+        Field expirationField = JwtServiceImpl.class.getDeclaredField("expiration");
         expirationField.setAccessible(true);
-        expirationField.set(jwtUtil, EXPIRATION);
+        expirationField.set(jwtService, EXPIRATION);
     }
 
 
@@ -46,7 +47,7 @@ class JwtUtilTest {
 
         String username = "john.doe";
 
-        String token = jwtUtil.generateToken(username);
+        String token = jwtService.generateToken(username);
 
         assertNotNull(token);
         assertFalse(token.isBlank());
@@ -58,10 +59,10 @@ class JwtUtilTest {
 
         String username = "john.doe";
 
-        String token = jwtUtil.generateToken(username);
+        String token = jwtService.generateToken(username);
 
         String extractedUsername =
-                jwtUtil.extractUsername(token);
+                jwtService.extractUsername(token);
 
         assertEquals(username, extractedUsername);
     }
@@ -74,7 +75,7 @@ class JwtUtilTest {
 
         assertThrows(
                 Exception.class,
-                () -> jwtUtil.extractUsername(invalidToken)
+                () -> jwtService.extractUsername(invalidToken)
         );
     }
 
@@ -84,10 +85,10 @@ class JwtUtilTest {
 
         String username = "john.doe";
 
-        String token = jwtUtil.generateToken(username);
+        String token = jwtService.generateToken(username);
 
         boolean result =
-                jwtUtil.isTokenValid(token, username);
+                jwtService.isTokenValid(token, username);
 
         assertTrue(result);
     }
@@ -97,11 +98,11 @@ class JwtUtilTest {
     void givenDifferentUsernameAndValidToken_whenIsTokenValid_thenReturnsFalse() {
 
         String token =
-                jwtUtil.generateToken("john.doe");
+                jwtService.generateToken("john.doe");
 
 
         boolean result =
-                jwtUtil.isTokenValid(
+                jwtService.isTokenValid(
                         token,
                         "jane.doe"
                 );
@@ -132,7 +133,7 @@ class JwtUtilTest {
 
 
         boolean result =
-                jwtUtil.isTokenValid(
+                jwtService.isTokenValid(
                         expiredToken,
                         username
                 );
@@ -145,7 +146,7 @@ class JwtUtilTest {
     void givenTamperedToken_whenExtractUsername_thenThrowsException() {
 
         String token =
-                jwtUtil.generateToken("john.doe");
+                jwtService.generateToken("john.doe");
 
 
         String tamperedToken =
@@ -154,7 +155,7 @@ class JwtUtilTest {
 
         assertThrows(
                 Exception.class,
-                () -> jwtUtil.extractUsername(tamperedToken)
+                () -> jwtService.extractUsername(tamperedToken)
         );
     }
 }
