@@ -137,7 +137,7 @@ public class GymFacadeImpl implements GymFacade {
 
     @Override
     public List<TrainerTrainingResponse> getTrainerTrainings(String username, TrainingFilter criteria) {
-        List<Training> trainings = trainingService.findByTraineeUsername(username, criteria);
+        List<Training> trainings = trainingService.findByTrainerUsername(username, criteria);
 
         return trainings.stream().map(t -> {
             TrainerTrainingResponse response = trainingMapper.toTrainerResponse(t);
