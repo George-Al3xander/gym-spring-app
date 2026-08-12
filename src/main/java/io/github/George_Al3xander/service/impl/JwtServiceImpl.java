@@ -12,15 +12,19 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
@@ -97,6 +101,11 @@ public class JwtServiceImpl implements JwtService {
         });
 
         tokenDao.saveAll(tokenList);
+    }
+
+    @Scheduled(fixedDelay = 12, timeUnit = TimeUnit.HOURS)
+    void cleanTokens() {
+        tokenDao.deleteAllByExpiredTrueOrRevokedTrue();
     }
 
     private User findUser(String username) {

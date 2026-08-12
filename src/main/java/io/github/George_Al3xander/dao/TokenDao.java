@@ -12,4 +12,6 @@ public interface TokenDao extends JpaRepository<Token, Long> {
     List<Token> findAllByUserUsernameAndExpiredFalseAndRevokedFalse(String username);
 
     Optional<Token> findByToken(String token);
+
+    void deleteAllByExpiredTrueOrRevokedTrue();
 }
