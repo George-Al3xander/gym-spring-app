@@ -39,9 +39,10 @@ public class Trainee extends User {
             String password,
             boolean isActive,
             LocalDate dateOfBirth,
-            String address
+            String address,
+            List<Token> tokens
     ) {
-        super(id, firstName, lastName, username, password, isActive);
+        super(id, firstName, lastName, username, password, isActive, tokens);
         setDateOfBirth(dateOfBirth);
         setAddress(address);
     }

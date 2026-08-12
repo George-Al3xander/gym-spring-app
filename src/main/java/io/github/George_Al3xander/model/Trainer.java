@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "trainers")
 @NoArgsConstructor
@@ -30,9 +32,10 @@ public class Trainer extends User {
             String username,
             String password,
             boolean isActive,
-            TrainingType specialization
+            TrainingType specialization,
+            List<Token> tokens
     ) {
-        super(id, firstName, lastName, username, password, isActive);
+        super(id, firstName, lastName, username, password, isActive, tokens);
         setSpecialization(specialization);
     }
 }

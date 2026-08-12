@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,8 @@ class TrainingServiceImplTest {
                 "pass",
                 true,
                 LocalDate.of(1990, 1, 1),
-                "Kyiv"
+                "Kyiv",
+                new ArrayList<>()
         );
 
         trainer = new Trainer(
@@ -67,7 +69,8 @@ class TrainingServiceImplTest {
                 "mike.smith",
                 "pass",
                 true,
-                trainingType
+                trainingType,
+                new ArrayList<>()
         );
 
         training = new Training(
