@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 120s
+  evaluation_interval: 120s
+
+scrape_configs:
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - "localhost:9090"
+
+  - job_name: "Gym Application input"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 2s
+    static_configs:
+      - targets:
+          - "host.docker.internal:8080"
+        labels:
+          application: "Gym Application"
