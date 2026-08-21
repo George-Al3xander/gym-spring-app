@@ -17,7 +17,7 @@ public class MonthWorkload {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "workload_month", nullable = false)
     private int month;
 
     @Column(nullable = false)
