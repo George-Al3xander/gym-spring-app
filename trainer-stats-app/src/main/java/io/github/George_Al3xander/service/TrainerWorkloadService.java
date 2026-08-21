@@ -5,4 +5,6 @@ import io.github.George_Al3xander.model.TrainerWorkload;
 
 public interface TrainerWorkloadService {
     TrainerWorkload handleTraining(WorkloadRequest request);
+
+    TrainerWorkload getWorkloadByTrainerUsername(String username);
 }

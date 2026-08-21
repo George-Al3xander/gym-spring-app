@@ -617,6 +617,53 @@ class TrainerWorkloadServiceImplTestIT {
         );
     }
 
+    @Test
+    void givenExistingTrainer_whenGettingWorkloadByUsername_thenReturnTrainerWorkload() {
+        WorkloadRequest request = createRequest(
+                "john.doe",
+                "John",
+                "Doe",
+                true,
+                LocalDate.of(2026, 8, 10),
+                8,
+                ActionType.ADD
+        );
+
+        trainerWorkloadService.handleTraining(request);
+
+        TrainerWorkload result =
+                trainerWorkloadService.getWorkloadByTrainerUsername("john.doe");
+
+        assertNotNull(result);
+        assertEquals("john.doe", result.getTrainerUsername());
+        assertEquals("John", result.getTrainerFirstName());
+        assertEquals("Doe", result.getTrainerLastName());
+        assertTrue(result.isTrainerStatus());
+
+        assertEquals(1, result.getYears().size());
+
+        YearWorkload year = findYearWorkload(result, 2026);
+
+        assertEquals(1, year.getMonths().size());
+
+        MonthWorkload month = findMonthWorkload(year, 8);
+
+        assertEquals(8, month.getTrainingSummaryDuration());
+    }
+
+    @Test
+    void givenNonExistingTrainer_whenGettingWorkloadByUsername_thenThrowEntityNotFoundException() {
+        jakarta.persistence.EntityNotFoundException exception =
+                assertThrows(
+                        jakarta.persistence.EntityNotFoundException.class,
+                        () -> trainerWorkloadService.getWorkloadByTrainerUsername("unknown")
+                );
+
+        assertNotNull(exception);
+        assertEquals(0, trainerWorkloadRepository.count());
+    }
+
+
     private WorkloadRequest createRequest(
             String username,
             String firstName,
