@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.facade.impl;
 
+import io.github.George_Al3xander.client.TrainerStatsClient;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
@@ -39,6 +40,8 @@ public class GymFacadeImpl implements GymFacade {
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
+
+    private final TrainerStatsClient trainerStatsClient;
 
     @Override
     public CredentialsDTO createTrainer(TrainerRegistrationRequest request) {
@@ -163,6 +166,8 @@ public class GymFacadeImpl implements GymFacade {
 
         training.setTrainingType(training.getTrainingType());
 
+        recordTrainerWorkload(training);
+
         return trainingService.saveTraining(training);
     }
 
@@ -205,4 +210,21 @@ public class GymFacadeImpl implements GymFacade {
 
         return trainingTypeOptional.get();
     }
+
+    private void recordTrainerWorkload(Training training) {
+        Trainer trainer = training.getTrainer();
+
+        TrainerWorkloadRequest trainerWorkloadRequest = TrainerWorkloadRequest.builder()
+                .trainerUsername(trainer.getUsername())
+                .trainerFirstName(trainer.getFirstName())
+                .trainerLastName(trainer.getLastName())
+                .active(trainer.getIsActive())
+                .actionType(TrainerWorkloadRequest.ActionType.ADD)
+                .trainingDate(training.getTrainingDate())
+                .trainingDuration(training.getDurationSeconds())
+                .build();
+
+        trainerStatsClient.addTrainingWorkload(trainerWorkloadRequest);
+    }
+
 }

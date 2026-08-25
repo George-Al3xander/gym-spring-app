@@ -1,9 +1,11 @@
 package io.github.George_Al3xander.config;
 
 import io.github.George_Al3xander.auth.UsernameAuthorizationInterceptor;
+import io.github.George_Al3xander.client.TrainerStatsClient;
 import io.github.George_Al3xander.logging.RestLoggingInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableFeignClients(basePackageClasses = TrainerStatsClient.class)
 @ComponentScan("io.github.George_Al3xander.controller")
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
