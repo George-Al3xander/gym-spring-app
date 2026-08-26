@@ -24,7 +24,6 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests
-                                .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
                 ).sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
