@@ -24,6 +24,12 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests
+                                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-resources/**",
+                                        "/v2/api-docs/**",
+                                        "/v3/api-docs/**"
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 ).sessionManagement(s ->
                         s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
