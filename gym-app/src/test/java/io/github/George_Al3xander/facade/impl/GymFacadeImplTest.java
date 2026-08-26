@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.facade.impl;
 
+import io.github.George_Al3xander.client.TrainerStatsClient;
 import io.github.George_Al3xander.dao.TrainingTypeDao;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
 import io.github.George_Al3xander.dto.filter.TrainerFilter;
@@ -49,6 +50,9 @@ class GymFacadeImplTest {
     private TrainingService trainingService;
     @Mock
     private TrainingTypeDao trainingTypeDao;
+
+    @Mock
+    private TrainerStatsClient trainerStatsClient;
 
     @Mock
     private TraineeMapper traineeMapper;
@@ -411,17 +415,30 @@ class GymFacadeImplTest {
         Trainer trainer = mock(Trainer.class);
         when(trainerService.getTrainerByUsername(TRAINER_USERNAME)).thenReturn(trainer);
 
+        when(trainer.getUsername()).thenReturn(TRAINER_USERNAME);
+        when(trainer.getFirstName()).thenReturn("John");
+        when(trainer.getLastName()).thenReturn("Doe");
+        when(trainer.getIsActive()).thenReturn(true);
+
         Trainee trainee = mock(Trainee.class);
         when(traineeService.getTraineeByUsername(TRAINEE_USERNAME)).thenReturn(trainee);
 
+        when(mappedTraining.getTrainer()).thenReturn(trainer);
+
         Training savedTraining = mock(Training.class);
         when(trainingService.saveTraining(mappedTraining)).thenReturn(savedTraining);
+
+        doNothing()
+                .when(trainerStatsClient)
+                .addTrainingWorkload(any(TrainerWorkloadRequest.class));
 
         Training result = gymFacade.addTraining(request);
 
         verify(mappedTraining).setTrainer(trainer);
         verify(mappedTraining).setTrainee(trainee);
+        verify(trainerStatsClient).addTrainingWorkload(any(TrainerWorkloadRequest.class));
         verify(trainingService).saveTraining(mappedTraining);
+
         assertEquals(savedTraining, result);
     }
 
