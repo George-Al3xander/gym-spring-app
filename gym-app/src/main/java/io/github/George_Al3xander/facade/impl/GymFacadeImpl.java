@@ -21,13 +21,16 @@ import io.github.George_Al3xander.service.TraineeService;
 import io.github.George_Al3xander.service.TrainerService;
 import io.github.George_Al3xander.service.TrainingService;
 import io.github.George_Al3xander.service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class GymFacadeImpl implements GymFacade {
 
@@ -155,6 +158,7 @@ public class GymFacadeImpl implements GymFacade {
     }
 
     @Override
+    @CircuitBreaker(name = "addTraining", fallbackMethod = "addTrainingFallback")
     public Training addTraining(AddTrainingRequest request) {
         Training training = trainingMapper.toTraining(request);
 
@@ -169,6 +173,19 @@ public class GymFacadeImpl implements GymFacade {
         recordTrainerWorkload(training);
 
         return trainingService.saveTraining(training);
+    }
+
+    private Training addTrainingFallback(AddTrainingRequest request, Throwable exception) {
+        log.warn(
+                "Trainer Stats service is unavailable while adding training. " +
+                        "Falling back. trainerUsername={}, traineeUsername={}, cause={}",
+                request.getTrainerUsername(),
+                request.getTraineeUsername(),
+                exception.getMessage(),
+                exception
+        );
+
+        return trainingMapper.toTraining(request);
     }
 
     @Override
