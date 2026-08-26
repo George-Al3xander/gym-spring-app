@@ -1,0 +1,69 @@
+services:
+  eureka-server:
+    image: eureka-server
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - gym-microservices-net
+
+  gym-app:
+    image: gym-app
+    build:
+      context: ./gym-app
+    ports:
+      - "8081:8081"
+    networks:
+      - gym-microservices-net
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - CORS_ALLOWED_ORIGINS=http://localhost:8080,http://localhost:8081,http://localhost:8082,http://localhost:8761
+
+  trainer-stats-app:
+    image: trainer-stats-app
+    build:
+      context: ./trainer-stats-app
+    ports:
+      - "8082:8082"
+    networks:
+      - gym-microservices-net
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./data/prometheus/config:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+    ports:
+      - 9090:9090
+    networks:
+      - gym-microservices-net
+
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    pull_policy: always
+    container_name: grafana
+    restart: unless-stopped
+    user: root
+    ports:
+      - 3000:3000
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+      - GF_LOG_MODE=console file
+      - GF_LOG_FILTERS=alerting.notifier.slack:debug alertmanager:debug ngalert:debug
+    networks:
+      - gym-microservices-net
+
+networks:
+  gym-microservices-net:
+    driver: bridge

@@ -125,6 +125,8 @@
     </dependencyManagement>
 
     <build>
+        <finalName>trainer-stats-app</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
