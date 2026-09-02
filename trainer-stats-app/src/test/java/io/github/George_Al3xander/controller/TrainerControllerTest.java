@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,6 +30,7 @@ class TrainerControllerTest {
 
     @Mock
     private TrainerWorkloadService trainerWorkloadService;
+
 
     private MockMvc mockMvc;
 
@@ -415,6 +417,7 @@ class TrainerControllerTest {
     ) {
         WorkloadRequest request = new WorkloadRequest();
 
+        request.setCorrelationId(UUID.randomUUID().toString());
         request.setTrainerUsername(username);
         request.setTrainerFirstName(firstName);
         request.setTrainerLastName(lastName);

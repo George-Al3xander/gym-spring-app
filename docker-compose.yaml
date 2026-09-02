@@ -39,6 +39,10 @@ services:
       - LOGGING_PATTERN_CONSOLE=${LOGGING_PATTERN_CONSOLE}
       - LOGGING_PATTERN_FILE=${LOGGING_PATTERN_FILE}
       - CORRELATION_ID_HEADER=${CORRELATION_ID_HEADER}
+      - SPRING_ACTIVEMQ_BROKER_URL=${ACTIVEMQ_BROKER_URL}
+      - SPRING_ACTIVEMQ_USER=${ACTIVEMQ_USER}
+      - SPRING_ACTIVEMQ_PASSWORD=${ACTIVEMQ_PASSWORD}
+      - APP_TRAINER_WORKLOAD_QUEUE_NAME=${APP_TRAINER_WORKLOAD_QUEUE_NAME}
       - SPRING_JPA_SHOW_SQL=false
 
   trainer-stats-app:
@@ -56,6 +60,10 @@ services:
       - LOGGING_PATTERN_CONSOLE=${LOGGING_PATTERN_CONSOLE}
       - LOGGING_PATTERN_FILE=${LOGGING_PATTERN_FILE}
       - CORRELATION_ID_HEADER=${CORRELATION_ID_HEADER}
+      - SPRING_ACTIVEMQ_BROKER_URL=${ACTIVEMQ_BROKER_URL}
+      - SPRING_ACTIVEMQ_USER=${ACTIVEMQ_USER}
+      - SPRING_ACTIVEMQ_PASSWORD=${ACTIVEMQ_PASSWORD}
+      - APP_TRAINER_WORKLOAD_QUEUE_NAME=${APP_TRAINER_WORKLOAD_QUEUE_NAME}
       - SPRING_JPA_SHOW_SQL=false
 
   mysql:
@@ -77,6 +85,13 @@ services:
       timeout: 5s
       retries: 20
       start_period: 20s
+
+  activemq:
+    image: apache/activemq-classic:latest
+    ports:
+      - "61616:61616"
+    networks:
+      - gym-microservices-net
 
   prometheus:
     image: prom/prometheus:v2.35.0
