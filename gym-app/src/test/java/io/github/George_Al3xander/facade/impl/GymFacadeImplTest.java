@@ -6,6 +6,7 @@ import io.github.George_Al3xander.dto.filter.TrainerFilter;
 import io.github.George_Al3xander.dto.filter.TrainingFilter;
 import io.github.George_Al3xander.dto.trainee.*;
 import io.github.George_Al3xander.dto.trainer.*;
+import io.github.George_Al3xander.dto.training.AddTrainingRequest;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.mapper.TraineeMapper;
 import io.github.George_Al3xander.mapper.TrainerMapper;
@@ -14,17 +15,13 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.model.TrainingType;
-import io.github.George_Al3xander.service.TraineeService;
-import io.github.George_Al3xander.service.TrainerService;
-import io.github.George_Al3xander.service.TrainingService;
-import io.github.George_Al3xander.service.UserService;
+import io.github.George_Al3xander.service.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.jms.core.JmsClient;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -51,7 +48,7 @@ class GymFacadeImplTest {
     private TrainingTypeDao trainingTypeDao;
 
     @Mock
-    private JmsClient jmsClient;
+    private TrainerWorkloadPublisher trainerWorkloadPublisher;
 
     @Mock
     private TraineeMapper traineeMapper;
@@ -402,45 +399,42 @@ class GymFacadeImplTest {
         }
     }
 
-    //TODO: fix
-//    @Test
-//    void givenValidRequest_whenAddTraining_thenTrainerAndTraineeAreLinkedAndSaved() {
-//        AddTrainingRequest request = mock(AddTrainingRequest.class);
-//        when(request.getTrainerUsername()).thenReturn(TRAINER_USERNAME);
-//        when(request.getTraineeUsername()).thenReturn(TRAINEE_USERNAME);
-//
-//        Training mappedTraining = mock(Training.class);
-//        when(trainingMapper.toTraining(request)).thenReturn(mappedTraining);
-//
-//        Trainer trainer = mock(Trainer.class);
-//        when(trainerService.getTrainerByUsername(TRAINER_USERNAME)).thenReturn(trainer);
-//
-//        when(trainer.getUsername()).thenReturn(TRAINER_USERNAME);
-//        when(trainer.getFirstName()).thenReturn("John");
-//        when(trainer.getLastName()).thenReturn("Doe");
-//        when(trainer.getIsActive()).thenReturn(true);
-//
-//        Trainee trainee = mock(Trainee.class);
-//        when(traineeService.getTraineeByUsername(TRAINEE_USERNAME)).thenReturn(trainee);
-//
-//        when(mappedTraining.getTrainer()).thenReturn(trainer);
-//
-//        Training savedTraining = mock(Training.class);
-//        when(trainingService.saveTraining(mappedTraining)).thenReturn(savedTraining);
-//
-//        doNothing()
-//                .when(trainerStatsClient)
-//                .addTrainingWorkload(any(TrainerWorkloadRequest.class));
-//
-//        Training result = gymFacade.addTraining(request);
-//
-//        verify(mappedTraining).setTrainer(trainer);
-//        verify(mappedTraining).setTrainee(trainee);
-//        verify(trainerStatsClient).addTrainingWorkload(any(TrainerWorkloadRequest.class));
-//        verify(trainingService).saveTraining(mappedTraining);
-//
-//        assertEquals(savedTraining, result);
-//    }
+    @Test
+    void givenValidRequest_whenAddTraining_thenTrainerAndTraineeAreLinkedAndSaved() {
+        AddTrainingRequest request = new AddTrainingRequest();
+        request.setTrainerUsername(TRAINER_USERNAME);
+        request.setTraineeUsername(TRAINEE_USERNAME);
+
+        Training mappedTraining = mock(Training.class);
+        when(trainingMapper.toTraining(request)).thenReturn(mappedTraining);
+
+        Trainer trainer = new Trainer();
+        when(trainerService.getTrainerByUsername(TRAINER_USERNAME)).thenReturn(trainer);
+
+        trainer.setUsername(TRAINER_USERNAME);
+        trainer.setFirstName("John");
+        trainer.setLastName("Doe");
+        trainer.setIsActive(true);
+
+        Trainee trainee = mock(Trainee.class);
+        when(traineeService.getTraineeByUsername(TRAINEE_USERNAME)).thenReturn(trainee);
+
+        Training savedTraining = mock(Training.class);
+        when(trainingService.saveTraining(mappedTraining)).thenReturn(savedTraining);
+
+        doNothing()
+                .when(trainerWorkloadPublisher)
+                .publish(any(Training.class));
+
+        Training result = gymFacade.addTraining(request);
+
+        verify(mappedTraining).setTrainer(trainer);
+        verify(mappedTraining).setTrainee(trainee);
+        verify(trainerWorkloadPublisher).publish(any(Training.class));
+        verify(trainingService).saveTraining(mappedTraining);
+
+        assertEquals(savedTraining, result);
+    }
 
     @Nested
     class GetTrainersByTraineeUsername {
