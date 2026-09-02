@@ -16,16 +16,10 @@ import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.model.TrainingType;
-import io.github.George_Al3xander.service.TraineeService;
-import io.github.George_Al3xander.service.TrainerService;
-import io.github.George_Al3xander.service.TrainingService;
-import io.github.George_Al3xander.service.UserService;
+import io.github.George_Al3xander.service.*;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jms.core.JmsClient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -46,14 +40,7 @@ public class GymFacadeImpl implements GymFacade {
     private final TrainerMapper trainerMapper;
     private final TrainingMapper trainingMapper;
 
-    private final JmsClient jmsClient;
-
-    @Value("${app.trainer-workload.queue-name}")
-    private String trainerWorkloadQueueName;
-
-    @Value("${correlation-id.header}")
-    private String correlationIdKey;
-
+    private final TrainerWorkloadPublisher trainerWorkloadPublisher;
 
     @Override
     public CredentialsDTO createTrainer(TrainerRegistrationRequest request) {
@@ -179,7 +166,7 @@ public class GymFacadeImpl implements GymFacade {
 
         training.setTrainingType(training.getTrainingType());
 
-        recordTrainerWorkload(training);
+        trainerWorkloadPublisher.publish(training);
 
         return trainingService.saveTraining(training);
     }
@@ -236,24 +223,4 @@ public class GymFacadeImpl implements GymFacade {
 
         return trainingTypeOptional.get();
     }
-
-    private void recordTrainerWorkload(Training training) {
-        Trainer trainer = training.getTrainer();
-
-        TrainerWorkloadRequest trainerWorkloadRequest = TrainerWorkloadRequest.builder()
-                .correlationId(MDC.get(correlationIdKey))
-                .trainerUsername(trainer.getUsername())
-                .trainerFirstName(trainer.getFirstName())
-                .trainerLastName(trainer.getLastName())
-                .active(trainer.getIsActive())
-                .actionType(TrainerWorkloadRequest.ActionType.ADD)
-                .trainingDate(training.getTrainingDate())
-                .trainingDuration(training.getDurationSeconds())
-                .build();
-
-        jmsClient
-                .destination(trainerWorkloadQueueName)
-                .send(trainerWorkloadRequest);
-    }
-
 }
