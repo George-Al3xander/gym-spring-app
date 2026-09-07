@@ -2,6 +2,10 @@ package io.github.George_Al3xander.config;
 
 import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -13,6 +17,7 @@ import org.springframework.jms.support.converter.JacksonJsonMessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import java.util.Map;
+import java.util.Set;
 
 @Configuration
 @Slf4j
@@ -32,6 +37,7 @@ public class MessagingConfig {
 
         try {
             MDC.put(correlationIdKey, correlationId);
+            validateWorkloadRequest(workloadRequest);
             trainerWorkloadService.handleTraining(workloadRequest);
         } finally {
             MDC.remove(correlationIdKey);
@@ -49,5 +55,14 @@ public class MessagingConfig {
         ));
 
         return converter;
+    }
+
+    private void validateWorkloadRequest(WorkloadRequest workloadRequest) {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<WorkloadRequest>> violations = validator.validate(workloadRequest);
+
+            throw new RuntimeException(violations.toString());
+        }
     }
 }
