@@ -1,41 +1,31 @@
 package io.github.George_Al3xander.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "trainer_workload")
+@Document(collection = "trainer_workloads")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class TrainerWorkload {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true)
     private String trainerUsername;
 
-    @Column(nullable = false)
     private String trainerFirstName;
 
-    @Column(nullable = false)
     private String trainerLastName;
 
-    @Column(nullable = false)
     private boolean trainerStatus;
 
-    @OneToMany(
-            mappedBy = "trainerWorkload",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
     private List<YearWorkload> years = new ArrayList<>();
 }

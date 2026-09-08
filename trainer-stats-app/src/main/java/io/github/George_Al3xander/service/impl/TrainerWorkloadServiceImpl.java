@@ -107,7 +107,6 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
                     YearWorkload year = new YearWorkload();
                     year.setYear(targetYear);
-                    year.setTrainerWorkload(trainerWorkload);
                     trainerWorkload.getYears().add(year);
 
                     return year;
