@@ -7,7 +7,6 @@ import io.github.George_Al3xander.model.TrainerWorkload;
 import io.github.George_Al3xander.model.YearWorkload;
 import io.github.George_Al3xander.repository.TrainerWorkloadRepository;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +58,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     @Override
     public TrainerWorkload getWorkloadByTrainerUsername(String username) {
         return trainerWorkloadRepository.findByTrainerUsername(username)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(RuntimeException::new);
     }
 
     private TrainerWorkload findTrainerWorkloadByRequest(
@@ -131,7 +130,6 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
                     MonthWorkload month = new MonthWorkload();
                     month.setMonth(targetMonth);
                     month.setTrainingSummaryDuration(0);
-                    month.setYearWorkload(yearWorkload);
                     yearWorkload.getMonths().add(month);
 
                     return month;

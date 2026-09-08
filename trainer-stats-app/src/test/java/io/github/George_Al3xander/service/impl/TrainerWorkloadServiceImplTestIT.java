@@ -9,14 +9,14 @@ import io.github.George_Al3xander.repository.TrainerWorkloadRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataMongoTest
 @Import(TrainerWorkloadServiceImpl.class)
 class TrainerWorkloadServiceImplTestIT {
 
@@ -653,9 +653,9 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNonExistingTrainer_whenGettingWorkloadByUsername_thenThrowEntityNotFoundException() {
-        jakarta.persistence.EntityNotFoundException exception =
+        RuntimeException exception =
                 assertThrows(
-                        jakarta.persistence.EntityNotFoundException.class,
+                        RuntimeException.class,
                         () -> trainerWorkloadService.getWorkloadByTrainerUsername("unknown")
                 );
 
