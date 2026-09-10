@@ -7,6 +7,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class MessagingConfig {
 
     private final TrainerWorkloadService trainerWorkloadService;
@@ -37,6 +39,9 @@ public class MessagingConfig {
             MDC.put(correlationIdKey, correlationId);
             validateWorkloadRequest(workloadRequest);
             trainerWorkloadService.handleTraining(workloadRequest);
+        } catch (Exception e) {
+            log.error("Processing failed", e);
+            throw e;
         } finally {
             MDC.remove(correlationIdKey);
         }
