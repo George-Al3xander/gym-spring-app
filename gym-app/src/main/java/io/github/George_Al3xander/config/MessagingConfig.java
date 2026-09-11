@@ -53,15 +53,15 @@ public class MessagingConfig {
 
     @JmsListener(destination = "ActiveMQ.DLQ")
     public void handleDLQ(
-            String json,
+            TrainerWorkloadRequest request,
             @Header(JmsHeaders.MESSAGE_ID) String messageId,
-            @Header("JMSDestination") Destination destination) {
+            @Header(JmsHeaders.DESTINATION) Destination destination) {
 
         log.error(
                 "DLQ message. messageId={}, destination={}, payload={}",
                 messageId,
                 destination,
-                json
+                request
         );
     }
 

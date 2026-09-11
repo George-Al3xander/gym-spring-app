@@ -65,7 +65,11 @@ public class MessagingConfig {
             Validator validator = factory.getValidator();
             Set<ConstraintViolation<WorkloadRequest>> violations = validator.validate(workloadRequest);
 
-            throw new RuntimeException(violations.toString());
+            if (!violations.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Invalid WorkloadRequest: " + violations
+                );
+            }
         }
     }
 }
