@@ -28,7 +28,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
-     
+
         String username = null;
         String jwt = null;
 
@@ -38,7 +38,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.isTokenValid(jwt)) {
+            if (!jwtUtil.isTokenExpired(jwt)) {
 
                 List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 

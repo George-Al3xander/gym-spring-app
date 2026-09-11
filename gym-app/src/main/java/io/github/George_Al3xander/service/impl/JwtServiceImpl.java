@@ -1,5 +1,6 @@
 package io.github.George_Al3xander.service.impl;
 
+import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dao.TokenDao;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.exception.GymBadCredentialsException;
@@ -7,19 +8,11 @@ import io.github.George_Al3xander.model.Token;
 import io.github.George_Al3xander.model.TokenType;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.JwtService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.SecretKey;
-import java.security.Key;
-import java.time.Duration;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,12 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Transactional
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private Duration expiration;
+    private final JwtUtil jwtUtil;
 
     private final UserDao userDao;
     private final TokenDao tokenDao;
@@ -42,7 +30,7 @@ public class JwtServiceImpl implements JwtService {
 
         Token tokenEntity = new Token();
         tokenEntity.setUser(findUser(username));
-        tokenEntity.setToken(generateToken(username));
+        tokenEntity.setToken(jwtUtil.generateToken(username));
         tokenEntity.setTokenType(TokenType.BEARER);
         tokenEntity.setRevoked(false);
         tokenEntity.setExpired(false);
@@ -52,20 +40,15 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String extractUsername(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        return jwtUtil.extractUsername(token);
     }
 
     @Override
     public boolean isTokenValid(String token, String usernameFromUserDetails) {
         try {
-            String usernameFromToken = extractUsername(token);
+            String usernameFromToken = jwtUtil.extractUsername(token);
 
-            if (!usernameFromToken.equals(usernameFromUserDetails) || isTokenExpired(token)) {
+            if (!usernameFromToken.equals(usernameFromUserDetails) || jwtUtil.isTokenExpired(token)) {
                 return false;
             }
 
@@ -116,30 +99,5 @@ public class JwtServiceImpl implements JwtService {
     private Token findToken(String token) {
         return tokenDao.findByToken(token)
                 .orElseThrow(() -> new GymBadCredentialsException("Invalid username or password"));
-    }
-
-    private String generateToken(String username) {
-        return Jwts.builder()
-                .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration.toMillis()))
-                .signWith(getSigningKey())
-                .compact();
-    }
-
-    private boolean isTokenExpired(String token) {
-        Date expiration = Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration();
-
-        return expiration.before(new Date());
-    }
-
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

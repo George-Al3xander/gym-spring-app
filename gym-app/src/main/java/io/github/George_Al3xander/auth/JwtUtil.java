@@ -1,4 +1,4 @@
-package io.github.George_Al3xander.jwt;
+package io.github.George_Al3xander.auth;
 
 import io.github.common.auth.jwt.JwtAbstractUtil;
 import org.springframework.beans.factory.annotation.Value;

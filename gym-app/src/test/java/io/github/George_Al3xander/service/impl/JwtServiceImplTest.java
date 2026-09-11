@@ -1,22 +1,19 @@
 package io.github.George_Al3xander.service.impl;
 
+import io.github.George_Al3xander.auth.JwtUtil;
 import io.github.George_Al3xander.dao.TokenDao;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.model.Token;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.JwtService;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.crypto.SecretKey;
-import java.lang.reflect.Field;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,28 +33,14 @@ class JwtServiceImplTest {
 
     private JwtService jwtService;
 
-    private static final String SECRET =
-            Base64.getEncoder()
-                    .encodeToString(
-                            "my-super-secret-key-my-super-secret-key".getBytes()
-                    );
-
-    private static final Duration EXPIRATION =
-            Duration.ofMinutes(10);
-
     @BeforeEach
-    void setUp() throws Exception {
-        jwtService = new JwtServiceImpl(userDao, tokenDao);
+    void setUp() {
+        JwtUtil jwtUtil = new JwtUtil(
+                "VGhpc0lzQVN1ZmZpY2llbnRseUxvbmdTZWN1cmVTZWNyZXRLZXk=",
+                Duration.ofMinutes(30)
+        );
 
-        Field secretField =
-                JwtServiceImpl.class.getDeclaredField("secret");
-        secretField.setAccessible(true);
-        secretField.set(jwtService, SECRET);
-
-        Field expirationField =
-                JwtServiceImpl.class.getDeclaredField("expiration");
-        expirationField.setAccessible(true);
-        expirationField.set(jwtService, EXPIRATION);
+        jwtService = new JwtServiceImpl(jwtUtil, userDao, tokenDao);
     }
 
     @Test
@@ -177,11 +160,6 @@ class JwtServiceImplTest {
 
         String username = "john.doe";
 
-        SecretKey key =
-                Keys.hmacShaKeyFor(
-                        Base64.getDecoder()
-                                .decode(SECRET)
-                );
 
         String expiredToken =
                 Jwts.builder()
@@ -196,7 +174,6 @@ class JwtServiceImplTest {
                                         System.currentTimeMillis() - 10000
                                 )
                         )
-                        .signWith(key)
                         .compact();
 
         boolean result =
