@@ -1,6 +1,6 @@
 package io.github.George_Al3xander.config;
 
-import io.github.George_Al3xander.dto.trainer.TrainerWorkloadRequest;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import jakarta.jms.Destination;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;

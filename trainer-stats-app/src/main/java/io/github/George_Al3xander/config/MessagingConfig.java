@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.config;
 
-import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -31,7 +31,7 @@ public class MessagingConfig {
 
     @JmsListener(destination = "${app.trainer-workload.queue-name}")
     public void receiveWorkload(
-            WorkloadRequest workloadRequest
+            TrainerWorkloadRequest workloadRequest
     ) {
         String correlationId = workloadRequest.getCorrelationId();
 
@@ -54,16 +54,16 @@ public class MessagingConfig {
         converter.setTypeIdPropertyName("_type");
 
         converter.setTypeIdMappings(Map.of(
-                "trainer.workload", WorkloadRequest.class
+                "trainer.workload", TrainerWorkloadRequest.class
         ));
 
         return converter;
     }
 
-    private void validateWorkloadRequest(WorkloadRequest workloadRequest) {
+    private void validateWorkloadRequest(TrainerWorkloadRequest workloadRequest) {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
-            Set<ConstraintViolation<WorkloadRequest>> violations = validator.validate(workloadRequest);
+            Set<ConstraintViolation<TrainerWorkloadRequest>> violations = validator.validate(workloadRequest);
 
             if (!violations.isEmpty()) {
                 throw new IllegalArgumentException(

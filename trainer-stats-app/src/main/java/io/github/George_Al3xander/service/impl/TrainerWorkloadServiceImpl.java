@@ -1,12 +1,11 @@
 package io.github.George_Al3xander.service.impl;
 
-import io.github.George_Al3xander.dto.workload.ActionType;
-import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.model.MonthWorkload;
 import io.github.George_Al3xander.model.TrainerWorkload;
 import io.github.George_Al3xander.model.YearWorkload;
 import io.github.George_Al3xander.repository.TrainerWorkloadRepository;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     private final TrainerWorkloadRepository trainerWorkloadRepository;
 
     @Override
-    public TrainerWorkload handleTraining(WorkloadRequest request) {
+    public TrainerWorkload handleTraining(TrainerWorkloadRequest request) {
         TrainerWorkload trainerWorkload = findTrainerWorkloadByRequest(request);
 
         YearWorkload yearWorkload =
@@ -62,7 +61,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     }
 
     private TrainerWorkload findTrainerWorkloadByRequest(
-            WorkloadRequest request
+            TrainerWorkloadRequest request
     ) {
         return trainerWorkloadRepository
                 .findByTrainerUsername(request.getTrainerUsername())
@@ -73,7 +72,7 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
                     return trainer;
                 })
                 .orElseGet(() -> {
-                    if (request.getActionType() == ActionType.DELETE) {
+                    if (request.getActionType() == TrainerWorkloadRequest.ActionType.DELETE) {
                         throw new IllegalArgumentException(
                                 "Cannot delete training for a trainer that does not exist"
                         );
@@ -92,13 +91,13 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     private YearWorkload findYearWorkloadByTrainerAndYear(
             TrainerWorkload trainerWorkload,
             int targetYear,
-            ActionType actionType
+            TrainerWorkloadRequest.ActionType actionType
     ) {
         return trainerWorkload.getYears().stream()
                 .filter(year -> year.getYear() == targetYear)
                 .findFirst()
                 .orElseGet(() -> {
-                    if (actionType == ActionType.DELETE) {
+                    if (actionType == TrainerWorkloadRequest.ActionType.DELETE) {
                         throw new IllegalArgumentException(
                                 "Cannot delete training for a year that does not exist"
                         );
@@ -115,13 +114,13 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     private MonthWorkload findMonthWorkloadByYearAndMonth(
             YearWorkload yearWorkload,
             int targetMonth,
-            ActionType actionType
+            TrainerWorkloadRequest.ActionType actionType
     ) {
         return yearWorkload.getMonths().stream()
                 .filter(month -> month.getMonth() == targetMonth)
                 .findFirst()
                 .orElseGet(() -> {
-                    if (actionType == ActionType.DELETE) {
+                    if (actionType == TrainerWorkloadRequest.ActionType.DELETE) {
                         throw new IllegalArgumentException(
                                 "Cannot delete training for a month that does not exist"
                         );

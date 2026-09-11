@@ -1,18 +1,17 @@
 package io.github.George_Al3xander.service.impl;
 
-import io.github.George_Al3xander.dto.workload.ActionType;
-import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.model.MonthWorkload;
 import io.github.George_Al3xander.model.TrainerWorkload;
 import io.github.George_Al3xander.model.YearWorkload;
 import io.github.George_Al3xander.repository.TrainerWorkloadRepository;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 import org.springframework.context.annotation.Import;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,14 +32,14 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNewTrainer_whenAddingTraining_thenCreateTrainerYearAndMonth() {
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 8,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         TrainerWorkload result =
@@ -67,14 +66,14 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNewTrainer_whenAddingTraining_thenPersistTrainer() {
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 8,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(request);
@@ -92,26 +91,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTrainer_whenAddingTraining_thenUpdateTrainerMetadata() {
-        WorkloadRequest firstRequest = createRequest(
+        TrainerWorkloadRequest firstRequest = createRequest(
                 "john.doe",
                 "Old",
                 "Name",
                 false,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(firstRequest);
 
-        WorkloadRequest secondRequest = createRequest(
+        TrainerWorkloadRequest secondRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 15),
+                LocalDateTime.of(2026, 8, 15, 0, 0, 0, 0),
                 3,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(secondRequest);
@@ -128,26 +127,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingMonth_whenAddingTraining_thenIncreaseDuration() {
-        WorkloadRequest firstRequest = createRequest(
+        TrainerWorkloadRequest firstRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(firstRequest);
 
-        WorkloadRequest secondRequest = createRequest(
+        TrainerWorkloadRequest secondRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 20),
+                LocalDateTime.of(2026, 8, 20, 0, 0, 0, 0),
                 3,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         TrainerWorkload result =
@@ -161,26 +160,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingYearWithoutMonth_whenAddingTraining_thenCreateNewMonth() {
-        WorkloadRequest augustRequest = createRequest(
+        TrainerWorkloadRequest augustRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(augustRequest);
 
-        WorkloadRequest septemberRequest = createRequest(
+        TrainerWorkloadRequest septemberRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 9, 10),
+                LocalDateTime.of(2026, 9, 10, 0, 0, 0, 0),
                 7,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         TrainerWorkload result =
@@ -203,26 +202,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTrainer_whenAddingTrainingForDifferentYear_thenCreateSeparateYear() {
-        WorkloadRequest request2026 = createRequest(
+        TrainerWorkloadRequest request2026 = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(request2026);
 
-        WorkloadRequest request2027 = createRequest(
+        TrainerWorkloadRequest request2027 = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2027, 8, 10),
+                LocalDateTime.of(2027, 8, 10, 0, 0),
                 7,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         TrainerWorkload result =
@@ -251,24 +250,24 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenDifferentTrainers_whenAddingTraining_thenPersistIndependentWorkloads() {
-        WorkloadRequest johnRequest = createRequest(
+        TrainerWorkloadRequest johnRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
-        WorkloadRequest janeRequest = createRequest(
+        TrainerWorkloadRequest janeRequest = createRequest(
                 "jane.doe",
                 "Jane",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 8,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(johnRequest);
@@ -299,26 +298,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTraining_whenDeletingTraining_thenDecreaseDuration() {
-        WorkloadRequest addRequest = createRequest(
+        TrainerWorkloadRequest addRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 10,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(addRequest);
 
-        WorkloadRequest deleteRequest = createRequest(
+        TrainerWorkloadRequest deleteRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 4,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         TrainerWorkload result =
@@ -332,26 +331,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTrainingWithExactDuration_whenDeletingTraining_thenSetDurationToZero() {
-        WorkloadRequest addRequest = createRequest(
+        TrainerWorkloadRequest addRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 10,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(addRequest);
 
-        WorkloadRequest deleteRequest = createRequest(
+        TrainerWorkloadRequest deleteRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 10,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         TrainerWorkload result =
@@ -365,26 +364,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTrainingWithInsufficientDuration_whenDeletingTraining_thenThrowIllegalArgumentException() {
-        WorkloadRequest addRequest = createRequest(
+        TrainerWorkloadRequest addRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(addRequest);
 
-        WorkloadRequest deleteRequest = createRequest(
+        TrainerWorkloadRequest deleteRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 6,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -411,14 +410,14 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNonExistingTrainer_whenDeletingTraining_thenThrowIllegalArgumentException() {
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 5,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -439,26 +438,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNonExistingYear_whenDeletingTraining_thenThrowIllegalArgumentException() {
-        WorkloadRequest addRequest = createRequest(
+        TrainerWorkloadRequest addRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(addRequest);
 
-        WorkloadRequest deleteRequest = createRequest(
+        TrainerWorkloadRequest deleteRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2027, 8, 10),
+                LocalDateTime.of(2027, 8, 10, 0, 0),
                 5,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -482,26 +481,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNonExistingMonth_whenDeletingTraining_thenThrowIllegalArgumentException() {
-        WorkloadRequest addRequest = createRequest(
+        TrainerWorkloadRequest addRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 5,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(addRequest);
 
-        WorkloadRequest deleteRequest = createRequest(
+        TrainerWorkloadRequest deleteRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 9, 10),
+                LocalDateTime.of(2026, 9, 10, 0, 0),
                 5,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         IllegalArgumentException exception = assertThrows(
@@ -528,26 +527,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenZeroDuration_whenAddingTraining_thenKeepDurationUnchanged() {
-        WorkloadRequest firstRequest = createRequest(
+        TrainerWorkloadRequest firstRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 10,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(firstRequest);
 
-        WorkloadRequest zeroRequest = createRequest(
+        TrainerWorkloadRequest zeroRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 0,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         TrainerWorkload result =
@@ -562,26 +561,26 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenZeroDuration_whenDeletingTraining_thenKeepDurationUnchanged() {
-        WorkloadRequest firstRequest = createRequest(
+        TrainerWorkloadRequest firstRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 10,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(firstRequest);
 
-        WorkloadRequest zeroRequest = createRequest(
+        TrainerWorkloadRequest zeroRequest = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 0,
-                ActionType.DELETE
+                TrainerWorkloadRequest.ActionType.DELETE
         );
 
         TrainerWorkload result =
@@ -596,14 +595,14 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenNegativeDuration_whenAddingTraining_thenThrowIllegalArgumentException() {
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 -1,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         assertThrows(
@@ -619,14 +618,14 @@ class TrainerWorkloadServiceImplTestIT {
 
     @Test
     void givenExistingTrainer_whenGettingWorkloadByUsername_thenReturnTrainerWorkload() {
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 8,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         trainerWorkloadService.handleTraining(request);
@@ -664,16 +663,16 @@ class TrainerWorkloadServiceImplTestIT {
     }
 
 
-    private WorkloadRequest createRequest(
+    private TrainerWorkloadRequest createRequest(
             String username,
             String firstName,
             String lastName,
             boolean active,
-            LocalDate date,
+            LocalDateTime date,
             int duration,
-            ActionType actionType
+            TrainerWorkloadRequest.ActionType actionType
     ) {
-        WorkloadRequest request = new WorkloadRequest();
+        TrainerWorkloadRequest request = new TrainerWorkloadRequest();
 
         request.setTrainerUsername(username);
         request.setTrainerFirstName(firstName);

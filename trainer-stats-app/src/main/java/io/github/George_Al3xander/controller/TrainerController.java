@@ -1,8 +1,8 @@
 package io.github.George_Al3xander.controller;
 
-import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.model.TrainerWorkload;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,10 +64,10 @@ public class TrainerController {
                     required = true,
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = WorkloadRequest.class)
+                            schema = @Schema(implementation = TrainerWorkloadRequest.class)
                     )
             )
-            @Valid @RequestBody WorkloadRequest request
+            @Valid @RequestBody TrainerWorkloadRequest request
     ) {
         trainerWorkloadService.handleTraining(request);
         return ResponseEntity.ok().build();

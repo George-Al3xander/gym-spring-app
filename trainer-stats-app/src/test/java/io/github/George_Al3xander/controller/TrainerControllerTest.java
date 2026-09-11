@@ -2,10 +2,9 @@ package io.github.George_Al3xander.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.github.George_Al3xander.dto.workload.ActionType;
-import io.github.George_Al3xander.dto.workload.WorkloadRequest;
 import io.github.George_Al3xander.model.TrainerWorkload;
 import io.github.George_Al3xander.service.TrainerWorkloadService;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -60,14 +59,14 @@ class TrainerControllerTest {
     void givenValidAddTrainingRequest_whenAddTraining_thenReturnOk()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -84,14 +83,14 @@ class TrainerControllerTest {
     void givenNegativeTrainingDuration_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 -1,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -108,14 +107,14 @@ class TrainerControllerTest {
     void givenBlankUsername_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -132,14 +131,14 @@ class TrainerControllerTest {
     void givenBlankFirstName_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -156,14 +155,14 @@ class TrainerControllerTest {
     void givenBlankLastName_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -180,14 +179,14 @@ class TrainerControllerTest {
     void givenNullTrainingDate_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
                 null,
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -204,12 +203,12 @@ class TrainerControllerTest {
     void givenNullActionType_whenAddTraining_thenReturnBadRequest()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
                 null
         );
@@ -260,14 +259,14 @@ class TrainerControllerTest {
     void givenMissingContentType_whenAddTraining_thenReturnUnsupportedMediaType()
             throws Exception {
 
-        WorkloadRequest request = createRequest(
+        TrainerWorkloadRequest request = createRequest(
                 "john.doe",
                 "John",
                 "Doe",
                 true,
-                LocalDate.of(2026, 8, 10),
+                LocalDateTime.of(2026, 8, 10, 0, 0),
                 20,
-                ActionType.ADD
+                TrainerWorkloadRequest.ActionType.ADD
         );
 
         mockMvc.perform(
@@ -406,16 +405,16 @@ class TrainerControllerTest {
                 ));
     }
 
-    private WorkloadRequest createRequest(
+    private TrainerWorkloadRequest createRequest(
             String username,
             String firstName,
             String lastName,
             boolean active,
-            LocalDate date,
+            LocalDateTime date,
             int duration,
-            ActionType actionType
+            TrainerWorkloadRequest.ActionType actionType
     ) {
-        WorkloadRequest request = new WorkloadRequest();
+        TrainerWorkloadRequest request = new TrainerWorkloadRequest();
 
         request.setCorrelationId(UUID.randomUUID().toString());
         request.setTrainerUsername(username);

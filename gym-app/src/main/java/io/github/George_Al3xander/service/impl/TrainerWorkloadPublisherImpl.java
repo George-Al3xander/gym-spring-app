@@ -1,9 +1,9 @@
 package io.github.George_Al3xander.service.impl;
 
-import io.github.George_Al3xander.dto.trainer.TrainerWorkloadRequest;
 import io.github.George_Al3xander.model.Trainer;
 import io.github.George_Al3xander.model.Training;
 import io.github.George_Al3xander.service.TrainerWorkloadPublisher;
+import io.github.common.dto.trainer.TrainerWorkloadRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
