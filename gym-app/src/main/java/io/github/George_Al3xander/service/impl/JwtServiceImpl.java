@@ -2,7 +2,7 @@ package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.TokenDao;
 import io.github.George_Al3xander.dao.UserDao;
-import io.github.George_Al3xander.exception.BadCredentialsException;
+import io.github.George_Al3xander.exception.GymBadCredentialsException;
 import io.github.George_Al3xander.model.Token;
 import io.github.George_Al3xander.model.TokenType;
 import io.github.George_Al3xander.model.User;
@@ -110,12 +110,12 @@ public class JwtServiceImpl implements JwtService {
 
     private User findUser(String username) {
         return userDao.findByUsername(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+                .orElseThrow(() -> new GymBadCredentialsException("Invalid username or password"));
     }
 
     private Token findToken(String token) {
         return tokenDao.findByToken(token)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+                .orElseThrow(() -> new GymBadCredentialsException("Invalid username or password"));
     }
 
     private String generateToken(String username) {

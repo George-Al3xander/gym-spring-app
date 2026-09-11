@@ -4,7 +4,7 @@ import io.github.George_Al3xander.dao.TraineeDao;
 import io.github.George_Al3xander.dao.TrainerDao;
 import io.github.George_Al3xander.dao.TrainingDao;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
-import io.github.George_Al3xander.exception.EntityInUseException;
+import io.github.George_Al3xander.exception.GymEntityInUseException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.Trainee;
 import io.github.George_Al3xander.model.Trainer;
@@ -245,7 +245,7 @@ class TraineeServiceImplTest {
                 .thenReturn(List.of(training));
 
         assertThrows(
-                EntityInUseException.class,
+                GymEntityInUseException.class,
                 () -> traineeService.deleteTrainee(1L)
         );
 
@@ -267,7 +267,7 @@ class TraineeServiceImplTest {
                 .thenReturn(List.of(training));
 
         assertThrows(
-                EntityInUseException.class,
+                GymEntityInUseException.class,
                 () -> traineeService.deleteTrainee(123L)
         );
 

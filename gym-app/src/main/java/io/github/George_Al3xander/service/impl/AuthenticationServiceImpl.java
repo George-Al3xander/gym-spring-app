@@ -3,7 +3,7 @@ package io.github.George_Al3xander.service.impl;
 import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
-import io.github.George_Al3xander.exception.BadCredentialsException;
+import io.github.George_Al3xander.exception.GymBadCredentialsException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.AuthenticationService;
@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void validatePassword(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new BadCredentialsException("Wrong old password");
+            throw new GymBadCredentialsException("Wrong old password");
         }
     }
 }

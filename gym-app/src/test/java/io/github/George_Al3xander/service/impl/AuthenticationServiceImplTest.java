@@ -4,7 +4,7 @@ import io.github.George_Al3xander.dao.UserDao;
 import io.github.George_Al3xander.dao.impl.UserDaoImpl;
 import io.github.George_Al3xander.dto.auth.ChangeLoginRequest;
 import io.github.George_Al3xander.dto.auth.CredentialsDTO;
-import io.github.George_Al3xander.exception.BadCredentialsException;
+import io.github.George_Al3xander.exception.GymBadCredentialsException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import jakarta.persistence.EntityManager;
@@ -154,7 +154,7 @@ class AuthenticationServiceImplTest {
         entityManager.flush();
 
         assertThrows(
-                BadCredentialsException.class,
+                GymBadCredentialsException.class,
                 () -> authenticationService.changePassword(
                         new ChangeLoginRequest(username, "wrongPassword", "newPass!!!")
                 )

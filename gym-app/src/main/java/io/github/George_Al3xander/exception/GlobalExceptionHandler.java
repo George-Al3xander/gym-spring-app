@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({EntityInUseException.class, GymEntityNotFoundException.class, ActivationStateConflictException.class})
+    @ExceptionHandler({GymEntityInUseException.class, GymEntityNotFoundException.class, GymActivationStateConflictException.class})
     @ResponseBody
     public ResponseEntity<Map<String, String>> handleCustomEntityExceptions(Exception ex) {
 
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(error);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler(GymBadCredentialsException.class)
     @ResponseBody
     public ResponseEntity<Map<String, String>> handleInvalidCredentials() {
 

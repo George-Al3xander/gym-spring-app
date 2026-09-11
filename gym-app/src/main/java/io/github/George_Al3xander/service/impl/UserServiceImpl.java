@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
-import io.github.George_Al3xander.exception.ActivationStateConflictException;
+import io.github.George_Al3xander.exception.GymActivationStateConflictException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.service.UserService;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         boolean previousActiveStatus = Boolean.TRUE.equals(user.getIsActive());
 
         if (previousActiveStatus == active) {
-            throw new ActivationStateConflictException(
+            throw new GymActivationStateConflictException(
                     "User " + username + " is already " + (active ? "active" : "inactive")
             );
         }

@@ -1,7 +1,7 @@
 package io.github.George_Al3xander.service.impl;
 
 import io.github.George_Al3xander.dao.UserDao;
-import io.github.George_Al3xander.exception.ActivationStateConflictException;
+import io.github.George_Al3xander.exception.GymActivationStateConflictException;
 import io.github.George_Al3xander.exception.GymEntityNotFoundException;
 import io.github.George_Al3xander.model.User;
 import io.github.George_Al3xander.util.PasswordGenerator;
@@ -134,7 +134,7 @@ class UserServiceImplTest {
 
         when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
 
-        assertThrows(ActivationStateConflictException.class,
+        assertThrows(GymActivationStateConflictException.class,
                 () -> userService.updateActiveStatusByUsername("john", true));
 
         verify(userDao, never()).update(any());
@@ -148,7 +148,7 @@ class UserServiceImplTest {
 
         when(userDao.findByUsername("john")).thenReturn(Optional.of(user));
 
-        assertThrows(ActivationStateConflictException.class,
+        assertThrows(GymActivationStateConflictException.class,
                 () -> userService.updateActiveStatusByUsername("john", false));
 
         verify(userDao, never()).update(any());
