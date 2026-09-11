@@ -5,6 +5,7 @@ import jakarta.jms.Destination;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,9 @@ public class MessagingConfig {
 
     @Value("${spring.activemq.broker.url}")
     private String brokerUrl;
+
+    @Value("${correlation-id.header}")
+    private String correlationIdKey;
 
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
@@ -57,12 +61,20 @@ public class MessagingConfig {
             @Header(JmsHeaders.MESSAGE_ID) String messageId,
             @Header(JmsHeaders.DESTINATION) Destination destination) {
 
-        log.error(
-                "DLQ message. messageId={}, destination={}, payload={}",
-                messageId,
-                destination,
-                request
-        );
+        try {
+            MDC.put(correlationIdKey, request.getCorrelationId());
+            log.error(
+                    "DLQ message. messageId={}, destination={}, payload={}",
+                    messageId,
+                    destination,
+                    request
+            );
+        } catch (Exception e) {
+            log.error("Processing failed", e);
+            throw e;
+        } finally {
+            MDC.remove(correlationIdKey);
+        }
     }
 
 }
